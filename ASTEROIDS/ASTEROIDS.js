@@ -88,7 +88,7 @@ function updateSimulation(du) {
 // GAME-SPECIFIC DIAGNOSTICS
 
 var g_allowMixedActions = true;
-var g_useGravity = false;
+var g_useGravity = true;
 var g_useAveVel = true;
 var g_renderSpatialDebug = false;
 
