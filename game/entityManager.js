@@ -171,6 +171,10 @@ update: function(du) {
 
 },
 
+getMainShip: function() {
+    return this._ships[0];
+    },
+
 render: function(ctx) {
 
     var debugX = 10, debugY = 100;

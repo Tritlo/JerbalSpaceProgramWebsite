@@ -2,29 +2,6 @@
 // ASTEROIDS
 // =========
 /*
-
-A sort-of-playable version of the classic arcade game.
-
-
-HOMEWORK INSTRUCTIONS:
-
-You have some "TODO"s to fill in again, particularly in:
-
-spatialManager.js
-
-But also, to a lesser extent, in:
-
-Rock.js
-Bullet.js
-Ship.js
-
-
-...Basically, you need to implement the core of the spatialManager,
-and modify the Rock/Bullet/Ship so that the register (and unregister)
-with it correctly, so that they can participate in collisions.
-
-*/
-
 "use strict";
 
 /* jshint browser: true, devel: true, globalstrict: true */
@@ -100,7 +77,9 @@ var g_settings = {"useGravity": true,
 		  "enableRocks": false,
 		  "minLandingSpeed": 1.6,
 		  "minFrictSpeed": 0.1,
-		  "maxSafeSpeed" : 5
+		  "maxSafeSpeed" : 5,
+		  "hudSize": 2,
+		  "speedToMPSConstant": 10
 		 };
 
 var KEY_MIXED   = keyCode('M');
@@ -170,6 +149,7 @@ function processDiagnostics() {
 function renderSimulation(ctx) {
 
     entityManager.render(ctx);
+    renderHUD(ctx);
 
     if (g_renderSpatialDebug) spatialManager.render(ctx);
 }

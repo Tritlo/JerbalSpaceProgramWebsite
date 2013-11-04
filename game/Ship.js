@@ -24,8 +24,6 @@ function Ship(descr) {
     this.sprite = this.sprite || g_sprites.lunarLander;
     this.width = this.sprite.width;
     this.height = this.sprite.height;
-
-    console.log(this.width, this.height);
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
