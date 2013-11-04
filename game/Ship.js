@@ -21,8 +21,11 @@ function Ship(descr) {
     this.rememberResets();
     
     // Default sprite, if not otherwise specified
-    this.sprite = this.sprite || g_sprites.ship2;
-    
+    this.sprite = this.sprite || g_sprites.lunarLander;
+    this.width = this.sprite.width;
+    this.height = this.sprite.height;
+
+    console.log(this.width, this.height);
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
@@ -41,6 +44,7 @@ Ship.prototype.KEY_THRUST = 'W'.charCodeAt(0);
 Ship.prototype.KEY_RETRO  = 'S'.charCodeAt(0);
 Ship.prototype.KEY_LEFT   = 'A'.charCodeAt(0);
 Ship.prototype.KEY_RIGHT  = 'D'.charCodeAt(0);
+
 
 Ship.prototype.KEY_FIRE   = ' '.charCodeAt(0);
 
@@ -245,7 +249,7 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     // bounce
     if (g_useGravity) {
 
-	var minY = this.sprite.height / 2;
+	var minY = this.height / 2;
 	var maxY = g_canvas.height - minY;
 
 	// Ignore the bounce if the ship is already in
@@ -309,7 +313,8 @@ Ship.prototype.maybeFireBullet = function () {
 };
 
 Ship.prototype.getRadius = function () {
-    return (this.sprite.width / 2) * 0.9;
+    
+    return (Math.max(this.width,this.height) / 2) * 0.9;
 };
 
 Ship.prototype.takeBulletHit = function () {
