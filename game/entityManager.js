@@ -178,11 +178,15 @@ render: function(ctx) {
         ctx.translate(-s.cx - g_canvas.width/2,-s.cy - g_canvas.height/2); 
 	//console.log((s.cx) + " "  + (s.cy));
     }
+    
     ctx.strokeStyle="white";
     ctx.beginPath();
-    ctx.rect(g_canvas.width,g_canvas.height,g_canvas.width,g_canvas.height);
+    //ctx.rect(g_canvas.width,g_canvas.height,g_canvas.width,g_canvas.height);
+    ctx.moveTo(s.cx - g_canvas.width/2, g_canvas.height*2);
+    ctx.lineTo(s.cy + 5*g_canvas.width/2, g_canvas.height*2);
     ctx.stroke();
     ctx.closePath();
+    
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
