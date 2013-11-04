@@ -231,6 +231,10 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 	} else if (nextY > maxY || nextY < minY) {
             this.velY = oldVelY * -0.9;
             intervalVelY = this.velY;
+	    if (Math.abs(intervalVelY) <= g_settings.minLandingSpeed){
+		this.land(maxY);
+		intervalVelY = 0;
+		}
         }
     }
     
@@ -238,6 +242,20 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     this.cx += du * intervalVelX;
     this.cy += du * intervalVelY;
 };
+
+Ship.prototype.land = function(maxY) {
+    this.cy = maxY;
+    this.velY = 0;
+    this.applyFriction();
+    }
+
+Ship.prototype.applyFriction = function (){
+    this.velX *= 0.98;
+    if (this.velX <= g_settings.minFrict){
+	this.velX = 0;
+	}
+    }
+    
 
 Ship.prototype.maybeFireBullet = function () {
 
