@@ -14,11 +14,13 @@
 
 // Construct a "sprite" from the given `image`,
 //
-function Sprite(image, dim, celldim) {
+function Sprite(image, dim, celldim, duration) {
     this.image = image;
     this.dim = dim;
+    this.celldim = celldim;
     this.width = image.width;
     this.height = image.height;
+    this.duration = duration;
     this.scale = 1;
 }
 
@@ -27,7 +29,7 @@ Sprite.prototype.drawAt = function (ctx, x, y) {
                   x, y);
 };
 
-Sprite.drawCell = function(ctx, frame){
+Sprite.prototype.drawCell = function(ctx, frame){
     var w = this.width,
         h = this.height;
     var row = Math.floor(frame/this.dim[1]);

@@ -99,7 +99,8 @@ var g_settings = {"useGravity": true,
 		  "allowMixedActions": true,
 		  "enableRocks": false,
 		  "minLandingSpeed": 2,
-		  "minFrictSpeed": 0.1
+		  "minFrictSpeed": 0.1,
+		  "maxSafeSpeed" : 5
 		 };
 
 var KEY_MIXED   = keyCode('M');
@@ -184,7 +185,7 @@ function requestPreloads() {
 
     var requiredImages = {
 	ship : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship.png",
-	ship_2 : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship_2.png",
+	ship2 : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship_2.png",
 	rock : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/rock.png",
 	explosion : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/explosion.png"
 	
@@ -197,13 +198,13 @@ var g_sprites = {};
 
 function preloadDone() {
 
-    g_sprites.explosion = new Sprite(g_images.explosion, [5,5],[64,64]);
     g_sprites.ship  = new Sprite(g_images.ship);
     g_sprites.ship2 = new Sprite(g_images.ship2);
     g_sprites.rock  = new Sprite(g_images.rock);
 
     g_sprites.bullet = new Sprite(g_images.ship);
     g_sprites.bullet.scale = 0.25;
+    g_sprites.explosion = new Sprite(g_images.explosion, [5,5],[64,64], 50);
 
     entityManager.init();
     createInitialShips();
