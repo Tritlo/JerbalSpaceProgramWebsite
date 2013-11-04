@@ -132,8 +132,6 @@ Ship.prototype._updateExplosion = function (du) {
     var explSpr = g_sprites.explosion;
     var numframes = explSpr.dim[0]*explSpr.dim[1];
     var frame = Math.floor(numframes * this._explosionDuration/explSpr.duration);
-    console.log
-    console.log(this._explosionDuration);
     if (frame <= numframes){
 	this._explosionFrame = frame;
         return 0;
@@ -175,7 +173,7 @@ Ship.prototype.update = function (du) {
     this.maybeFireBullet();
 
     if (this.isColliding())    this.warp();
-    else spatialManager.register(this);
+    if ( !(this.isColliding()) && !(this._isExploding)) spatialManager.register(this);
     // TODO: YOUR STUFF HERE! --- Warp if isColliding, otherwise Register
 
 };
