@@ -98,7 +98,7 @@ var g_settings = {"useGravity": true,
 		  "renderSpatialDebug":false,
 		  "allowMixedActions": true,
 		  "enableRocks": false,
-		  "minLandingSpeed": 2,
+		  "minLandingSpeed": 1,
 		  "minFrictSpeed": 0.1,
 		  "maxSafeSpeed" : 5
 		 };
