@@ -21,7 +21,7 @@ function Ship(descr) {
     this.rememberResets();
     
     // Default sprite, if not otherwise specified
-    this.sprite = this.sprite || g_sprites.ship;
+    this.sprite = this.sprite || g_sprites.ship2;
     
     // Set normal drawing scale, and warp state off
     this._scale = 1;
@@ -52,6 +52,7 @@ Ship.prototype.velX = 0;
 Ship.prototype.velY = 0;
 Ship.prototype.launchVel = 2;
 Ship.prototype.numSubSteps = 1;
+Ship.prototype.explodeFrame = 0;
 
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
@@ -221,7 +222,7 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     // bounce
     if (g_useGravity) {
 
-	var minY = g_sprites.ship.height / 2;
+	var minY = this.sprite.height / 2;
 	var maxY = g_canvas.height - minY;
 
 	// Ignore the bounce if the ship is already in
@@ -311,11 +312,27 @@ Ship.prototype.updateRotation = function (du) {
 };
 
 Ship.prototype.render = function (ctx) {
-    var origScale = this.sprite.scale;
-    // pass my scale into the sprite, for drawing
-    this.sprite.scale = this._scale;
-    this.sprite.drawWrappedCentredAt(
-	ctx, this.cx, this.cy, this.rotation
-    );
-    this.sprite.scale = origScale;
+    if (this.explodeFrame > 0){
+	var origSprite = this.sprite
+	this.sprite = g_sprites.explosion;
+	
+	var origScale = this.sprite.scale;
+	// pass my scale into the sprite, for drawing
+	this.sprite.scale = this._scale;
+	this.sprite.drawWrappedCentredAt(
+	    ctx, this.cx, this.cy, this.rotation, this.explodeFrame
+	);
+	this.sprite.scale = origScale;
+	this.sprite = origSprite;
+    } else {
+	var origScale = this.sprite.scale;
+	// pass my scale into the sprite, for drawing
+	this.sprite.scale = this._scale;
+	this.sprite.drawWrappedCentredAt(
+	    ctx, this.cx, this.cy, this.rotation
+	);
+	this.sprite.scale = origScale;
+	}
+	
+    
 };
