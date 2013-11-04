@@ -21,7 +21,7 @@ function Ship(descr) {
     this.rememberResets();
     
     // Default sprite, if not otherwise specified
-    this.sprite = this.sprite || g_sprites.ship;
+    this.sprite = this.sprite || g_sprites.ship2;
     
     // Set normal drawing scale, and warp state off
     this._scale = 1;
@@ -52,6 +52,9 @@ Ship.prototype.velX = 0;
 Ship.prototype.velY = 0;
 Ship.prototype.launchVel = 2;
 Ship.prototype.numSubSteps = 1;
+Ship.prototype._explosionFrame = 0;
+Ship.prototype._explosionDuration = 0;
+Ship.prototype._isExploding = false;
 
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
@@ -123,6 +126,24 @@ Ship.prototype._moveToASafePlace = function () {
         
     }
 };
+
+Ship.prototype._updateExplosion = function (du) {
+    this._explosionDuration += du;
+    var explSpr = g_sprites.explosion;
+    var numframes = explSpr.dim[0]*explSpr.dim[1];
+    var frame = Math.floor(numframes * this._explosionDuration/explSpr.duration);
+    if (frame <= numframes){
+	this._explosionFrame = frame;
+        return 0;
+	}
+    else {
+	this._isExploding = false;
+	this._explosionDuration = 0;
+	createInitialShips();
+	return entityManager.KILL_ME_NOW;
+	}
+    }
+    
     
 Ship.prototype.update = function (du) {
 
@@ -131,6 +152,9 @@ Ship.prototype.update = function (du) {
         this._updateWarp(du);
         return;
     }
+    if (this._isExploding) {
+	return this._updateExplosion(du);
+	}
     
     spatialManager.unregister(this);
     if (this._isDeadNow)
@@ -149,7 +173,7 @@ Ship.prototype.update = function (du) {
     this.maybeFireBullet();
 
     if (this.isColliding())    this.warp();
-    else spatialManager.register(this);
+    if ( !(this.isColliding()) && !(this._isExploding)) spatialManager.register(this);
     // TODO: YOUR STUFF HERE! --- Warp if isColliding, otherwise Register
 
 };
@@ -221,7 +245,7 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     // bounce
     if (g_useGravity) {
 
-	var minY = g_sprites.ship.height / 2;
+	var minY = this.sprite.height / 2;
 	var maxY = g_canvas.height - minY;
 
 	// Ignore the bounce if the ship is already in
@@ -236,6 +260,11 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 		intervalVelY = this.velY;
 		intervalVelX = this.velX;
 		}
+	    if (Math.abs(intervalVelY) > g_settings.maxSafeSpeed)
+		{
+		    this._isExploding = true;
+		    }
+	    
         }
     }
     
@@ -311,11 +340,26 @@ Ship.prototype.updateRotation = function (du) {
 };
 
 Ship.prototype.render = function (ctx) {
-    var origScale = this.sprite.scale;
-    // pass my scale into the sprite, for drawing
-    this.sprite.scale = this._scale;
-    this.sprite.drawWrappedCentredAt(
-	ctx, this.cx, this.cy, this.rotation
-    );
-    this.sprite.scale = origScale;
+    if (this._isExploding){
+	var origSprite = this.sprite
+	this.sprite = g_sprites.explosion;
+	var origScale = this.sprite.scale;
+	// pass my scale into the sprite, for drawing
+	this.sprite.scale = this._scale;
+	this.sprite.drawWrappedCentredAt(
+	    ctx, this.cx, this.cy, this.rotation, this._explosionFrame
+	);
+	this.sprite.scale = origScale;
+	this.sprite = origSprite;
+    } else {
+	var origScale = this.sprite.scale;
+	// pass my scale into the sprite, for drawing
+	this.sprite.scale = this._scale;
+	this.sprite.drawWrappedCentredAt(
+	    ctx, this.cx, this.cy, this.rotation
+	);
+	this.sprite.scale = origScale;
+	}
+	
+    
 };
