@@ -91,8 +91,8 @@ deferredSetup : function () {
 },
 
 init: function() {
-    this._generateRocks();
     if (g_settings.enableRocks){
+	console.log("generating rocks");
 	this._generateRocks();
 	}
     //this._generateShip();
@@ -165,7 +165,7 @@ update: function(du) {
         }
     }
     
-    if (this._rocks.length === 0) this._generateRocks();
+    if (g_settings.enableRocks && this._rocks.length === 0) this._generateRocks();
 
 },
 
