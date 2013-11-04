@@ -92,9 +92,6 @@ deferredSetup : function () {
 
 init: function() {
     this._generateRocks();
-    if (g_settings.enableRocks){
-	this._generateRocks();
-	}
     //this._generateShip();
 },
 
