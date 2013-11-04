@@ -99,7 +99,7 @@ var g_settings = {"useGravity": true,
 		  "allowMixedActions": true,
 		  "enableRocks": false,
 		  "minLandingSpeed": 2,
-		  "minFrict": 0.1
+		  "minFrictSpeed": 0.1
 		 };
 
 var KEY_MIXED   = keyCode('M');

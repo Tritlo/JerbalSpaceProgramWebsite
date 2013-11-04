@@ -233,7 +233,8 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
             intervalVelY = this.velY;
 	    if (Math.abs(intervalVelY) <= g_settings.minLandingSpeed){
 		this.land(maxY);
-		intervalVelY = 0;
+		intervalVelY = this.velY;
+		intervalVelX = this.velX;
 		}
         }
     }
@@ -251,7 +252,7 @@ Ship.prototype.land = function(maxY) {
 
 Ship.prototype.applyFriction = function (){
     this.velX *= 0.98;
-    if (this.velX <= g_settings.minFrict){
+    if (Math.abs(this.velX) <= g_settings.minFrictSpeed){
 	this.velX = 0;
 	}
     }
