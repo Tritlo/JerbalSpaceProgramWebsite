@@ -172,6 +172,12 @@ update: function(du) {
 render: function(ctx) {
 
     var debugX = 10, debugY = 100;
+    ctx.save();
+    if(this._ships[0]){
+        var s = this._ships[0];
+        ctx.translate(-s.cx - g_canvas.width/2,-s.cy - g_canvas.height/2); 
+	//console.log((s.cx) + " "  + (s.cy));
+    }
 
     for (var c = 0; c < this._categories.length; ++c) {
 
@@ -189,6 +195,7 @@ render: function(ctx) {
         }
         debugY += 10;
     }
+    ctx.restore();
 }
 
 }
