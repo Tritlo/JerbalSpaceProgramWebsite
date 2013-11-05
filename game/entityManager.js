@@ -183,8 +183,8 @@ render: function(ctx) {
         var s = this._ships[0];
 	//virkar ekki, reyndu t.d. ad kveikja a collsiion,
 	//sem a ad teikna hring a skipinu, en gerir thad ekki.
-	//this.offset = [-s.cx - g_canvas.width/2,-s.cy - g_canvas.height/2]
-        ctx.translate(-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2); 
+	this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2]
+        ctx.translate(this.offset[0],this.offset[1]); 
 	//console.log((s.cx) + " "  + (s.cy));
     }
     
@@ -213,7 +213,8 @@ render: function(ctx) {
         debugY += 10;
     }
     ctx.restore();
-}
+},
+
 
 }
 
