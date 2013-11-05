@@ -93,14 +93,15 @@ var g_useGravity = true;
 var g_useAveVel = true;
 var g_renderSpatialDebug = false;
 
-var g_settings = {"useGravity": true,
-		  "useAveVel": true,
-		  "renderSpatialDebug":false,
-		  "allowMixedActions": true,
-		  "enableRocks": false,
-		  "minLandingSpeed": 1.6,
-		  "minFrictSpeed": 0.1,
-		  "maxSafeSpeed" : 5
+var g_settings = {"useGravity"		: true,
+		  "useAveVel"		: true,
+		  "renderSpatialDebug"	:false,
+		  "allowMixedActions"	: true,
+		  "enableRocks"		: false,
+		  "minLandingSpeed"	: 1.6,
+		  "minFrictSpeed"	: 0.1,
+		  "maxSafeSpeed" 	: 5,
+		  "maxSafeAngle" 	: 1
 		 };
 
 var KEY_MIXED   = keyCode('M');
