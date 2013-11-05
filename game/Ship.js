@@ -38,14 +38,6 @@ Ship.prototype.rememberResets = function () {
     this.reset_rotation = this.rotation;
 };
 
-Ship.prototype.KEY_THRUST = 'W'.charCodeAt(0);
-Ship.prototype.KEY_RETRO  = 'S'.charCodeAt(0);
-Ship.prototype.KEY_LEFT   = 'A'.charCodeAt(0);
-Ship.prototype.KEY_RIGHT  = 'D'.charCodeAt(0);
-
-
-Ship.prototype.KEY_FIRE   = ' '.charCodeAt(0);
-
 // Initial, inheritable, default values
 Ship.prototype.rotation = 0;
 Ship.prototype.cx = 200;
@@ -307,7 +299,7 @@ Ship.prototype.applyFriction = function (){
 
 Ship.prototype.maybeFireBullet = function () {
 
-    if (keys[this.KEY_FIRE]) {
+    if (keys[g_settings.keys.KEY_FIRE]) {
     
         var dX = +Math.sin(this.rotation);
         var dY = -Math.cos(this.rotation);
