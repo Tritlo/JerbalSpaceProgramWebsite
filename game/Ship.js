@@ -348,10 +348,10 @@ Ship.prototype.halt = function () {
 var NOMINAL_ROTATE_RATE = 0.1;
 
 Ship.prototype.updateRotation = function (du) {
-    if (keys[this.KEY_LEFT]) {
+    if (keys[g_settings.keys.KEY_LEFT]) {
         this.rotation = (this.rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
-    if (keys[this.KEY_RIGHT]) {
+    if (keys[g_settings.keys.KEY_RIGHT]) {
         this.rotation = (this.rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
 };
