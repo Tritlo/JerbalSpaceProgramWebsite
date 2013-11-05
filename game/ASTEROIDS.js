@@ -70,17 +70,6 @@ var g_useGravity = true;
 var g_useAveVel = true;
 var g_renderSpatialDebug = false;
 
-<<<<<<< HEAD
-var g_settings = {"useGravity"		: true,
-		  "useAveVel"		: true,
-		  "renderSpatialDebug"	:false,
-		  "allowMixedActions"	: true,
-		  "enableRocks"		: false,
-		  "minLandingSpeed"	: 1.6,
-		  "minFrictSpeed"	: 0.1,
-		  "maxSafeSpeed" 	: 5,
-		  "maxSafeAngle" 	: 1
-=======
 var g_settings = {"useGravity": true,
 		  "useAveVel": true,
 		  "renderSpatialDebug":false,
@@ -89,6 +78,7 @@ var g_settings = {"useGravity": true,
 		  "minLandingSpeed": 1.4,
 		  "minFrictSpeed": 0.1,
 		  "maxSafeSpeed" : 3,
+		  "maxSafeAngle" 	: 1,
 		  "hudSize": 1.5,
 		  "hudColor": "lime",
 		  "pixelToMeterConstant": 0.08125,
@@ -100,8 +90,6 @@ var g_settings = {"useGravity": true,
 		      "KEY_RIGHT": keyCode('D')
 		      },
 		  "seaLevel": g_canvas.height*2
-			   
->>>>>>> c20544b0ff43aedcc485c14dd3696d3f97d3d616
 		 };
 
 var KEY_MIXED   = keyCode('M');

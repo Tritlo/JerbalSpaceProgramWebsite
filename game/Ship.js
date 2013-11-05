@@ -348,19 +348,11 @@ Ship.prototype.halt = function () {
 var NOMINAL_ROTATE_RATE = 0.1;
 
 Ship.prototype.updateRotation = function (du) {
-<<<<<<< HEAD
     if (keys[this.KEY_LEFT]) {
         this.rotation = (this.rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
     if (keys[this.KEY_RIGHT]) {
         this.rotation = (this.rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
-=======
-    if (keys[g_settings.keys.KEY_LEFT]) {
-        this.rotation -= NOMINAL_ROTATE_RATE * du;
-    }
-    if (keys[g_settings.keys.KEY_RIGHT]) {
-        this.rotation += NOMINAL_ROTATE_RATE * du;
->>>>>>> c20544b0ff43aedcc485c14dd3696d3f97d3d616
     }
 };
 
