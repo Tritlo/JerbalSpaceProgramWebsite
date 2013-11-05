@@ -59,8 +59,9 @@ Ship.prototype._explosionDuration = 0;
 Ship.prototype._isExploding = false;
 Ship.prototype.throttle = 0;
 Ship.prototype.thrust = 0;
-var NOMINAL_THRUST = +0.2;
-var NOMINAL_RETRO  = -0.1;
+Ship.prototype.fuel = 500;
+Ship.prototype.efficiency = 1;
+Ship.prototype.maxThrust = 0.2;
 
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
@@ -188,11 +189,17 @@ Ship.prototype.update = function (du) {
 
 Ship.prototype.computeSubStep = function (du) {
     
-    var thrust = this.computeThrustMag();
+    this.computeThrustMag();
+    this.fuel -= du*this.thrust/this.efficiency;
+    if (this.fuel <= 0){
+	this.fuel = 0;
+	this.thrust = 0;
+	}
+	
 
     // Apply thrust directionally, based on our rotation
-    var accelX = +Math.sin(this.rotation) * thrust;
-    var accelY = -Math.cos(this.rotation) * thrust;
+    var accelX = +Math.sin(this.rotation) * this.thrust;
+    var accelY = -Math.cos(this.rotation) * this.thrust;
     
     accelY += this.computeGravity();
 
@@ -200,12 +207,12 @@ Ship.prototype.computeSubStep = function (du) {
     
     this.wrapPosition();
     
-    if (thrust === 0 || g_allowMixedActions) {
+    if (this.thrust === 0 || g_allowMixedActions) {
         this.updateRotation(du);
     }
 };
 
-var NOMINAL_GRAVITY = 0.12;
+var NOMINAL_GRAVITY = 0.02;
 
 Ship.prototype.computeGravity = function () {
     return g_useGravity ? NOMINAL_GRAVITY : 0;
@@ -214,26 +221,18 @@ Ship.prototype.computeGravity = function () {
 
 Ship.prototype.computeThrustMag = function () {
     
-    var thrust = 0;
     if (keys[g_settings.keys.KEY_THRUST]) {
-	this.throttle += this.throttle < 100 ? 2 : 0;
+	this.throttle += this.throttle < 100 ? 1 : 0;
     }
     if (keys[g_settings.keys.KEY_RETRO]) {
-	this.throttle -= this.throttle > 0 ? 2 : 0;
+	this.throttle -= this.throttle > 0 ? 1 : 0;
     }
     if (eatKey(g_settings.keys.KEY_KILLTHROTTLE)) {
 	this.throttle = 0;
 	}
-    /* 
-    if (keys[this.KEY_THRUST]) {
-        thrust += NOMINAL_THRUST;
-    }
-    if (keys[this.KEY_RETRO]) {
-        thrust += NOMINAL_RETRO;
-    }
-    */
-    thrust = NOMINAL_THRUST*this.throttle/100;
-    return thrust;
+    
+    this.thrust = this.maxThrust*this.throttle/100;
+    return this.thrust;
 };
 
 Ship.prototype.applyAccel = function (accelX, accelY, du) {
@@ -377,11 +376,11 @@ Ship.prototype.render = function (ctx) {
 	var y = this.cy;
 	var w = this.width;
 	var h = this.height;
-	var t = this.throttle;
+	var t = this.thrust/this.maxThrust;
 	var rot = this.rotation;
-	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t/100 +h*0.3,rot,x,y);
+	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
 	ctx.strokeStyle = "red";
-	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t/100 +h*0.3,rot,x,y);
+	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
 	ctx.restore()
 	this.sprite.scale = this._scale;
 	this.sprite.drawWrappedCentredAt(
