@@ -53,6 +53,39 @@ square: function(x) {
     return x*x;
 },
 
+findClosestPoints: function (x0,y0, pointList) {
+    var xs = [];
+    var ys = [];
+    pointList.map(function (x) {
+        xs.push(x[0]);
+        ys.push(x[1]);
+    });
+
+    var i = util.binarySearch(x,xs);
+    
+    //fails at edge of terrain.
+    if (xs[i] <= x0) {
+        return [[xs[i],ys[i]],[xs[i+1],ys[i+1]]];
+    }
+    else {
+        return [[xs[i-1],ys[i-1]],[xs[i],ys[i]]];
+    }
+},
+
+binarySearch: function(val,list) {
+    var low = 0;
+    var high = list.length -1;
+    while(high > low){
+        var mid = Math.floor(low + (high-low)/2);
+        if ( val > list[mid]){
+            low = mid+1; 
+        }
+        else {
+            high = mid;
+        }
+    }
+    return low;
+},
 
 // DISTANCES
 // =========
@@ -73,7 +106,11 @@ wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {
     return this.square(dx) + this.square(dy);
 },
 
-
+distFromLine: function(x0,y0,x1,y1,p0,p1) {
+    var m = (y1 -y0)/(x1-x0);
+    var c = (y0 - m*x0);
+    return Math.abs(m*p0-1*p1 + c)/Math.sqrt(m*m + 1);
+},
 // CANVAS OPS
 // ==========
 
