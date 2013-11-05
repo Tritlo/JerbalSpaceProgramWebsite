@@ -179,27 +179,13 @@ render: function(ctx) {
 
     if(this._ships[0]){
         var s = this._ships[0];
-<<<<<<< HEAD
-=======
-	//virkar ekki, reyndu t.d. ad kveikja a collsiion,
-	//sem a ad teikna hring a skipinu, en gerir thad ekki.
-	this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2]
-        ctx.translate(this.offset[0],this.offset[1]); 
-	//console.log((s.cx) + " "  + (s.cy));
->>>>>>> f1b08ff34e90a2132b6d3a0db59966caf6e05646
     }
   
     ctx.strokeStyle="white";
 	//þetta er pseudo fyrir yfirborð þarf að fjarlægja 
     ctx.beginPath();
-<<<<<<< HEAD
     ctx.moveTo(s.cx - g_canvas.width/2, g_settings.seaLevel);
     ctx.lineTo(s.cx + g_canvas.width/2, g_settings.seaLevel);
-=======
-    //ctx.rect(g_canvas.width,g_canvas.height,g_canvas.width,g_canvas.height);
-    ctx.moveTo(s.cx - 3*g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
-    ctx.lineTo(s.cy + 3*g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
->>>>>>> f1b08ff34e90a2132b6d3a0db59966caf6e05646
     ctx.stroke();
     ctx.closePath();
     	// hér lýkur yfirborðinu
@@ -213,16 +199,8 @@ render: function(ctx) {
             aCategory[i].render(ctx);
         }
     }
-<<<<<<< HEAD
-}
-=======
-    ctx.restore();
 },
-
->>>>>>> f1b08ff34e90a2132b6d3a0db59966caf6e05646
-
 }
-
 // Some deferred setup which needs the object to have been created first
 entityManager.deferredSetup();
 

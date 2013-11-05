@@ -89,7 +89,7 @@ var g_settings = {"useGravity": true,
 		      "KEY_LEFT": keyCode('A'),
 		      "KEY_RIGHT": keyCode('D')
 		      },
-		  "seaLevel": 500
+	  "seaLevel": 500
 		 };
 
 var KEY_MIXED   = keyCode('M');
