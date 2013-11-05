@@ -91,8 +91,14 @@ findEntityInRange: function(posX, posY, radius) {
 },
 
 render: function(ctx) {
-    var oldStyle = ctx.strokeStyle;
+    ctx.save();
     ctx.strokeStyle = "red";
+    if(entityManager.getMainShip()){
+        var s = entityManager.getMainShip();
+        ctx.translate(entityManager.offset[0],entityManager.offset[1]); 
+	//console.log((s.cx) + " "  + (s.cy));
+    }
+
     
     for (var ID in this._entities) {
         var e = this._entities[ID];
@@ -102,7 +108,7 @@ render: function(ctx) {
             util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius());
 	    }
     }
-    ctx.strokeStyle = oldStyle;
+    ctx.restore();
 }
 
 };
