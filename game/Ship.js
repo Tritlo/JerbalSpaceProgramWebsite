@@ -62,7 +62,6 @@ Ship.prototype.thrust = 0;
 Ship.prototype.fuel = 500;
 Ship.prototype.efficiency = 1;
 Ship.prototype.maxThrust = 0.2;
-var NOMINAL_RETRO  = -0.1;
 
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
@@ -213,7 +212,7 @@ Ship.prototype.computeSubStep = function (du) {
     }
 };
 
-var NOMINAL_GRAVITY = 0.12;
+var NOMINAL_GRAVITY = 0.02;
 
 Ship.prototype.computeGravity = function () {
     return g_useGravity ? NOMINAL_GRAVITY : 0;
@@ -223,10 +222,10 @@ Ship.prototype.computeGravity = function () {
 Ship.prototype.computeThrustMag = function () {
     
     if (keys[g_settings.keys.KEY_THRUST]) {
-	this.throttle += this.throttle < 100 ? 2 : 0;
+	this.throttle += this.throttle < 100 ? 1 : 0;
     }
     if (keys[g_settings.keys.KEY_RETRO]) {
-	this.throttle -= this.throttle > 0 ? 2 : 0;
+	this.throttle -= this.throttle > 0 ? 1 : 0;
     }
     if (eatKey(g_settings.keys.KEY_KILLTHROTTLE)) {
 	this.throttle = 0;
