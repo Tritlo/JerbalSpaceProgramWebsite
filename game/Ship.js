@@ -264,9 +264,9 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 
 	// Ignore the bounce if the ship is already in
 	// the "border zone" (to avoid trapping them there)
-	if (this.cy > maxY || this.cy < minY) {
+	if (this.cy > maxY /*|| this.cy < minY*/) {
 	    // do nothing
-	} else if (nextY > maxY || nextY < minY) {
+	} else if (nextY > maxY /*|| nextY < minY*/) {
             this.velY = oldVelY * -0.9;
             intervalVelY = this.velY;
 	    if (Math.abs(intervalVelY) <= g_settings.minLandingSpeed){
