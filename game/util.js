@@ -96,6 +96,25 @@ fillCircle: function (ctx, x, y, r) {
     ctx.fill();
 },
 
+
+strokeTriangle: function (ctx,x0,y0,x1,y1,x2,y2) {
+    ctx.beginPath();
+    ctx.moveTo(x0,y0);
+    ctx.lineTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.lineTo(x0,y0);
+    ctx.stroke();
+    },
+    
+fillTriangle: function (ctx,x0,y0,x1,y1,x2,y2) {
+    ctx.beginPath();
+    ctx.moveTo(x0,y0);
+    ctx.lineTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.lineTo(x0,y0);
+    ctx.fill();
+    },
+    
 fillBox: function (ctx, x, y, w, h, style) {
     var oldStyle = ctx.fillStyle;
     ctx.fillStyle = style;

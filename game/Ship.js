@@ -373,6 +373,17 @@ Ship.prototype.render = function (ctx) {
     } else {
 	var origScale = this.sprite.scale;
 	// pass my scale into the sprite, for drawing
+	ctx.save()
+	ctx.strokeStyle = "white";
+	//Afhverju tharf eg ad hlidra um heilt canvas?
+	//TODO: Fix BUG!
+	var x = this.cx+g_canvas.width;
+	var y = this.cy+g_canvas.height;
+	var w = this.width;
+	var h = this.height;
+	var t = this.throttle;
+	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t/100 +h*0.3);
+	ctx.restore()
 	this.sprite.scale = this._scale;
 	this.sprite.drawWrappedCentredAt(
 	    ctx, this.cx, this.cy, this.rotation
