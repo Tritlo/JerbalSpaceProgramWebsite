@@ -191,8 +191,8 @@ render: function(ctx) {
     ctx.strokeStyle="white";
     ctx.beginPath();
     //ctx.rect(g_canvas.width,g_canvas.height,g_canvas.width,g_canvas.height);
-    ctx.moveTo(s.cx - g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
-    ctx.lineTo(s.cy + 5*g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
+    ctx.moveTo(s.cx - 3*g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
+    ctx.lineTo(s.cy + 3*g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
     ctx.stroke();
     ctx.closePath();
     
