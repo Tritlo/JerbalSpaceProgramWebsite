@@ -40,7 +40,7 @@ function renderUpperHud(ctx,ship){
 
 function renderAltitude(ctx,ship) {
     //TODO: Make altitude accurate according to speed 
-    ctx.fillText("Alt: " + (g_settings.unitToMeterConstant*ship.getAltitude()).toFixed(0) + " m", 0,0);
+    ctx.fillText("Alt: " + (g_settings.pixelToMeterConstant*ship.getAltitude()).toFixed(0) + " m", 0,0);
     ctx.stroke();
     }
 
@@ -62,7 +62,7 @@ function renderGyroscope(ctx,cRad,speed,dirV,rotation){
 
 function renderSpeed(ctx,cRad,speed){
     //TODO: Make speed accurate according to altitude change
-    ctx.fillText("Speed: " + (g_settings.unitToMeterConstant*speed).toFixed(2) + " m/s", 0, - cRad - 10);
+    ctx.fillText("Speed: " + (g_settings.pixelToMeterConstant*speed*60).toFixed(2) + " m/s" , 0, - cRad - 10);
     }
 
 function renderThrottle(ctx,cRad,throttle) {
