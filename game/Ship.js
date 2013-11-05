@@ -57,6 +57,10 @@ Ship.prototype.numSubSteps = 1;
 Ship.prototype._explosionFrame = 0;
 Ship.prototype._explosionDuration = 0;
 Ship.prototype._isExploding = false;
+Ship.prototype.throttle = 0;
+Ship.prototype.thrust = 0;
+var NOMINAL_THRUST = +0.2;
+var NOMINAL_RETRO  = -0.1;
 
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
@@ -205,20 +209,28 @@ Ship.prototype.computeGravity = function () {
     return g_useGravity ? NOMINAL_GRAVITY : 0;
 };
 
-var NOMINAL_THRUST = +0.2;
-var NOMINAL_RETRO  = -0.1;
 
 Ship.prototype.computeThrustMag = function () {
     
     var thrust = 0;
-    
+    if (keys[g_settings.keys.KEY_THRUST]) {
+	this.throttle += this.throttle < 100 ? 2 : 0;
+    }
+    if (keys[g_settings.keys.KEY_RETRO]) {
+	this.throttle -= this.throttle > 0 ? 2 : 0;
+    }
+    if (eatKey(g_settings.keys.KEY_KILLTHROTTLE)) {
+	this.throttle = 0;
+	}
+    /* 
     if (keys[this.KEY_THRUST]) {
         thrust += NOMINAL_THRUST;
     }
     if (keys[this.KEY_RETRO]) {
         thrust += NOMINAL_RETRO;
     }
-    
+    */
+    thrust = NOMINAL_THRUST*this.throttle/100;
     return thrust;
 };
 
@@ -334,10 +346,10 @@ Ship.prototype.halt = function () {
 var NOMINAL_ROTATE_RATE = 0.1;
 
 Ship.prototype.updateRotation = function (du) {
-    if (keys[this.KEY_LEFT]) {
+    if (keys[g_settings.keys.KEY_LEFT]) {
         this.rotation -= NOMINAL_ROTATE_RATE * du;
     }
-    if (keys[this.KEY_RIGHT]) {
+    if (keys[g_settings.keys.KEY_RIGHT]) {
         this.rotation += NOMINAL_ROTATE_RATE * du;
     }
 };

@@ -78,8 +78,16 @@ var g_settings = {"useGravity": true,
 		  "minLandingSpeed": 1.6,
 		  "minFrictSpeed": 0.1,
 		  "maxSafeSpeed" : 5,
-		  "hudSize": 2,
-		  "speedToMPSConstant": 10
+		  "hudSize": 1.5,
+		  "speedToMPSConstant": 10,
+		  "keys": {
+		      "KEY_THRUST": keyCode('W'),
+		      "KEY_RETRO": keyCode('S'),
+		      "KEY_KILLTHROTTLE": keyCode('E'),
+		      "KEY_LEFT": keyCode('A'),
+		      "KEY_RIGHT": keyCode('D')
+		      }
+			   
 		 };
 
 var KEY_MIXED   = keyCode('M');
