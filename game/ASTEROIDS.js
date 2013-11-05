@@ -78,6 +78,7 @@ var g_settings = {"useGravity": true,
 		  "minLandingSpeed": 1.4,
 		  "minFrictSpeed": 0.1,
 		  "maxSafeSpeed" : 3,
+		  "maxSafeAngle" 	: 1,
 		  "hudSize": 1.5,
 		  "hudColor": "lime",
 		  "pixelToMeterConstant": 0.08125,
@@ -89,7 +90,6 @@ var g_settings = {"useGravity": true,
 		      "KEY_RIGHT": keyCode('D')
 		      },
 		  "seaLevel": g_canvas.height*2
-			   
 		 };
 
 var KEY_MIXED   = keyCode('M');

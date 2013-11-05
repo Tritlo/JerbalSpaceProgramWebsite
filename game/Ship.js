@@ -169,7 +169,6 @@ Ship.prototype.update = function (du) {
     spatialManager.unregister(this);
     if (this._isDeadNow)
 	return entityManager.KILL_ME_NOW;
-    // TODO: YOUR STUFF HERE! --- Unregister and check for death
 
     // Perform movement substeps
     var steps = this.numSubSteps;
@@ -184,7 +183,6 @@ Ship.prototype.update = function (du) {
 
     if (this.isColliding())    this.warp();
     if ( !(this.isColliding()) && !(this._isExploding)) spatialManager.register(this);
-    // TODO: YOUR STUFF HERE! --- Warp if isColliding, otherwise Register
 
 };
 
@@ -273,12 +271,12 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 	} else if (nextY > maxY /*|| nextY < minY*/) {
             this.velY = oldVelY * -0.9;
             intervalVelY = this.velY;
-	    if (Math.abs(intervalVelY) <= g_settings.minLandingSpeed){
+	    if (Math.abs(intervalVelY) <= g_settings.minLandingSpeed && Math.abs(this.rotation)<=g_settings.maxSafeAngle){
 		this.land(maxY);
 		intervalVelY = this.velY;
 		intervalVelX = this.velX;
 		}
-	    if (Math.abs(intervalVelY) > g_settings.maxSafeSpeed)
+	    if (Math.abs(intervalVelY) > g_settings.maxSafeSpeed || Math.abs(this.rotation)>g_settings.maxSafeAngle)
 		{
 		    this._isExploding = true;
 		    }
@@ -351,10 +349,10 @@ var NOMINAL_ROTATE_RATE = 0.1;
 
 Ship.prototype.updateRotation = function (du) {
     if (keys[g_settings.keys.KEY_LEFT]) {
-        this.rotation -= NOMINAL_ROTATE_RATE * du;
+        this.rotation = (this.rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
     if (keys[g_settings.keys.KEY_RIGHT]) {
-        this.rotation += NOMINAL_ROTATE_RATE * du;
+        this.rotation = (this.rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
 };
 
