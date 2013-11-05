@@ -96,6 +96,44 @@ fillCircle: function (ctx, x, y, r) {
     ctx.fill();
 },
 
+
+strokeTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry) {
+    // x0,y0,... are the corner-points of the triangle
+    // rot is the rotation in radians, rx and ry denote
+    // the center of rotation.
+    rot = rot || 0;
+    rx = rx || (x0 + x1 + x2)/3;
+    ry = ry || (y0 + y1 + y2)/3;
+    
+    ctx.save();
+    
+    ctx.translate(rx,ry);
+    x0 = x0 - rx;
+    x1 = x1 - rx;
+    x2 = x2 - rx;
+    y0 = y0 - ry;
+    y1 = y1 - ry;
+    y2 = y2 - ry;
+    ctx.rotate(rot);
+    
+    ctx.beginPath();
+    ctx.moveTo(x0,y0);
+    ctx.lineTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.lineTo(x0,y0);
+    ctx.stroke();
+    ctx.restore();
+    },
+    
+fillTriangle: function (ctx,x0,y0,x1,y1,x2,y2) {
+    ctx.beginPath();
+    ctx.moveTo(x0,y0);
+    ctx.lineTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.lineTo(x0,y0);
+    ctx.fill();
+    },
+    
 fillBox: function (ctx, x, y, w, h, style) {
     var oldStyle = ctx.fillStyle;
     ctx.fillStyle = style;
