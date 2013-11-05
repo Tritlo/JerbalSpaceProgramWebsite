@@ -48,8 +48,8 @@ Ship.prototype.KEY_FIRE   = ' '.charCodeAt(0);
 
 // Initial, inheritable, default values
 Ship.prototype.rotation = 0;
-Ship.prototype.cx = 200;
-Ship.prototype.cy = 200;
+Ship.prototype.cx = 0;
+Ship.prototype.cy = 0;
 Ship.prototype.velX = 0;
 Ship.prototype.velY = 0;
 Ship.prototype.launchVel = 2;
@@ -134,7 +134,7 @@ Ship.prototype._moveToASafePlace = function () {
 };
 
 Ship.prototype.getAltitude = function () {
-    return -(this.cy - g_settings.seaLevel/2 + this.height/2);
+    return -(this.cy - g_settings.seaLevel + this.height/2);
     }
 
 Ship.prototype._updateExplosion = function (du) {
@@ -262,7 +262,7 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     if (g_useGravity) {
 
 	var minY = this.height / 2;
-	var maxY = g_canvas.height - minY;
+	var maxY = g_settings.seaLevel - minY;
 
 	// Ignore the bounce if the ship is already in
 	// the "border zone" (to avoid trapping them there)
@@ -363,7 +363,7 @@ Ship.prototype.render = function (ctx) {
 	var origScale = this.sprite.scale;
 	// pass my scale into the sprite, for drawing
 	this.sprite.scale = this._scale;
-	this.sprite.drawWrappedCentredAt(
+	this.sprite.drawCentredAt(
 	    ctx, this.cx, this.cy, this.rotation, this._explosionFrame
 	);
 	this.sprite.scale = origScale;
@@ -372,7 +372,7 @@ Ship.prototype.render = function (ctx) {
 	var origScale = this.sprite.scale;
 	// pass my scale into the sprite, for drawing
 	this.sprite.scale = this._scale;
-	this.sprite.drawWrappedCentredAt(
+	this.sprite.drawCentredAt(
 	    ctx, this.cx, this.cy, this.rotation
 	);
 	this.sprite.scale = origScale;

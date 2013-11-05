@@ -89,7 +89,7 @@ var g_settings = {"useGravity": true,
 		      "KEY_LEFT": keyCode('A'),
 		      "KEY_RIGHT": keyCode('D')
 		      },
-		  "seaLevel": g_canvas.height*2
+		  "seaLevel": 500
 		 };
 
 var KEY_MIXED   = keyCode('M');
@@ -157,11 +157,16 @@ function processDiagnostics() {
 // GAME-SPECIFIC RENDERING
 
 function renderSimulation(ctx) {
+	ctx.save();
+	var s=entityManager.getMainShip();
+	ctx.translate(-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2);
+	/// hér þurfa allir hlutir háðir sýninni að vera
+    	 entityManager.render(ctx);
+	 if (g_renderSpatialDebug) spatialManager.render(ctx);
+	ctx.restore();
+	/// hér koma hlutir óháðir sýn
+    	renderHUD(ctx);
 
-    entityManager.render(ctx);
-    renderHUD(ctx);
-
-    if (g_renderSpatialDebug) spatialManager.render(ctx);
 }
 
 

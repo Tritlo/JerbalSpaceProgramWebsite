@@ -177,39 +177,30 @@ getMainShip: function() {
 
 render: function(ctx) {
 
-    var debugX = 10, debugY = 100;
-    ctx.save();
     if(this._ships[0]){
         var s = this._ships[0];
-        ctx.translate(-s.cx - g_canvas.width/2,-s.cy - g_canvas.height/2); 
+        //ctx.translate(-s.cx - g_canvas.width/2,-s.cy - g_canvas.height/2); 
 	//console.log((s.cx) + " "  + (s.cy));
     }
-    
+  
     ctx.strokeStyle="white";
+	//þetta er pseudo fyrir yfirborð þarf að fjarlægja 
     ctx.beginPath();
-    //ctx.rect(g_canvas.width,g_canvas.height,g_canvas.width,g_canvas.height);
     ctx.moveTo(s.cx - g_canvas.width/2, g_settings.seaLevel);
-    ctx.lineTo(s.cy + 5*g_canvas.width/2, g_settings.seaLevel);
+    ctx.lineTo(s.cx + g_canvas.width/2, g_settings.seaLevel);
     ctx.stroke();
     ctx.closePath();
-    
+    	// hér lýkur yfirborðinu
     for (var c = 0; c < this._categories.length; ++c) {
-
         var aCategory = this._categories[c];
-
         if (!this._bShowRocks && 
             aCategory == this._rocks)
             continue;
 
         for (var i = 0; i < aCategory.length; ++i) {
-
             aCategory[i].render(ctx);
-            //debug.text(".", debugX + i * 10, debugY);
-
         }
-        debugY += 10;
     }
-    ctx.restore();
 }
 
 }
