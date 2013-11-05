@@ -179,8 +179,6 @@ render: function(ctx) {
 
     if(this._ships[0]){
         var s = this._ships[0];
-        //ctx.translate(-s.cx - g_canvas.width/2,-s.cy - g_canvas.height/2); 
-	//console.log((s.cx) + " "  + (s.cy));
     }
   
     ctx.strokeStyle="white";
