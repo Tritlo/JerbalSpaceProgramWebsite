@@ -133,6 +133,10 @@ Ship.prototype._moveToASafePlace = function () {
     }
 };
 
+Ship.prototype.getAltitude = function () {
+    return -(this.cy - g_settings.seaLevel/2 + this.height/2);
+    }
+
 Ship.prototype._updateExplosion = function (du) {
     this._explosionDuration += du;
     var explSpr = g_sprites.explosion;

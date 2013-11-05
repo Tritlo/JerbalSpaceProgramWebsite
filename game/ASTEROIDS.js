@@ -79,14 +79,16 @@ var g_settings = {"useGravity": true,
 		  "minFrictSpeed": 0.1,
 		  "maxSafeSpeed" : 5,
 		  "hudSize": 1.5,
-		  "speedToMPSConstant": 10,
+		  "hudColor": "lime",
+		  "unitToMeterConstant": 10,
 		  "keys": {
 		      "KEY_THRUST": keyCode('W'),
 		      "KEY_RETRO": keyCode('S'),
 		      "KEY_KILLTHROTTLE": keyCode('E'),
 		      "KEY_LEFT": keyCode('A'),
 		      "KEY_RIGHT": keyCode('D')
-		      }
+		      },
+		  "seaLevel": g_canvas.height*2
 			   
 		 };
 
