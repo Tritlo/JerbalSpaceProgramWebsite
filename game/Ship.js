@@ -377,8 +377,8 @@ Ship.prototype.render = function (ctx) {
 	ctx.strokeStyle = "white";
 	//Afhverju tharf eg ad hlidra um heilt canvas?
 	//TODO: Fix BUG!
-	var x = this.cx+g_canvas.width;
-	var y = this.cy+g_canvas.height;
+	var x = this.cx;//+g_canvas.width;
+	var y = this.cy;//+g_canvas.height;
 	var w = this.width;
 	var h = this.height;
 	var t = this.throttle;
