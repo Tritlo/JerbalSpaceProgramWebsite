@@ -374,15 +374,16 @@ Ship.prototype.render = function (ctx) {
 	var origScale = this.sprite.scale;
 	// pass my scale into the sprite, for drawing
 	ctx.save()
-	ctx.strokeStyle = "white";
-	//Afhverju tharf eg ad hlidra um heilt canvas?
-	//TODO: Fix BUG!
-	var x = this.cx;//+g_canvas.width;
-	var y = this.cy;//+g_canvas.height;
+	ctx.strokeStyle = "yellow";
+	var x = this.cx;
+	var y = this.cy;
 	var w = this.width;
 	var h = this.height;
 	var t = this.throttle;
-	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t/100 +h*0.3);
+	var rot = this.rotation;
+	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t/100 +h*0.3,rot,x,y);
+	ctx.strokeStyle = "red";
+	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t/100 +h*0.3,rot,x,y);
 	ctx.restore()
 	this.sprite.scale = this._scale;
 	this.sprite.drawWrappedCentredAt(
