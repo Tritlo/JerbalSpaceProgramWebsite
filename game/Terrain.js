@@ -87,6 +87,7 @@ Terrain.prototype.genTerrain = function () {
 			if(!up_down) {
 				up_down = -1;
 			}
+			sameY = false;
 		}
 		else {
 			up_down = Math.floor(Math.random()*3-1);
@@ -98,7 +99,7 @@ Terrain.prototype.genTerrain = function () {
 		if(up_down) {
 			var maxDY = null;
 			if(up_down>0) {
-				maxDY=yMax-currY; 
+				maxDY= yMax - currY; 
 			}
 			else {
 				maxDY = currY - yMin;
@@ -136,12 +137,12 @@ Terrain.prototype.render = function (ctx) {
     ctx.strokeStyle = "white";
     ctx.fillStyle = "black";
     ctx.beginPath()
-    ctx.moveTo(terr[0][0],this.minY +g_canvas.height)
+    ctx.moveTo(terr[0][0],this.maxY +g_canvas.height)
     ctx.lineTo(terr[0][0],terr[0][1]);
     for(var i = 1; i < terr.length;i++){
-	ctx.lineTo(terr[i][0],terr[i][1]);
+		ctx.lineTo(terr[i][0],terr[i][1]);
 	}
-    ctx.lineTo(terr[terr.length-1][0],this.minY + g_canvas.height)
+    ctx.lineTo(terr[terr.length-1][0],this.maxY + g_canvas.height)
 	ctx.closePath();
 	ctx.stroke();
     ctx.fill();
