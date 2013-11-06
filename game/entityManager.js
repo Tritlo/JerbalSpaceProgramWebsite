@@ -50,6 +50,8 @@ _generateTerrain : function() {
     var sL = g_settings.seaLevel;
     var minangl = Math.PI/30;
     var maxangl = Math.PI/2.2;
+    this._terrainMinY = sL/2;
+    this._terrainMaxY = 300;
     this._terrain = genTerrain([-10000,10000],[300,sL/2],[1000,2000],[minangl,maxangl]);
     var startsite = util.findIndexesOfClosestPoints(200,this._terrain);
     this._terrain[startsite[0]][1] = this._terrain[startsite[1]][1];
@@ -197,14 +199,20 @@ getMainShip: function() {
 
 _renderTerrain: function (ctx) {
 	var terr = this._terrain;
+    ctx.save()
 	ctx.strokeStyle = "white";
+    ctx.fillStyle = "white";
 	ctx.beginPath()
-	ctx.moveTo(terr[0][0],terr[0][1]);
+    ctx.moveTo(terr[0][0],this._terrainMinY +g_canvas.height)
+	ctx.lineTo(terr[0][0],terr[0][1]);
 	for(var i = 1; i < terr.length;i++){
 	    ctx.lineTo(terr[i][0],terr[i][1]);
 	    }
-	ctx.stroke();
+    ctx.lineTo(terr[terr.length-1][0],this._terrainMinY + g_canvas.height)
 	ctx.closePath();
+	ctx.stroke();
+    ctx.fill();
+    ctx.restore();
     },
 
 render: function(ctx) {
@@ -220,8 +228,8 @@ render: function(ctx) {
         ctx.translate(this.offset[0],this.offset[1]); 
 	//console.log((s.cx) + " "  + (s.cy));
     }
-    this._renderTerrain(ctx);
     Stars.render(ctx);
+    this._renderTerrain(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
