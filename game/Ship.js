@@ -48,6 +48,9 @@ Ship.prototype.launchVel = 2;
 Ship.prototype.numSubSteps = 1;
 Ship.prototype._explosionFrame = 0;
 Ship.prototype._explosionDuration = 0;
+Ship.prototype._timeFromExplosion = 0;
+Ship.prototype._explosionRadius = 0;
+Ship.prototype._explCraterAdded = false;
 Ship.prototype._isExploding = false;
 Ship.prototype.throttle = 0;
 Ship.prototype.thrust = 0;
@@ -130,22 +133,51 @@ Ship.prototype.getAltitude = function () {
     return -(this.cy - g_settings.seaLevel/2 + this.height/2);
     }
 
-Ship.prototype._updateExplosion = function (du) {
-    this._explosionDuration += du;
+Ship.prototype._updateSpriteExplosion = function (du) {
     var explSpr = g_sprites.explosion;
     var numframes = explSpr.dim[0]*explSpr.dim[1];
-    var frame = Math.floor(numframes * this._explosionDuration/explSpr.duration);
+    var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
+    if(this._timeFromExplosion > explSpr.duration/15 && !(this._explCraterAdded)){
+	entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
+    }
     if (frame <= numframes){
 	this._explosionFrame = frame;
         return 0;
-	}
-    else {
+    } else {
 	this._isExploding = false;
-	this._explosionDuration = 0;
+	this._timeFromExplosion = 0;
+	this._explCraterAdded = false;
 	createInitialShips();
 	return entityManager.KILL_ME_NOW;
-	}
     }
+    
+}
+
+Ship.prototype._updateVectorExplosion = function (du){
+    if(this._timeFromExplosion > this._explosionDuration/2 && !(this._explCraterAdded)){
+	entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
+    }
+    if (this._timeFromExplosion > this._explosionDuration){
+	this._isExploding = false;
+	this._explosionDuration = 0;
+	this._timeFromExplosion = 0;
+	this._explosionRadius = 0;
+	this._explCraterAdded = false;
+	createInitialShips();
+	return entityManager.KILL_ME_NOW;
+    }
+    
+}
+
+Ship.prototype._updateExplosion = function (du) {
+    this._timeFromExplosion += du;
+    if (g_settings.spriteExplosion){
+	return this._updateSpriteExplosion(du);
+    }
+    else {
+	return this._updateVectorExplosion(du);
+    }
+}
     
     
 Ship.prototype.update = function (du) {
@@ -266,8 +298,8 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 		}
 	    if (collisionSpeed > g_settings.maxSafeSpeed || Math.abs(this.rotation-collisionAngle)>g_settings.maxSafeAngle)
 		{
-		    this._isExploding = true;
-		    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),collisionSpeed);
+		    this.explode(this.cx,this.cy,collisionSpeed);
+		    
 		    }
         }
     }
@@ -278,6 +310,15 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 };
 
 
+Ship.prototype.explode = function(x,y,speed){
+	this._isExploding = true;
+        var radius = this.getRadius();
+	var explRadius = radius + radius*speed/10
+        this._explosionRadius = explRadius;
+        //this._explosionDuration = explRadius;
+        this._explosionDuration = 36;
+}
+    
 
 Ship.prototype.land = function(prevX,prevY) {
     this.cx = prevX
@@ -348,40 +389,67 @@ Ship.prototype.updateRotation = function (du) {
     }
 };
 
+Ship.prototype._renderExplosion = function (ctx) {
+    if (g_settings.spriteExplosion) {
+	this._renderSpriteExplosion(ctx);
+    } else {
+	this._renderVectorExplosion(ctx);
+    }
+};
+
+Ship.prototype._renderVectorExplosion = function (ctx) {
+    ctx.save()
+    ctx.fillStyle = "white";
+    var radRatio = 1-Math.abs(2*this._timeFromExplosion/this._explosionDuration - 1);
+    var radius =  radRatio* this._explosionRadius;
+    util.fillCircle(ctx,this.cx,this.cy+this.getRadius(),radius);
+    ctx.restore();
+    
+};
+
+Ship.prototype._renderSpriteExplosion = function (ctx) {
+    var origSprite = this.sprite
+    this.sprite = g_sprites.explosion;
+    var origScale = this.sprite.scale;
+    // pass my scale into the sprite, for drawing
+    //this.sprite.scale = this._scale;
+    this.sprite.scale = this._scale*this._explosionRadius/32;
+    this.sprite.drawWrappedCentredAt(
+	ctx, this.cx, this.cy+this.getRadius(), this.rotation, this._explosionFrame
+    );
+    this.sprite.scale = origScale;
+    this.sprite = origSprite;
+};
+
+Ship.prototype._renderSprite = function (ctx) {
+    var origScale = this.sprite.scale;
+    // pass my scale into the sprite, for drawing
+    ctx.save()
+    var x = this.cx;
+    var y = this.cy;
+    var w = this.width;
+    var h = this.height;
+    var t = this.thrust/this.maxThrust;
+    var rot = this.rotation;
+    ctx.closePath();
+    ctx.strokeStyle = "yellow";
+    util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
+    ctx.strokeStyle = "red";
+    util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
+    ctx.restore()
+    this.sprite.scale = this._scale;
+    this.sprite.drawWrappedCentredAt(
+	ctx, this.cx, this.cy, this.rotation
+    );
+    this.sprite.scale = origScale;
+};
+
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){
-	var origSprite = this.sprite
-	this.sprite = g_sprites.explosion;
-	var origScale = this.sprite.scale;
-	// pass my scale into the sprite, for drawing
-	this.sprite.scale = this._scale;
-	this.sprite.drawWrappedCentredAt(
-	    ctx, this.cx, this.cy, this.rotation, this._explosionFrame
-	);
-	this.sprite.scale = origScale;
-	this.sprite = origSprite;
+	this._renderExplosion(ctx);
     } else {
-	var origScale = this.sprite.scale;
-	// pass my scale into the sprite, for drawing
-	ctx.save()
-	var x = this.cx;
-	var y = this.cy;
-	var w = this.width;
-	var h = this.height;
-	var t = this.thrust/this.maxThrust;
-	var rot = this.rotation;
-	ctx.closePath();
-	ctx.strokeStyle = "yellow";
-	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
-	ctx.strokeStyle = "red";
-	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
-	ctx.restore()
-	this.sprite.scale = this._scale;
-	this.sprite.drawWrappedCentredAt(
-	    ctx, this.cx, this.cy, this.rotation
-	);
-	this.sprite.scale = origScale;
-	}
+	this._renderSprite(ctx);
+    }
 	
     
 };

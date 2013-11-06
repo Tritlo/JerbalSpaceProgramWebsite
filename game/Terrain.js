@@ -25,10 +25,15 @@ Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
     this.points = head.concat(values,tail);
     }
 
-Terrain.prototype.addCrater = function (x,y, radius,speed) {
+Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     //TODO: add effects of speed
-    var y = y+radius;
-    this.spliceByXCoords(x-radius, x+radius,[[x-radius,y],[x-radius/2,y+10],[x,y+15],[x+radius/2,y+10],[x+radius,y]]);
+    var values = [];
+    var steps = 5;
+    for(var i = 0; i <= steps; i++){
+	var deg = Math.PI * i/steps;
+	values.push([x-Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
+    }
+    this.spliceByXCoords(x-explRadius, x+explRadius,values);
     }
 
 Terrain.prototype.hit = function (prevX,prevY, nextX,nextY, radius) {
