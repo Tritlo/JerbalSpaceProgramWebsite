@@ -31,6 +31,8 @@ _rocks   : [],
 _bullets : [],
 _ships   : [],
 
+_terrain : [],
+
 _bShowRocks : true,
 
 // "PRIVATE" METHODS
@@ -42,6 +44,27 @@ _generateRocks : function() {
     for (i = 0; i < NUM_ROCKS; ++i) {
         this.generateRock();
     }
+},
+
+_generateTerrain : function() {
+    var sL = g_settings.seaLevel;
+    var minangl = Math.PI/30;
+    var maxangl = Math.PI/2.2;
+    this._terrainMinY = sL/2;
+    this._terrainMaxY = 300;
+    this._terrain = genTerrain([-10000,10000],[300,sL/2],[1000,2000],[minangl,maxangl]);
+    var startsite = util.findIndexesOfClosestPoints(200,this._terrain);
+    this._terrain[startsite[0]][1] = 200+32;
+    this._terrain[startsite[1]][1] = 200+32;
+    this._terrain[startsite[1]+1][1] = 200+32;
+    this._terrain[startsite[0]-1][1] = 200+32;
+    //this._terrain[startsite[1]][1];
+   //this._terrain = [[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40]]
+   //this._terrain = [[-10000,-10],[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40],[10000,47]]
+},
+
+getTerrain : function () {
+    return this._terrain;
 },
 
 _findNearestShip : function(posX, posY) {
@@ -95,6 +118,7 @@ init: function() {
 	console.log("generating rocks");
 	this._generateRocks();
 	}
+    this._generateTerrain();
     //this._generateShip();
 },
 
@@ -143,6 +167,7 @@ toggleRocks: function() {
     this._bShowRocks = !this._bShowRocks;
 },
 
+
 update: function(du) {
 
     for (var c = 0; c < this._categories.length; ++c) {
@@ -168,6 +193,7 @@ update: function(du) {
     }
     
     if (g_settings.enableRocks && this._rocks.length === 0) this._generateRocks();
+    Stars.update(du);
 
 },
 
@@ -175,31 +201,61 @@ getMainShip: function() {
     return this._ships[0];
     },
 
+_renderTerrain: function (ctx) {
+	var terr = this._terrain;
+    ctx.save()
+	ctx.strokeStyle = "white";
+    ctx.fillStyle = "black";
+	ctx.beginPath()
+    ctx.moveTo(terr[0][0],this._terrainMinY +g_canvas.height)
+	ctx.lineTo(terr[0][0],terr[0][1]);
+	for(var i = 1; i < terr.length;i++){
+	    ctx.lineTo(terr[i][0],terr[i][1]);
+	    }
+    ctx.lineTo(terr[terr.length-1][0],this._terrainMinY + g_canvas.height)
+	ctx.closePath();
+	ctx.stroke();
+    ctx.fill();
+    ctx.restore();
+    },
+
 render: function(ctx) {
 
+
+    var debugX = 10, debugY = 100;
+    ctx.save();
     if(this._ships[0]){
         var s = this._ships[0];
+	//virkar ekki, reyndu t.d. ad kveikja a collsiion,
+	//sem a ad teikna hring a skipinu, en gerir thad ekki.
+	this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2]
+        ctx.translate(this.offset[0],this.offset[1]); 
+	//console.log((s.cx) + " "  + (s.cy));
     }
-  
-    ctx.strokeStyle="white";
-	//þetta er pseudo fyrir yfirborð þarf að fjarlægja 
-    ctx.beginPath();
-    ctx.moveTo(s.cx - g_canvas.width/2, g_settings.seaLevel);
-    ctx.lineTo(s.cx + g_canvas.width/2, g_settings.seaLevel);
-    ctx.stroke();
-    ctx.closePath();
-    	// hér lýkur yfirborðinu
+    Stars.render(ctx);
+    this._renderTerrain(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
+
         var aCategory = this._categories[c];
+
         if (!this._bShowRocks && 
             aCategory == this._rocks)
             continue;
 
         for (var i = 0; i < aCategory.length; ++i) {
+
             aCategory[i].render(ctx);
+            //debug.text(".", debugX + i * 10, debugY);
+
         }
+        debugY += 10;
     }
+    ctx.restore();
 },
+
+
 }
+
 // Some deferred setup which needs the object to have been created first
 entityManager.deferredSetup();
+

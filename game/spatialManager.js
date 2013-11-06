@@ -59,12 +59,20 @@ register: function(entity) {
     var spatialID = entity.getSpatialID();
 
     this._entities[spatialID] = entity;
+    
+    // TODO: YOUR STUFF HERE!
+
 },
 
 unregister: function(entity) {
     var spatialID = entity.getSpatialID();
 
     this._entities[spatialID] = undefined;
+
+    
+
+    // TODO: YOUR STUFF HERE!
+
 },
 
 findEntityInRange: function(posX, posY, radius) {
@@ -83,7 +91,13 @@ findEntityInRange: function(posX, posY, radius) {
 },
 
 render: function(ctx) {
+    ctx.save();
     ctx.strokeStyle = "red";
+    if(entityManager.getMainShip()){
+        var s = entityManager.getMainShip();
+        ctx.translate(entityManager.offset[0],entityManager.offset[1]); 
+	//console.log((s.cx) + " "  + (s.cy));
+    }
 
     
     for (var ID in this._entities) {
@@ -94,6 +108,7 @@ render: function(ctx) {
             util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius());
 	    }
     }
+    ctx.restore();
 }
 
 };

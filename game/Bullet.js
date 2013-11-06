@@ -65,6 +65,8 @@ Bullet.prototype.update = function (du) {
 
     this.wrapPosition();
     
+    // TODO? NO, ACTUALLY, I JUST DID THIS BIT FOR YOU! :-)
+    //
     // Handle collisions
     //
     var hitEntity = this.findHitEntity();

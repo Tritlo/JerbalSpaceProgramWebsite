@@ -28,6 +28,7 @@ function createInitialShips() {
     
 }
 
+
 // =============
 // GATHER INPUTS
 // =============
@@ -71,8 +72,8 @@ var g_useAveVel = true;
 
 var g_settings = {
           "useGravity": true,
-		  "useAveVel": true,
-		  "renderSpatialDebug":false,
+		"useAveVel": true,
+		"renderSpatialDebug":false,
           "enableDebug" : false,
 		  "allowMixedActions": true,
 		  "enableRocks": false,
@@ -81,6 +82,7 @@ var g_settings = {
 		  "maxSafeSpeed" : 3,
 		  "maxSafeAngle" 	: 1,
 		  "hudSize": 1.5,
+                  "hudExtra": "",
 		  "hudColor": "lime",
 		  "pixelToMeterConstant": 0.08125,
           "doClear" : true,
@@ -100,7 +102,6 @@ var g_settings = {
               "KEY_PAUSE" :  keyCode('P'),
               "KEY_STEP" :  keyCode('O')
 		      },
-	  "seaLevel": 500
           "debugKeys" : {
               "KEY_GRAVITY" : keyCode('G'),
               "KEY_AVE_VEL": keyCode('V'),
@@ -119,6 +120,7 @@ var g_settings = {
               "KEY_TOGGLE_RENDER"   : keyCode('R')
 
             },
+		  "seaLevel": g_canvas.height*2
 		 };
 
 
@@ -177,16 +179,11 @@ function processDiagnostics() {
 // GAME-SPECIFIC RENDERING
 
 function renderSimulation(ctx) {
-	ctx.save();
-	var s=entityManager.getMainShip();
-	ctx.translate(-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2);
-	/// hér þurfa allir hlutir háðir sýninni að vera
-    	 entityManager.render(ctx);
-	 if (g_renderSpatialDebug) spatialManager.render(ctx);
-	ctx.restore();
-	/// hér koma hlutir óháðir sýn
-    	renderHUD(ctx);
 
+    entityManager.render(ctx);
+    renderHUD(ctx);
+
+    if (g_settings.renderSpatialDebug) spatialManager.render(ctx);
 }
 
 
