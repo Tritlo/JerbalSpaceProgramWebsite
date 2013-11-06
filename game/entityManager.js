@@ -31,6 +31,8 @@ _rocks   : [],
 _bullets : [],
 _ships   : [],
 
+_terrain : [],
+
 _bShowRocks : true,
 
 // "PRIVATE" METHODS
@@ -42,6 +44,16 @@ _generateRocks : function() {
     for (i = 0; i < NUM_ROCKS; ++i) {
         this.generateRock();
     }
+},
+
+_generateTerrain : function() {
+    //util.genTerrain(...);
+    var sL = g_settings.seaLevel;
+    this._terrain = [[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40]]
+},
+
+getTerrain : function () {
+    return this._terrain;
 },
 
 _findNearestShip : function(posX, posY) {
@@ -95,6 +107,7 @@ init: function() {
 	console.log("generating rocks");
 	this._generateRocks();
 	}
+    this._generateTerrain();
     //this._generateShip();
 },
 
@@ -143,6 +156,7 @@ toggleRocks: function() {
     this._bShowRocks = !this._bShowRocks;
 },
 
+
 update: function(du) {
 
     for (var c = 0; c < this._categories.length; ++c) {
@@ -177,6 +191,7 @@ getMainShip: function() {
 
 render: function(ctx) {
 
+
     var debugX = 10, debugY = 100;
     ctx.save();
     if(this._ships[0]){
@@ -187,15 +202,16 @@ render: function(ctx) {
         ctx.translate(this.offset[0],this.offset[1]); 
 	//console.log((s.cx) + " "  + (s.cy));
     }
-    
-    ctx.strokeStyle="white";
-    ctx.beginPath();
-    //ctx.rect(g_canvas.width,g_canvas.height,g_canvas.width,g_canvas.height);
-    ctx.moveTo(s.cx - 3*g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
-    ctx.lineTo(s.cy + 3*g_canvas.width/2, g_settings.seaLevel-g_canvas.width);
+    //this._terrain.render(ctx);
+    var terr = this._terrain;
+    ctx.strokeStyle = "white";
+    ctx.beginPath()
+    ctx.moveTo(terr[0][0],terr[0][1]);
+    for(var i = 1; i < terr.length;i++){
+	ctx.lineTo(terr[i][0],terr[i][1]);
+	}
     ctx.stroke();
     ctx.closePath();
-    
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
