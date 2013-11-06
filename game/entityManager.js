@@ -187,6 +187,7 @@ update: function(du) {
     }
     
     if (g_settings.enableRocks && this._rocks.length === 0) this._generateRocks();
+    Stars.update(du);
 
 },
 
@@ -220,6 +221,7 @@ render: function(ctx) {
 	//console.log((s.cx) + " "  + (s.cy));
     }
     this._renderTerrain(ctx);
+    Stars.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
