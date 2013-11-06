@@ -26,7 +26,7 @@ Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
     }
 
 Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
-    //TODO: add effects of speed
+    //TODO: Don't raise up terrain, only lower.
     var values = [];
     var steps = 5;
     for(var i = 0; i <= steps; i++){
