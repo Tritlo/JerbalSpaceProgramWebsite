@@ -36,12 +36,20 @@ function renderUpperHud(ctx,ship){
     ctx.scale(g_settings.hudSize, g_settings.hudSize);
     renderAltitude(ctx,ship,0);
     renderFuel(ctx,ship,10);
+    if (g_settings.hudExtra.length > 0) {
+	renderExtra(ctx,20);
+	}
     ctx.restore();
     }
 
 function renderFuel(ctx,ship,yoffset) {
     var fuel = ship.fuel;
     ctx.fillText("Fuel: " + fuel.toFixed(0), 0,yoffset);
+    ctx.stroke();
+    }
+
+function renderExtra(ctx,yoffset){
+    ctx.fillText("Extra: " + g_settings.hudExtra, 0,yoffset);
     ctx.stroke();
     }
     

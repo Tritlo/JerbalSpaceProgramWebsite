@@ -28,6 +28,7 @@ function createInitialShips() {
     
 }
 
+
 // =============
 // GATHER INPUTS
 // =============
@@ -71,8 +72,8 @@ var g_useAveVel = true;
 
 var g_settings = {
           "useGravity": true,
-		  "useAveVel": true,
-		  "renderSpatialDebug":false,
+		"useAveVel": true,
+		"renderSpatialDebug":false,
           "enableDebug" : false,
 		  "allowMixedActions": true,
 		  "enableRocks": false,
@@ -81,6 +82,7 @@ var g_settings = {
 		  "maxSafeSpeed" : 3,
 		  "maxSafeAngle" 	: 1,
 		  "hudSize": 1.5,
+                  "hudExtra": "",
 		  "hudColor": "lime",
 		  "pixelToMeterConstant": 0.08125,
           "doClear" : true,
