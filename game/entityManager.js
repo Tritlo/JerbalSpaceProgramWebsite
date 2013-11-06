@@ -201,7 +201,7 @@ _renderTerrain: function (ctx) {
 	var terr = this._terrain;
     ctx.save()
 	ctx.strokeStyle = "white";
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "black";
 	ctx.beginPath()
     ctx.moveTo(terr[0][0],this._terrainMinY +g_canvas.height)
 	ctx.lineTo(terr[0][0],terr[0][1]);
