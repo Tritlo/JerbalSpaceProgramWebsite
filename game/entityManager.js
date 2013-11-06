@@ -54,7 +54,11 @@ _generateTerrain : function() {
     this._terrainMaxY = 300;
     this._terrain = genTerrain([-10000,10000],[300,sL/2],[1000,2000],[minangl,maxangl]);
     var startsite = util.findIndexesOfClosestPoints(200,this._terrain);
-    this._terrain[startsite[0]][1] = this._terrain[startsite[1]][1];
+    this._terrain[startsite[0]][1] = 200+32;
+    this._terrain[startsite[1]][1] = 200+32;
+    this._terrain[startsite[1]+1][1] = 200+32;
+    this._terrain[startsite[0]-1][1] = 200+32;
+    //this._terrain[startsite[1]][1];
    //this._terrain = [[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40]]
    //this._terrain = [[-10000,-10],[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40],[10000,47]]
 },
