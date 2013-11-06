@@ -1,4 +1,4 @@
-// =========
+    // =========
 // ASTEROIDS
 // =========
 /*
@@ -59,7 +59,7 @@ function updateSimulation(du) {
     entityManager.update(du);
 
     // Prevent perpetual firing!
-    eatKey(Ship.prototype.KEY_FIRE);
+    eatKey(g_settings.keys.KEY_FIRE);
 }
 
 // GAME-SPECIFIC DIAGNOSTICS
@@ -68,11 +68,12 @@ var g_allowMixedActions = true;
 //var g_useGravity = false;
 var g_useGravity = true;
 var g_useAveVel = true;
-var g_renderSpatialDebug = false;
 
-var g_settings = {"useGravity": true,
+var g_settings = {
+          "useGravity": true,
 		  "useAveVel": true,
 		  "renderSpatialDebug":false,
+          "enableDebug" : false,
 		  "allowMixedActions": true,
 		  "enableRocks": false,
 		  "minLandingSpeed": 1.4,
@@ -82,63 +83,82 @@ var g_settings = {"useGravity": true,
 		  "hudSize": 1.5,
 		  "hudColor": "lime",
 		  "pixelToMeterConstant": 0.08125,
+          "doClear" : true,
+          "doBox" : false,
+          "undoBox" : false,
+          "doFlipFlop" : false,
+          "doRender" : true,
 		  "keys": {
 		      "KEY_THRUST": keyCode('W'),
 		      "KEY_RETRO": keyCode('S'),
 		      "KEY_KILLTHROTTLE": keyCode('E'),
 		      "KEY_LEFT": keyCode('A'),
-		      "KEY_RIGHT": keyCode('D')
+		      "KEY_RIGHT": keyCode('D'),
+              "KEY_FIRE" : keyCode(' '),
+              "KEY_TOGGLE_DEBUG": keyCode('B'),
+              "KEY_QUIT" : keyCode('Q'),
+              "KEY_PAUSE" :  keyCode('P'),
+              "KEY_STEP" :  keyCode('O')
 		      },
 	  "seaLevel": 500
+          "debugKeys" : {
+              "KEY_GRAVITY" : keyCode('G'),
+              "KEY_AVE_VEL": keyCode('V'),
+              "KEY_SPATIAL": keyCode('X'),
+              "KEY_MIXED": keyCode('M'),
+              "KEY_HALT " : keyCode('H'),
+              "KEY_RESET" : keyCode('R'),
+              "KEY_0" : keyCode('0'),
+              "KEY_1" : keyCode('1'),
+              "KEY_2" : keyCode('2'),
+              "KEY_K" : keyCode('K'),
+              "KEY_TOGGLE_CLEAR"    : keyCode('C'),
+              "KEY_TOGGLE_BOX"      : keyCode('B'),
+              "KEY_TOGGLE_UNDO_BOX" : keyCode('U'),
+              "KEY_TOGGLE_FLIPFLOP" : keyCode('F'),
+              "KEY_TOGGLE_RENDER"   : keyCode('R')
+
+            },
 		 };
 
-var KEY_MIXED   = keyCode('M');
-var KEY_GRAVITY = keyCode('G');
-var KEY_AVE_VEL = keyCode('V');
-var KEY_SPATIAL = keyCode('X');
-
-var KEY_HALT  = keyCode('H');
-var KEY_RESET = keyCode('R');
-
-var KEY_0 = keyCode('0');
-
-var KEY_1 = keyCode('1');
-var KEY_2 = keyCode('2');
-
-var KEY_K = keyCode('K');
 
 function processDiagnostics() {
 
-    if (eatKey(KEY_MIXED))
-        g_allowMixedActions = !g_allowMixedActions;
+    if (eatKey(g_settings.keys.KEY_TOGGLE_DEBUG))
+        g_settings.enableDebug = ! g_settings.enableDebug;
+    
+    if(g_settings.enableDebug) {
+        if (eatKey(g_settings.debugKeys.KEY_MIXED))
+            g_allowMixedActions = !g_allowMixedActions;
 
-    if (eatKey(KEY_GRAVITY)) g_useGravity = !g_useGravity;
+        if (eatKey(g_settings.debugKeys.KEY_GRAVITY)) g_settings.useGravity = !g_settings.useGravity;
 
-    if (eatKey(KEY_AVE_VEL)) g_useAveVel = !g_useAveVel;
+        if (eatKey(g_settings.debugKeys.KEY_AVE_VEL)) g_settings.useAveVel = !g_settings.useAveVel;
 
-    if (eatKey(KEY_SPATIAL)) g_renderSpatialDebug = !g_renderSpatialDebug;
+        if (eatKey(g_settings.debugKeys.KEY_SPATIAL)) g_settings.renderSpatialDebug = !g_settings.renderSpatialDebug;
 
-    if (eatKey(KEY_HALT)) entityManager.haltShips();
+        if (eatKey(g_settings.debugKeys.KEY_HALT)) entityManager.haltShips();
 
-    if (eatKey(KEY_RESET)) entityManager.resetShips();
+        if (eatKey(g_settings.debugKeys.KEY_RESET)) entityManager.resetShips();
 
-    if (eatKey(KEY_0)) entityManager.toggleRocks();
+        if (eatKey(g_settings.debugKeys.KEY_0)) entityManager.toggleRocks();
 
-    if (eatKey(KEY_1)) entityManager.generateShip({
-        cx : g_mouseX,
-        cy : g_mouseY,
-        
-        sprite : g_sprites.ship});
+        if (eatKey(g_settings.debugKeys.KEY_1)) entityManager.generateShip({
+            cx : g_mouseX,
+            cy : g_mouseY,
+            
+            sprite : g_sprites.ship});
 
-    if (eatKey(KEY_2)) entityManager.generateShip({
-        cx : g_mouseX,
-        cy : g_mouseY,
-        
-        sprite : g_sprites.ship2
-        });
+        if (eatKey(g_settings.debugKeys.KEY_2)) entityManager.generateShip({
+            cx : g_mouseX,
+            cy : g_mouseY,
+            
+            sprite : g_sprites.ship2
+            });
 
-    if (eatKey(KEY_K)) entityManager.killNearestShip(
-        g_mouseX, g_mouseY);
+        if (eatKey(g_settings.debugKeys.KEY_K)) entityManager.killNearestShip(
+            g_mouseX, g_mouseY);
+    }
 }
 
 

@@ -98,6 +98,10 @@ fillCircle: function (ctx, x, y, r) {
 
 
 strokeTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry) {
+    util.drawTriangle(ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry,true);
+    },
+
+drawTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry,strokeNotFill) {
     // x0,y0,... are the corner-points of the triangle
     // rot is the rotation in radians, rx and ry denote
     // the center of rotation.
@@ -121,17 +125,17 @@ strokeTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry) {
     ctx.lineTo(x1,y1);
     ctx.lineTo(x2,y2);
     ctx.lineTo(x0,y0);
-    ctx.stroke();
+    if (strokeNotFill) {
+	ctx.stroke();
+    }
+    else {
+	ctx.fill();
+    }
     ctx.restore();
     },
     
-fillTriangle: function (ctx,x0,y0,x1,y1,x2,y2) {
-    ctx.beginPath();
-    ctx.moveTo(x0,y0);
-    ctx.lineTo(x1,y1);
-    ctx.lineTo(x2,y2);
-    ctx.lineTo(x0,y0);
-    ctx.fill();
+fillTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry) {
+    util.drawTriangle(ctx,x0,y0,x1,y1,rot,rx,ry,false);
     },
     
 fillBox: function (ctx, x, y, w, h, style) {
