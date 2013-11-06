@@ -12,14 +12,14 @@ function genTerrain(x,y,length,angles) {
 	maxlen = length[1],
 	minAng = angles[0],
 	maxAng = angles[1];
-		console.log(minAng,maxAng);
+		//console.log(minAng,maxAng);
 	var yDiff = yMax-yMin,
 	lenDiff = maxlen-minlen;
 	var y_init = Math.random()*yDiff+yMin;
 	points[0]=[xMin,y_init];
 	var currX = xMin,
 		currY = y_init;
-	console.log(currX,currY);
+	//console.log(currX,currY);
 	var sameY = Math.floor(Math.random()*2),
 	up_down = 0;
 	while(currX < xMax) {
@@ -34,10 +34,10 @@ function genTerrain(x,y,length,angles) {
 		else {
 			up_down = Math.floor(Math.random()*3-1);
 		}
-		console.log(up_down);
+		//console.log(up_down);
 		var len = null;
 		var angle = up_down*(minAng+Math.random()*(maxAng-minAng));
-		console.log(angle);
+		//console.log(angle);
 		if(up_down) {
 			var maxDY = null;
 			if(up_down>0) {
@@ -46,10 +46,9 @@ function genTerrain(x,y,length,angles) {
 			else {
 				maxDY = currY - yMin;
 			}
-			console.log(maxDY);
+			//console.log(maxDY);
 			var maxL = Math.pow((maxDY)/(Math.sin(angle)),2);
-			console.log(maxL);
-
+			//console.log(maxL);
 			if (maxL<minlen) {
 				len = maxL;
 			}
@@ -60,29 +59,23 @@ function genTerrain(x,y,length,angles) {
 		else {
 			len = minlen+Math.random()*(maxlen-minlen);
 		}
-		console.log(minlen);	
+		//console.log(minlen);	
 		var rootlen = Math.sqrt(len);
 		var nextX = Math.min(xMax,currX+rootlen*Math.cos(angle));
 		var nextY = currY+rootlen*Math.sin(angle);	
 		points.push([nextX,nextY]);
 		currX = nextX;
 		currY = nextY;
-		console.log(currY,currX);
+		//console.log(currY,currX);
 	}
 	return points;
 }
 
 function renderTerrain(ctx,x,y,length,angles) {
 	var terrPoints = genTerrain(x,y,length,angles);
-	ctx.beginPath();
-    ctx.moveTo(terrPoints[0][0],terrPoints[0][1]);
-	for(var i = 1; i<=terrPoints.length; i++) {
-		ctx.lineTo(terrPoints[i][0],terrPoints[i][1]);
-     	ctx.stroke();
-	}
 	ctx.endPath();
 }
-var minangl = Math.PI/30,
-maxangl = Math.PI/2.2;
-console.log(minangl,maxangl);
-renderTerrain(g_ctx,[0,600],[0,600],[5,20],[minangl,maxangl]);
+//var minangl = Math.PI/30,
+//maxangl = Math.PI/2.2;
+//console.log(minangl,maxangl);
+//renderTerrain(g_ctx,[0,600],[0,600],[5,20],[minangl,maxangl]);

@@ -53,23 +53,29 @@ square: function(x) {
     return x*x;
 },
 
-findClosestPoints: function (x0,y0, pointList) {
+findIndexOfClosest: function (x0,pointList) {
     var xs = [];
     var ys = [];
     pointList.map(function (x) {
         xs.push(x[0]);
         ys.push(x[1]);
     });
-
     var i = util.binarySearch(x0,xs);
+    return i;
+    },
+
+findIndexesOfClosestPoints: function(x0,pointList){
+    var i = util.findIndexOfClosest(x0,pointList);
+    if (pointList[i][0] <= x0)
+	return [i,i+1];
+    else
+	return [i-1,i];
+    },
     
-    //fails at edge of terrain.
-    if (xs[i] <= x0) {
-        return [[xs[i],ys[i]],[xs[i+1],ys[i+1]]];
-    }
-    else {
-        return [[xs[i-1],ys[i-1]],[xs[i],ys[i]]];
-    }
+
+findClosestPoints: function (x0,y0, pointList) {
+    var is = util.findIndexesOfClosestPoints(x0,pointList);
+    return [pointList[is[0]],pointList[is[1]]];
 },
 
 binarySearch: function(val,list) {
@@ -174,8 +180,7 @@ sign: function(x) {
 },
 
     
-lineBelow : function(x,y) {
-    var terrain = entityManager.getTerrain();
+lineBelow : function(terrain,x,y) {
     var points = util.findClosestPoints(x,y,terrain);
     return points;
     },

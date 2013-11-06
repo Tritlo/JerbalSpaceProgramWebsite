@@ -255,17 +255,19 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 	if (terrainHit[0]) {
 	    var collisionSpeed = terrainHit[1];
 	    var collisionAngle = terrainHit[2];
+	    this.velX = oldVelX*-0.9*Math.sin(collisionAngle);
+	    this.velY = oldVelY * -0.9*Math.cos(collisionAngle);
+            intervalVelY = this.velY;
+            intervalVelX = this.velX;
 	    if (collisionSpeed <= g_settings.minLandingSpeed && Math.abs(this.rotation - collisionAngle)<=g_settings.maxSafeAngle){
 		this.land(this.cx,this.cy);
+		intervalVelY = this.velY;
+		intervalVelX = this.velX;
 		}
 	    if (collisionSpeed > g_settings.maxSafeSpeed || Math.abs(this.rotation-collisionAngle)>g_settings.maxSafeAngle)
 		{
 		    this._isExploding = true;
 		    }
-	    this.velX = oldVelX*-0.9*Math.sin(collisionAngle);
-	    this.velY = oldVelY * -0.9*Math.cos(collisionAngle);
-            intervalVelY = this.velY;
-            intervalVelX = this.velX;
         }
     }
     
@@ -275,9 +277,14 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 };
 
 Ship.prototype.terrainHit = function(prevX,prevY,nextX,nextY) {
-    var points = util.lineBelow(nextX,nextY);
+    var points = util.lineBelow(entityManager.getTerrain(),nextX,nextY);
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
+    //If I'm not between the lines height points, don't consider it.
+    if (! (util.isBetween(nextY,Math.min(y0,y1)-this.getRadius(),Math.max(y0,y1)+this.getRadius()))){
+	return [false];
+	}
+    
     var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
     var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
     var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));

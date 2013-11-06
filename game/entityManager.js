@@ -47,9 +47,14 @@ _generateRocks : function() {
 },
 
 _generateTerrain : function() {
-    //util.genTerrain(...);
     var sL = g_settings.seaLevel;
-    this._terrain = [[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40]]
+    var minangl = Math.PI/30;
+    var maxangl = Math.PI/2.2;
+    this._terrain = genTerrain([-10000,10000],[300,sL/2],[1000,2000],[minangl,maxangl]);
+    var startsite = util.findIndexesOfClosestPoints(200,this._terrain);
+    this._terrain[startsite[0]][1] = this._terrain[startsite[1]][1];
+   //this._terrain = [[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40]]
+   //this._terrain = [[-10000,-10],[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40],[10000,47]]
 },
 
 getTerrain : function () {
@@ -189,6 +194,18 @@ getMainShip: function() {
     return this._ships[0];
     },
 
+_renderTerrain: function (ctx) {
+	var terr = this._terrain;
+	ctx.strokeStyle = "white";
+	ctx.beginPath()
+	ctx.moveTo(terr[0][0],terr[0][1]);
+	for(var i = 1; i < terr.length;i++){
+	    ctx.lineTo(terr[i][0],terr[i][1]);
+	    }
+	ctx.stroke();
+	ctx.closePath();
+    },
+
 render: function(ctx) {
 
 
@@ -202,16 +219,7 @@ render: function(ctx) {
         ctx.translate(this.offset[0],this.offset[1]); 
 	//console.log((s.cx) + " "  + (s.cy));
     }
-    //this._terrain.render(ctx);
-    var terr = this._terrain;
-    ctx.strokeStyle = "white";
-    ctx.beginPath()
-    ctx.moveTo(terr[0][0],terr[0][1]);
-    for(var i = 1; i < terr.length;i++){
-	ctx.lineTo(terr[i][0],terr[i][1]);
-	}
-    ctx.stroke();
-    ctx.closePath();
+    this._renderTerrain(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
