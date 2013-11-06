@@ -254,6 +254,11 @@ fillBox: function (ctx, x, y, w, h, style) {
     ctx.fillStyle = style;
     ctx.fillRect(x, y, w, h);
     ctx.fillStyle = oldStyle;
+},
+
+drawDot: function (ctx,x,y,color){
+    color = color || ctx.fillStyle;
+    this.fillBox(ctx,x,y,1,1,color);
 }
 
 };
