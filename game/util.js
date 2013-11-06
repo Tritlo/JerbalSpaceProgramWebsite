@@ -53,6 +53,45 @@ square: function(x) {
     return x*x;
 },
 
+findIndexOfClosest: function (x0,pointList) {
+    var xs = [];
+    var ys = [];
+    pointList.map(function (x) {
+        xs.push(x[0]);
+        ys.push(x[1]);
+    });
+    var i = util.binarySearch(x0,xs);
+    return i;
+    },
+
+findIndexesOfClosestPoints: function(x0,pointList){
+    var i = util.findIndexOfClosest(x0,pointList);
+    if (pointList[i][0] <= x0)
+	return [i,i+1];
+    else
+	return [i-1,i];
+    },
+    
+
+findClosestPoints: function (x0,y0, pointList) {
+    var is = util.findIndexesOfClosestPoints(x0,pointList);
+    return [pointList[is[0]],pointList[is[1]]];
+},
+
+binarySearch: function(val,list) {
+    var low = 0;
+    var high = list.length -1;
+    while(high > low){
+        var mid = Math.floor(low + (high-low)/2);
+        if ( val > list[mid]){
+            low = mid+1; 
+        }
+        else {
+            high = mid;
+        }
+    }
+    return low;
+},
 
 // DISTANCES
 // =========
@@ -73,7 +112,79 @@ wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {
     return this.square(dx) + this.square(dy);
 },
 
+getEqOfLine: function (x0,y0,x1,y1) {
+    var m = (y1 -y0)/(x1-x0);
+    var c = (y0 - m*x0);
+    return [(y1-y0),(x0-x1),c*(x1-x0)];
+},
 
+lineNormal: function(x0,y0,x1,y1){
+    var coeffs = util.getEqOfLine(x0,y0,x1,y1);
+    return [coeffs[0],coeffs[1]];
+},
+
+sideOfLine: function(a0,a1,b0,b1,p0,p1) {
+    return util.sign( (b0-a0)*(p1-a1) - (b1-a1)*(p0-a0));
+},
+/*
+sideOfLine: function(x0,y0,x1,y1,p0,p1) {
+    var lN = util.lineNormal(x0,y0,x1,y1);
+    var lineV = util.normalOfVector(lN);
+    var projOfPOnLRatio = util.dotProd([p0,p1],lineV)/util.dotProd(lineV,lineV);
+    var projOfPOnL = [projOfPOnLRatio*lineV[0], projOfPOnLRatio*lineV[1]];
+    return util.signOfCrossProduct(lN,projOfPOnL);
+},
+*/
+
+projectionOfPointOnLine: function(x0,y0,x1,y1,p0,p1) {
+    var lN = util.lineNormal(x0,y0,x1,y1);
+    var lineV = util.normalOfVector(lN);
+    var projOfPOnLRatio = util.dotProd([p0,p1],lineV)/util.dotProd(lineV,lineV);
+    var projOfPOnL = [projOfPOnLRatio*lineV[0], projOfPOnLRatio*lineV[1]];
+    return projOfPOnL;
+},
+
+normalOfVector: function(a) {
+    return [a[1],-1*a[0]];
+},
+
+dotProd: function(a,b) {
+    return a[0]*b[0] + a[1]*b[1];
+},
+
+lengthOfVector: function(a) {
+    return Math.sqrt(util.dotProd(a,a));
+},
+
+angleBetweenVectors: function(a,b) {
+    var dPScaled = util.dotProd(a,b)/(util.lengthOfVector(a)*util.lengthOfVector(b));
+    return Math.acos(dPScaled);
+},
+
+distFromLine: function(x0,y0,x1,y1,p0,p1) {
+    var coeffs = util.getEqOfLine(x0,y0,x1,y1);
+    var a = coeffs[0];
+    var b = coeffs[1];
+    var c = coeffs[2];
+    return Math.abs(a*p0 +b*p1 + c)/Math.sqrt(a*a + b*b);
+},
+
+signOfCrossProduct : function(a,b) {
+   return a[0]*b[1] - a[1]*b[0]; 
+},
+
+sign: function(x) {
+    if (x > 0) return 1;
+    if(x < 0) return -1;
+    return 0;
+},
+
+    
+lineBelow : function(terrain,x,y) {
+    var points = util.findClosestPoints(x,y,terrain);
+    return points;
+    },
+    
 // CANVAS OPS
 // ==========
 
@@ -98,6 +209,10 @@ fillCircle: function (ctx, x, y, r) {
 
 
 strokeTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry) {
+    util.drawTriangle(ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry,true);
+    },
+
+drawTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry,strokeNotFill) {
     // x0,y0,... are the corner-points of the triangle
     // rot is the rotation in radians, rx and ry denote
     // the center of rotation.
@@ -121,17 +236,17 @@ strokeTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry) {
     ctx.lineTo(x1,y1);
     ctx.lineTo(x2,y2);
     ctx.lineTo(x0,y0);
-    ctx.stroke();
+    if (strokeNotFill) {
+	ctx.stroke();
+    }
+    else {
+	ctx.fill();
+    }
     ctx.restore();
     },
     
-fillTriangle: function (ctx,x0,y0,x1,y1,x2,y2) {
-    ctx.beginPath();
-    ctx.moveTo(x0,y0);
-    ctx.lineTo(x1,y1);
-    ctx.lineTo(x2,y2);
-    ctx.lineTo(x0,y0);
-    ctx.fill();
+fillTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry) {
+    util.drawTriangle(ctx,x0,y0,x1,y1,rot,rx,ry,false);
     },
     
 fillBox: function (ctx, x, y, w, h, style) {
@@ -139,6 +254,11 @@ fillBox: function (ctx, x, y, w, h, style) {
     ctx.fillStyle = style;
     ctx.fillRect(x, y, w, h);
     ctx.fillStyle = oldStyle;
+},
+
+drawDot: function (ctx,x,y,color){
+    color = color || ctx.fillStyle;
+    this.fillBox(ctx,x,y,1,1,color);
 }
 
 };

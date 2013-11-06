@@ -34,13 +34,29 @@ function renderUpperHud(ctx,ship){
     var uHeight = 10*g_settings.hudSize;
     ctx.translate(g_canvas.width/2,uHeight);
     ctx.scale(g_settings.hudSize, g_settings.hudSize);
-    renderAltitude(ctx,ship);
+    renderAltitude(ctx,ship,0);
+    renderFuel(ctx,ship,10);
+    if (g_settings.hudExtra.length > 0) {
+	renderExtra(ctx,20);
+	}
     ctx.restore();
     }
 
-function renderAltitude(ctx,ship) {
-    //TODO: Make altitude accurate according to speed 
-    ctx.fillText("Alt: " + (g_settings.pixelToMeterConstant*ship.getAltitude()).toFixed(0) + " m", 0,0);
+function renderFuel(ctx,ship,yoffset) {
+    var fuel = ship.fuel;
+    ctx.fillText("Fuel: " + fuel.toFixed(0), 0,yoffset);
+    ctx.stroke();
+    }
+
+function renderExtra(ctx,yoffset){
+    ctx.fillText("Extra: " + g_settings.hudExtra, 0,yoffset);
+    ctx.stroke();
+    }
+    
+    
+
+function renderAltitude(ctx,ship,yoffset) {
+    ctx.fillText("Alt: " + (g_settings.pixelToMeterConstant*ship.getAltitude()).toFixed(0) + " m", 0,yoffset);
     ctx.stroke();
     }
 
