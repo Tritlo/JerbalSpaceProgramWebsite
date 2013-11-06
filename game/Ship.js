@@ -197,7 +197,7 @@ Ship.prototype.computeSubStep = function (du) {
 
     this.applyAccel(accelX, accelY, du);
     
-    this.wrapPosition();
+    //this.wrapPosition();
     
     if (this.thrust === 0 || g_allowMixedActions) {
         this.updateRotation(du);
@@ -250,28 +250,22 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     var nextY = this.cy + intervalVelY * du;
     
     // bounce
-    if (g_useGravity) {
-
-	var minY = this.height / 2;
-	var maxY = g_canvas.height - minY;
-
-	// Ignore the bounce if the ship is already in
-	// the "border zone" (to avoid trapping them there)
-	if (this.cy > maxY /*|| this.cy < minY*/) {
-	    // do nothing
-	} else if (nextY > maxY /*|| nextY < minY*/) {
-            this.velY = oldVelY * -0.9;
-            intervalVelY = this.velY;
-	    if (Math.abs(intervalVelY) <= g_settings.minLandingSpeed && Math.abs(this.rotation)<=g_settings.maxSafeAngle){
-		this.land(maxY);
-		intervalVelY = this.velY;
-		intervalVelX = this.velX;
+    if (g_settings.useGravity) {
+	var terrainHit = this.terrainHit(this.cx,this.cy,nextX,nextY)
+	if (terrainHit[0]) {
+	    var collisionSpeed = terrainHit[1];
+	    var collisionAngle = terrainHit[2];
+	    if (collisionSpeed <= g_settings.minLandingSpeed && Math.abs(this.rotation - collisionAngle)<=g_settings.maxSafeAngle){
+		this.land(this.cx,this.cy);
 		}
-	    if (Math.abs(intervalVelY) > g_settings.maxSafeSpeed || Math.abs(this.rotation)>g_settings.maxSafeAngle)
+	    if (collisionSpeed > g_settings.maxSafeSpeed || Math.abs(this.rotation-collisionAngle)>g_settings.maxSafeAngle)
 		{
 		    this._isExploding = true;
 		    }
-	    
+	    this.velX = oldVelX*-0.9*Math.sin(collisionAngle);
+	    this.velY = oldVelY * -0.9*Math.cos(collisionAngle);
+            intervalVelY = this.velY;
+            intervalVelX = this.velX;
         }
     }
     
@@ -280,9 +274,31 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     this.cy += du * intervalVelY;
 };
 
-Ship.prototype.land = function(maxY) {
-    this.cy = maxY;
+Ship.prototype.terrainHit = function(prevX,prevY,nextX,nextY) {
+    var points = util.lineBelow(nextX,nextY);
+    var x0 = points[0][0]; var y0 = points[0][1];
+    var x1 = points[1][0]; var y1 = points[1][1];
+    var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
+    var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
+    var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
+    if ((nextDist <= this.getRadius()) ||  (prevSign != nextSign)){
+	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
+	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
+	var lN = util.lineNormal(x0,y0,x1,y1);
+	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+	return [true,collisionSpeed,collisionAngle];
+	}
+    else {
+	return [false];
+	}
+    }
+
+
+Ship.prototype.land = function(prevX,prevY) {
+    this.cx = prevX
+    this.cy = prevY;
     this.velY = 0;
+    this.velX = 0;
     this.applyFriction();
     }
 
@@ -363,13 +379,14 @@ Ship.prototype.render = function (ctx) {
 	var origScale = this.sprite.scale;
 	// pass my scale into the sprite, for drawing
 	ctx.save()
-	ctx.strokeStyle = "yellow";
 	var x = this.cx;
 	var y = this.cy;
 	var w = this.width;
 	var h = this.height;
 	var t = this.thrust/this.maxThrust;
 	var rot = this.rotation;
+	ctx.closePath();
+	ctx.strokeStyle = "yellow";
 	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
 	ctx.strokeStyle = "red";
 	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);

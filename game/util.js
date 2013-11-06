@@ -61,7 +61,7 @@ findClosestPoints: function (x0,y0, pointList) {
         ys.push(x[1]);
     });
 
-    var i = util.binarySearch(x,xs);
+    var i = util.binarySearch(x0,xs);
     
     //fails at edge of terrain.
     if (xs[i] <= x0) {
@@ -106,11 +106,80 @@ wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {
     return this.square(dx) + this.square(dy);
 },
 
-distFromLine: function(x0,y0,x1,y1,p0,p1) {
+getEqOfLine: function (x0,y0,x1,y1) {
     var m = (y1 -y0)/(x1-x0);
     var c = (y0 - m*x0);
-    return Math.abs(m*p0-1*p1 + c)/Math.sqrt(m*m + 1);
+    return [(y1-y0),(x0-x1),c*(x1-x0)];
 },
+
+lineNormal: function(x0,y0,x1,y1){
+    var coeffs = util.getEqOfLine(x0,y0,x1,y1);
+    return [coeffs[0],coeffs[1]];
+},
+
+sideOfLine: function(a0,a1,b0,b1,p0,p1) {
+    return util.sign( (b0-a0)*(p1-a1) - (b1-a1)*(p0-a0));
+},
+/*
+sideOfLine: function(x0,y0,x1,y1,p0,p1) {
+    var lN = util.lineNormal(x0,y0,x1,y1);
+    var lineV = util.normalOfVector(lN);
+    var projOfPOnLRatio = util.dotProd([p0,p1],lineV)/util.dotProd(lineV,lineV);
+    var projOfPOnL = [projOfPOnLRatio*lineV[0], projOfPOnLRatio*lineV[1]];
+    return util.signOfCrossProduct(lN,projOfPOnL);
+},
+*/
+
+projectionOfPointOnLine: function(x0,y0,x1,y1,p0,p1) {
+    var lN = util.lineNormal(x0,y0,x1,y1);
+    var lineV = util.normalOfVector(lN);
+    var projOfPOnLRatio = util.dotProd([p0,p1],lineV)/util.dotProd(lineV,lineV);
+    var projOfPOnL = [projOfPOnLRatio*lineV[0], projOfPOnLRatio*lineV[1]];
+    return projOfPOnL;
+},
+
+normalOfVector: function(a) {
+    return [a[1],-1*a[0]];
+},
+
+dotProd: function(a,b) {
+    return a[0]*b[0] + a[1]*b[1];
+},
+
+lengthOfVector: function(a) {
+    return Math.sqrt(util.dotProd(a,a));
+},
+
+angleBetweenVectors: function(a,b) {
+    var dPScaled = util.dotProd(a,b)/(util.lengthOfVector(a)*util.lengthOfVector(b));
+    return Math.acos(dPScaled);
+},
+
+distFromLine: function(x0,y0,x1,y1,p0,p1) {
+    var coeffs = util.getEqOfLine(x0,y0,x1,y1);
+    var a = coeffs[0];
+    var b = coeffs[1];
+    var c = coeffs[2];
+    return Math.abs(a*p0 +b*p1 + c)/Math.sqrt(a*a + b*b);
+},
+
+signOfCrossProduct : function(a,b) {
+   return a[0]*b[1] - a[1]*b[0]; 
+},
+
+sign: function(x) {
+    if (x > 0) return 1;
+    if(x < 0) return -1;
+    return 0;
+},
+
+    
+lineBelow : function(x,y) {
+    var terrain = entityManager.getTerrain();
+    var points = util.findClosestPoints(x,y,terrain);
+    return points;
+    },
+    
 // CANVAS OPS
 // ==========
 
