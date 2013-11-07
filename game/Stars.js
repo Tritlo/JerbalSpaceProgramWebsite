@@ -41,10 +41,25 @@ render: function(ctx){
     }
 },
 
+_starTween: function(x,y){
+    var speed = Math.sqrt(x*x + y*y);
+    var angle = Math.atan2(y,x);
+    var newSpeed = Math.atan((Math.max(speed-15,0))/60)*300;
+    return {x: Math.cos(angle)*newSpeed, y: Math.sin(angle)*newSpeed};
+},
+
 _renderStar: function(ctx,x,y){
+    var s = entityManager.getMainShip();
+    var addedSpeed = this._starTween(s.velX,s.velY);
+    var x1 = x + addedSpeed.x;
+    var y1 = y + addedSpeed.y;
     ctx.save();
     ctx.fillStyle="white";
-    util.fillCircle(ctx,x,y,2);
+    ctx.strokeStyle="white";
+    util.fillCircle(ctx,x,y,1);
+    util.fillCircle(ctx,x1,y1,1);
+    ctx.lineWidth=2;
+    util.drawLine(ctx,x,y,x1,y1);
     ctx.restore();
 },
 
