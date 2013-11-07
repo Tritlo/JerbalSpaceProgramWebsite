@@ -285,6 +285,14 @@ strokeBox: function (ctx, x, y, w, h) {
 drawDot: function (ctx,x,y,color){
     color = color || ctx.fillStyle;
     this.fillBox(ctx,x,y,1,1,color);
+},
+
+drawLine: function(ctx,x1,y1,x2,y2){
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+    ctx.closePath();
 }
 
 };
