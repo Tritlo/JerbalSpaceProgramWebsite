@@ -138,7 +138,8 @@ Ship.prototype._updateSpriteExplosion = function (du) {
     var numframes = explSpr.dim[0]*explSpr.dim[1];
     var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
     if(this._timeFromExplosion > explSpr.duration/15 && !(this._explCraterAdded)){
-	entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
+	    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
+        this._explCraterAdded = true;
     }
     if (frame <= numframes){
 	this._explosionFrame = frame;
@@ -155,7 +156,8 @@ Ship.prototype._updateSpriteExplosion = function (du) {
 
 Ship.prototype._updateVectorExplosion = function (du){
     if(this._timeFromExplosion > this._explosionDuration/2 && !(this._explCraterAdded)){
-	entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
+	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius);
+        this._explCraterAdded = true;
     }
     if (this._timeFromExplosion > this._explosionDuration){
 	this._isExploding = false;
@@ -232,9 +234,19 @@ Ship.prototype.computeSubStep = function (du) {
     //this.wrapPosition();
     
     if (this.thrust === 0 || g_allowMixedActions) {
-        this.updateRotation(du);
+        var rotation = this.computeRotation(du);
+        this.applyRotation(rotation,du);
     }
 };
+
+Ship.prototype.applyRotation = function(rotation,du) {
+    var oldRot = this.rotation;
+    var newRot = rotation;
+    var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
+    if (!(terrainHit[0])){
+        this.rotation = newRot;
+    }
+}
 
 var NOMINAL_GRAVITY = 0.02;
 
@@ -283,7 +295,13 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     
     // bounce
     if (g_settings.useGravity) {
-	var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,this.getRadius());
+        if (g_settings.hitBox){
+            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+                    this.getRadius(),this.width,this.height,this.rotation);
+        } else {
+            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+                    this.getRadius());
+        }
 	if (terrainHit[0]) {
 	    var collisionSpeed = terrainHit[1];
 	    var collisionAngle = terrainHit[2];
@@ -312,11 +330,13 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 
 Ship.prototype.explode = function(x,y,speed){
 	this._isExploding = true;
-        var radius = this.getRadius();
-	var explRadius = radius + radius*speed/20 + (this.fuel/1000)*radius;
-        this._explosionRadius = explRadius;
-        //this._explosionDuration = explRadius;
-        this._explosionDuration = 36;
+    var radius = this.getRadius();
+	var explRadius = radius + radius*speed/15 + (this.fuel/750)*radius;
+    this._explosionRadius = explRadius;
+    this._explosionX = x;
+    this._explosionY = y;
+    //this._explosionDuration = explRadius;
+    this._explosionDuration = 36;
 }
     
 
@@ -380,13 +400,16 @@ Ship.prototype.halt = function () {
 
 var NOMINAL_ROTATE_RATE = 0.1;
 
-Ship.prototype.updateRotation = function (du) {
+Ship.prototype.computeRotation = function (du) {
+    var rotation = this.rotation;
     if (keys[g_settings.keys.KEY_LEFT]) {
-        this.rotation = (this.rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
+        rotation = (rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
     if (keys[g_settings.keys.KEY_RIGHT]) {
-        this.rotation = (this.rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
+        rotation = (rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
+    return rotation;
+
 };
 
 Ship.prototype._renderExplosion = function (ctx) {

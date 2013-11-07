@@ -25,24 +25,86 @@ Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
     this.points = head.concat(values,tail);
     }
 
+Terrain.prototype.heightAtX = function (x) {
+    var ps = util.findClosestPoints(x,0,this.points);
+    var lEq = util.getEqOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
+    return (lEq[0]*x + lEq[2])/(-1*lEq[1]);
+}
+
 Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
-    //TODO: Don't raise up terrain, only lower.
     var values = [];
     var steps = 5;
     for(var i = 0; i <= steps; i++){
 	var deg = Math.PI * i/steps;
 	values.push([x-Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
     }
+    //Don't raise terrain:
+    var terr = this;
+    values = values.map(function(p) {
+        var hAtP = terr.heightAtX(p[0]);
+        if (hAtP > p[1]){
+            p[1] = hAtP;
+        }
+        return [p[0],p[1]];
+    });
     this.spliceByXCoords(x-explRadius, x+explRadius,values);
     }
 
-Terrain.prototype.hit = function (prevX,prevY, nextX,nextY, radius) {
+Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation){
+    if (g_settings.hitBox){
+        return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation);
+    } else {
+        return this.hitWCircle(prevX,prevY,nextX,nextY,radius);
+    }
+}
+
+Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation){
+    var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation);
+    var hits  = [];
+    for(var i = 0; i < hitBox.length; i++){
+        if (this.heightAtX(hitBox[i][0]) < hitBox[i][1]){
+            hits.push(hitBox[i]);
+        }
+    }
+    var circ = this.hitWCircle(prevX,prevY,nextX,nextY,radius); 
+    circ[3] = [nextX,this.heightAtX(nextX)];
+    if (hits.length === 0){
+            return circ;
+    }
+    var meanHitX = 0, meanHitY = 0;
+    for(var i = 0; i<hits.length; i++)
+    {
+        meanHitX += hits[i][0];
+        meanHitY += hits[i][1];
+    }
+    meanHitX = meanHitX/hits.length;
+    meanHitY = meanHitY/hits.length;
+    var pointOfHit = [meanHitX,meanHitY];
+    if (circ[0]){
+	    return [true,circ[1],circ[2],pointOfHit];
+    } else {
+    var points = util.lineBelow(this.points,pointOfHit[0],pointOfHit[1]);
+    var x0 = points[0][0]; var y0 = points[0][1];
+    var x1 = points[1][0]; var y1 = points[1][1];
+    var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
+    var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
+    var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
+	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
+	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
+	var lN = util.lineNormal(x0,y0,x1,y1);
+	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+	return [true,collisionSpeed,collisionAngle,pointOfHit];
+    }
+}
+
+
+Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
     var points = util.lineBelow(this.points,nextX,nextY);
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
     //If I'm not between the lines height points, don't consider it.
     if (! (util.isBetween(nextY,Math.min(y0,y1)-radius,Math.max(y0,y1)+radius))){
-	return [false];
+	    return [false];
 	}
     var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
     var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
@@ -57,7 +119,7 @@ Terrain.prototype.hit = function (prevX,prevY, nextX,nextY, radius) {
     else {
 	return [false];
 	}
-    }
+}
 
 
 Terrain.prototype.genTerrain = function () {
