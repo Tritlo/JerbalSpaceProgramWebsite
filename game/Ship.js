@@ -50,6 +50,7 @@ Ship.prototype._explosionFrame = 0;
 Ship.prototype._explosionDuration = 0;
 Ship.prototype._timeFromExplosion = 0;
 Ship.prototype._explosionRadius = 0;
+Ship.prototype._explosionSpeed = 0;
 Ship.prototype._explCraterAdded = false;
 Ship.prototype._isExploding = false;
 Ship.prototype.throttle = 0;
@@ -138,7 +139,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
     var numframes = explSpr.dim[0]*explSpr.dim[1];
     var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
     if(this._timeFromExplosion > explSpr.duration/4 && !(this._explCraterAdded)){
-	    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
+	    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius,this._explosionSpeed);
         this._explCraterAdded = true;
     }
     if (frame <= numframes){
@@ -156,7 +157,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
 
 Ship.prototype._updateVectorExplosion = function (du){
     if(this._timeFromExplosion > this._explosionDuration/2 && !(this._explCraterAdded)){
-	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius);
+	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius, this._explosionSpeed);
         this._explCraterAdded = true;
     }
     if (this._timeFromExplosion > this._explosionDuration){
@@ -331,6 +332,7 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 Ship.prototype.explode = function(x,y,speed){
 	this._isExploding = true;
     var radius = this.getRadius();
+    this._explosionSpeed = speed;
 	var explRadius = radius + radius*speed/15 + (this.fuel/750)*radius;
     this._explosionRadius = explRadius;
     this._explosionX = x;
