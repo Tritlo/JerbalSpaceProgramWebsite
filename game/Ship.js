@@ -137,7 +137,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
     var explSpr = g_sprites.explosion;
     var numframes = explSpr.dim[0]*explSpr.dim[1];
     var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
-    if(this._timeFromExplosion > explSpr.duration/15 && !(this._explCraterAdded)){
+    if(this._timeFromExplosion > explSpr.duration/4 && !(this._explCraterAdded)){
 	    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
         this._explCraterAdded = true;
     }
