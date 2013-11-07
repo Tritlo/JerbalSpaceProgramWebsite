@@ -44,7 +44,7 @@ render: function(ctx){
 _starTween: function(x,y){
     var speed = Math.sqrt(x*x + y*y);
     var angle = Math.atan2(y,x);
-    var newSpeed = Math.atan((Math.max(speed-15,0))/60)*300;
+    var newSpeed = Math.atan((Math.max(speed-15,0))/600)*650;
     return {x: Math.cos(angle)*newSpeed, y: Math.sin(angle)*newSpeed};
 },
 
