@@ -72,8 +72,10 @@ var g_useAveVel = true;
 
 var g_settings = {
           "useGravity": true,
-		"useAveVel": true,
-		"renderSpatialDebug":false,
+          "useAveVel": true,
+	      "renderSpatialDebug":false,
+          "hitBox": true,
+          "spriteExplosion": true,
           "enableDebug" : false,
 		  "allowMixedActions": true,
 		  "enableRocks": false,

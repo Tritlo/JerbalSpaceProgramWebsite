@@ -1,18 +1,137 @@
-var g_canvas = document.getElementById("myCanvas");
-var g_ctx = g_canvas.getContext("2d");
+"use strict";
 
-// búum til punkt (x,y) -hæð og fjarlægð
-function genTerrain(x,y,length,angles) {
+
+function Terrain(descr) {
+    this.setup(descr);
+    this.points = this.genTerrain();
+    //Add landing platform
+    this.spliceByXCoords(100,300,[[100,250],[150,232],[250,232],[300,250]]);
+};
+
+Terrain.prototype = new Entity();
+
+Terrain.prototype.spliceByIndex = function (indFrom, indTo, yValues) {
+    for(var i = 0; i < yValues.length; i++){
+	this.points[indFrom+i][1] = yValues[i];
+	}
+    }
+
+Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
+    var sliceStart = util.findIndexesOfClosestPoints(xFrom,this.points)[1];
+    var sliceEnd = util.findIndexesOfClosestPoints(xTo,this.points)[0];
+    //this.points.splice(spliceStart,spliceEnd-spliceStart,values);
+    var head = this.points.slice(0,sliceStart);
+    var tail = this.points.slice(sliceEnd+1,this.points.length);
+    this.points = head.concat(values,tail);
+    }
+
+Terrain.prototype.heightAtX = function (x) {
+    var ps = util.findClosestPoints(x,0,this.points);
+    var lEq = util.getEqOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
+    return (lEq[0]*x + lEq[2])/(-1*lEq[1]);
+}
+
+Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
+    var values = [];
+    var steps = 5;
+    for(var i = 0; i <= steps; i++){
+	var deg = Math.PI * i/steps;
+	values.push([x-Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
+    }
+    //Don't raise terrain:
+    var terr = this;
+    values = values.map(function(p) {
+        var hAtP = terr.heightAtX(p[0]);
+        if (hAtP > p[1]){
+            p[1] = hAtP;
+        }
+        return [p[0],p[1]];
+    });
+    this.spliceByXCoords(x-explRadius, x+explRadius,values);
+    }
+
+Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation){
+    if (g_settings.hitBox){
+        return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation);
+    } else {
+        return this.hitWCircle(prevX,prevY,nextX,nextY,radius);
+    }
+}
+
+Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation){
+    var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation);
+    var hits  = [];
+    for(var i = 0; i < hitBox.length; i++){
+        if (this.heightAtX(hitBox[i][0]) < hitBox[i][1]){
+            hits.push(hitBox[i]);
+        }
+    }
+    var circ = this.hitWCircle(prevX,prevY,nextX,nextY,radius); 
+    circ[3] = [nextX,this.heightAtX(nextX)];
+    if (hits.length === 0){
+            return circ;
+    }
+    var meanHitX = 0, meanHitY = 0;
+    for(var i = 0; i<hits.length; i++)
+    {
+        meanHitX += hits[i][0];
+        meanHitY += hits[i][1];
+    }
+    meanHitX = meanHitX/hits.length;
+    meanHitY = meanHitY/hits.length;
+    var pointOfHit = [meanHitX,meanHitY];
+    if (circ[0]){
+	    return [true,circ[1],circ[2],pointOfHit];
+    } else {
+    var points = util.lineBelow(this.points,pointOfHit[0],pointOfHit[1]);
+    var x0 = points[0][0]; var y0 = points[0][1];
+    var x1 = points[1][0]; var y1 = points[1][1];
+    var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
+    var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
+    var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
+	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
+	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
+	var lN = util.lineNormal(x0,y0,x1,y1);
+	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+	return [true,collisionSpeed,collisionAngle,pointOfHit];
+    }
+}
+
+
+Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
+    var points = util.lineBelow(this.points,nextX,nextY);
+    var x0 = points[0][0]; var y0 = points[0][1];
+    var x1 = points[1][0]; var y1 = points[1][1];
+    //If I'm not between the lines height points, don't consider it.
+    if (! (util.isBetween(nextY,Math.min(y0,y1)-radius,Math.max(y0,y1)+radius))){
+	    return [false];
+	}
+    var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
+    var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
+    var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
+    if ((nextDist <= radius) ||  (prevSign != nextSign)){
+	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
+	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
+	var lN = util.lineNormal(x0,y0,x1,y1);
+	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+	return [true,collisionSpeed,collisionAngle];
+	}
+    else {
+	return [false];
+	}
+}
+
+
+Terrain.prototype.genTerrain = function () {
 	var points = [],
-	xMin=x[0],
-	xMax=x[1],
-	yMin=y[0],
-	yMax=y[1],
-	minlen=length[0],
-	maxlen = length[1],
-	minAng = angles[0],
-	maxAng = angles[1];
-		//console.log(minAng,maxAng);
+	xMin   = this.minX,
+	xMax   = this.maxX,
+	yMin   = this.minY,
+	yMax   = this.maxY,
+	minlen = this.minLength,
+	maxlen =this.maxLength,
+	minAng =this.minAngle,
+	maxAng =this.maxAngle;
 	var yDiff = yMax-yMin,
 	lenDiff = maxlen-minlen;
 	var y_init = Math.random()*yDiff+yMin;
@@ -30,6 +149,7 @@ function genTerrain(x,y,length,angles) {
 			if(!up_down) {
 				up_down = -1;
 			}
+			sameY = false;
 		}
 		else {
 			up_down = Math.floor(Math.random()*3-1);
@@ -41,7 +161,7 @@ function genTerrain(x,y,length,angles) {
 		if(up_down) {
 			var maxDY = null;
 			if(up_down>0) {
-				maxDY=yMax-currY; 
+				maxDY= yMax - currY; 
 			}
 			else {
 				maxDY = currY - yMin;
@@ -71,11 +191,22 @@ function genTerrain(x,y,length,angles) {
 	return points;
 }
 
-function renderTerrain(ctx,x,y,length,angles) {
-	var terrPoints = genTerrain(x,y,length,angles);
-	ctx.endPath();
-}
-//var minangl = Math.PI/30,
-//maxangl = Math.PI/2.2;
-//console.log(minangl,maxangl);
-//renderTerrain(g_ctx,[0,600],[0,600],[5,20],[minangl,maxangl]);
+
+
+Terrain.prototype.render = function (ctx) {
+    var terr = this.points
+    ctx.save()
+    ctx.strokeStyle = "white";
+    ctx.fillStyle = "black";
+    ctx.beginPath()
+    ctx.moveTo(terr[0][0],this.maxY +g_canvas.height)
+    ctx.lineTo(terr[0][0],terr[0][1]);
+    for(var i = 1; i < terr.length;i++){
+		ctx.lineTo(terr[i][0],terr[i][1]);
+	}
+    ctx.lineTo(terr[terr.length-1][0],this.maxY + g_canvas.height)
+	ctx.closePath();
+	ctx.stroke();
+    ctx.fill();
+    ctx.restore();
+};

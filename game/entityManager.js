@@ -47,20 +47,21 @@ _generateRocks : function() {
 },
 
 _generateTerrain : function() {
+    
     var sL = g_settings.seaLevel;
     var minangl = Math.PI/30;
     var maxangl = Math.PI/2.2;
-    this._terrainMinY = sL/2;
-    this._terrainMaxY = 300;
-    this._terrain = genTerrain([-10000,10000],[300,sL/2],[1000,2000],[minangl,maxangl]);
-    var startsite = util.findIndexesOfClosestPoints(200,this._terrain);
-    this._terrain[startsite[0]][1] = 200+32;
-    this._terrain[startsite[1]][1] = 200+32;
-    this._terrain[startsite[1]+1][1] = 200+32;
-    this._terrain[startsite[0]-1][1] = 200+32;
-    //this._terrain[startsite[1]][1];
-   //this._terrain = [[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40]]
-   //this._terrain = [[-10000,-10],[-1000,-10],[-500,7+100],[0,sL/2],[500,sL/2],[1000,7+40],[10000,47]]
+    var terr = new Terrain({
+	"minX":-10000,
+	"maxX": 10000,
+	"minY": 300,
+	"maxY": sL/2,
+	"minLength": 1000,
+	"maxLength": 2000,
+	"minAngle": Math.PI/30,
+	"maxAngle": Math.PI/2.2
+	});
+    this._terrain = terr;
 },
 
 getTerrain : function () {
@@ -110,7 +111,7 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._rocks, this._bullets, this._ships];
+    this._categories = [this._rocks, this._bullets, this._ships,this._terrain];
 },
 
 init: function() {
@@ -201,23 +202,6 @@ getMainShip: function() {
     return this._ships[0];
     },
 
-_renderTerrain: function (ctx) {
-	var terr = this._terrain;
-    ctx.save()
-	ctx.strokeStyle = "white";
-    ctx.fillStyle = "black";
-	ctx.beginPath()
-    ctx.moveTo(terr[0][0],this._terrainMinY +g_canvas.height)
-	ctx.lineTo(terr[0][0],terr[0][1]);
-	for(var i = 1; i < terr.length;i++){
-	    ctx.lineTo(terr[i][0],terr[i][1]);
-	    }
-    ctx.lineTo(terr[terr.length-1][0],this._terrainMinY + g_canvas.height)
-	ctx.closePath();
-	ctx.stroke();
-    ctx.fill();
-    ctx.restore();
-    },
 
 render: function(ctx) {
 
@@ -233,7 +217,7 @@ render: function(ctx) {
 	//console.log((s.cx) + " "  + (s.cy));
     }
     Stars.render(ctx);
-    this._renderTerrain(ctx);
+    this._terrain.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];

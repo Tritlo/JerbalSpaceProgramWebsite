@@ -144,6 +144,7 @@ projectionOfPointOnLine: function(x0,y0,x1,y1,p0,p1) {
     return projOfPOnL;
 },
 
+
 normalOfVector: function(a) {
     return [a[1],-1*a[0]];
 },
@@ -184,6 +185,27 @@ lineBelow : function(terrain,x,y) {
     var points = util.findClosestPoints(x,y,terrain);
     return points;
     },
+
+paramsToRectangle: function(x,y,w,h,rot) {
+    if (rot === undefined) rot = 0;
+    var w2 = w/2;
+    var h2 = h/2;
+    var ps = [[x+w2,y+h2],[x-w2,y+h2],[x-w2,y-w2],[x+w2,y-w2]];
+    ps = ps.map(function(p) {
+        p = util.translatePoint(p[0],p[1],x,y);
+        p = util.rotatePoint(p[0],p[1],rot);
+        p = util.translatePoint(p[0],p[1],-x,-y);
+        return p;
+    });
+    return ps;
+},
+translatePoint: function(x,y,tX,tY){
+    return [x-tX,y-tY];
+},
+
+rotatePoint: function (x,y,rot) {
+    return [x*Math.cos(rot)-y*Math.sin(rot), x*Math.sin(rot)+y*Math.cos(rot)];
+},
     
 // CANVAS OPS
 // ==========
@@ -254,6 +276,10 @@ fillBox: function (ctx, x, y, w, h, style) {
     ctx.fillStyle = style;
     ctx.fillRect(x, y, w, h);
     ctx.fillStyle = oldStyle;
+},
+
+strokeBox: function (ctx, x, y, w, h) {
+    ctx.strokeRect(x, y, w, h);
 },
 
 drawDot: function (ctx,x,y,color){

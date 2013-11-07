@@ -105,7 +105,25 @@ render: function(ctx) {
         //util.strokeCircle(ctx, e.posX, e.posY, e.radius);
 	if (e) {
 	    var pos = e.getPos()
+        if (g_settings.hitBox){
+            ctx.save();
+            ctx.translate(pos.posX,pos.posY);
+            ctx.rotate(e.rotation);
+            ctx.translate(-pos.posX,-pos.posY);
+            util.strokeBox(ctx, pos.posX-e.width/2, pos.posY-e.height/2, e.width, e.height);
+            ctx.restore();
+            ctx.strokeStyle = "blue";
+            var hitBox = util.paramsToRectangle(pos.posX,pos.posY,e.width,e.height,e.rotation);
+            ctx.beginPath();
+            ctx.moveTo(hitBox[0][0],hitBox[0][1]);
+            for(var i = 1; i < hitBox.length;i++){
+                ctx.lineTo(hitBox[i][0],hitBox[i][1])
+            }
+            ctx.closePath();
+            ctx.stroke();
+        } else {
             util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius());
+        }
 	    }
     }
     ctx.restore();

@@ -48,6 +48,9 @@ Ship.prototype.launchVel = 2;
 Ship.prototype.numSubSteps = 1;
 Ship.prototype._explosionFrame = 0;
 Ship.prototype._explosionDuration = 0;
+Ship.prototype._timeFromExplosion = 0;
+Ship.prototype._explosionRadius = 0;
+Ship.prototype._explCraterAdded = false;
 Ship.prototype._isExploding = false;
 Ship.prototype.throttle = 0;
 Ship.prototype.thrust = 0;
@@ -130,22 +133,53 @@ Ship.prototype.getAltitude = function () {
     return -(this.cy - g_settings.seaLevel/2 + this.height/2);
     }
 
-Ship.prototype._updateExplosion = function (du) {
-    this._explosionDuration += du;
+Ship.prototype._updateSpriteExplosion = function (du) {
     var explSpr = g_sprites.explosion;
     var numframes = explSpr.dim[0]*explSpr.dim[1];
-    var frame = Math.floor(numframes * this._explosionDuration/explSpr.duration);
+    var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
+    if(this._timeFromExplosion > explSpr.duration/15 && !(this._explCraterAdded)){
+	    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius);
+        this._explCraterAdded = true;
+    }
     if (frame <= numframes){
 	this._explosionFrame = frame;
         return 0;
-	}
-    else {
+    } else {
 	this._isExploding = false;
-	this._explosionDuration = 0;
+	this._timeFromExplosion = 0;
+	this._explCraterAdded = false;
 	createInitialShips();
 	return entityManager.KILL_ME_NOW;
-	}
     }
+    
+}
+
+Ship.prototype._updateVectorExplosion = function (du){
+    if(this._timeFromExplosion > this._explosionDuration/2 && !(this._explCraterAdded)){
+	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius);
+        this._explCraterAdded = true;
+    }
+    if (this._timeFromExplosion > this._explosionDuration){
+	this._isExploding = false;
+	this._explosionDuration = 0;
+	this._timeFromExplosion = 0;
+	this._explosionRadius = 0;
+	this._explCraterAdded = false;
+	createInitialShips();
+	return entityManager.KILL_ME_NOW;
+    }
+    
+}
+
+Ship.prototype._updateExplosion = function (du) {
+    this._timeFromExplosion += du;
+    if (g_settings.spriteExplosion){
+	return this._updateSpriteExplosion(du);
+    }
+    else {
+	return this._updateVectorExplosion(du);
+    }
+}
     
     
 Ship.prototype.update = function (du) {
@@ -200,9 +234,19 @@ Ship.prototype.computeSubStep = function (du) {
     //this.wrapPosition();
     
     if (this.thrust === 0 || g_allowMixedActions) {
-        this.updateRotation(du);
+        var rotation = this.computeRotation(du);
+        this.applyRotation(rotation,du);
     }
 };
+
+Ship.prototype.applyRotation = function(rotation,du) {
+    var oldRot = this.rotation;
+    var newRot = rotation;
+    var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
+    if (!(terrainHit[0])){
+        this.rotation = newRot;
+    }
+}
 
 var NOMINAL_GRAVITY = 0.02;
 
@@ -251,7 +295,13 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     
     // bounce
     if (g_settings.useGravity) {
-	var terrainHit = this.terrainHit(this.cx,this.cy,nextX,nextY)
+        if (g_settings.hitBox){
+            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+                    this.getRadius(),this.width,this.height,this.rotation);
+        } else {
+            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+                    this.getRadius());
+        }
 	if (terrainHit[0]) {
 	    var collisionSpeed = terrainHit[1];
 	    var collisionAngle = terrainHit[2];
@@ -266,7 +316,8 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
 		}
 	    if (collisionSpeed > g_settings.maxSafeSpeed || Math.abs(this.rotation-collisionAngle)>g_settings.maxSafeAngle)
 		{
-		    this._isExploding = true;
+		    this.explode(this.cx,this.cy,collisionSpeed);
+		    
 		    }
         }
     }
@@ -276,30 +327,18 @@ Ship.prototype.applyAccel = function (accelX, accelY, du) {
     this.cy += du * intervalVelY;
 };
 
-Ship.prototype.terrainHit = function(prevX,prevY,nextX,nextY) {
-    var points = util.lineBelow(entityManager.getTerrain(),nextX,nextY);
-    var x0 = points[0][0]; var y0 = points[0][1];
-    var x1 = points[1][0]; var y1 = points[1][1];
-    //If I'm not between the lines height points, don't consider it.
-    if (! (util.isBetween(nextY,Math.min(y0,y1)-this.getRadius(),Math.max(y0,y1)+this.getRadius()))){
-	return [false];
-	}
-    
-    var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
-    var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
-    var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
-    if ((nextDist <= this.getRadius()) ||  (prevSign != nextSign)){
-	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
-	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
-	var lN = util.lineNormal(x0,y0,x1,y1);
-	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
-	return [true,collisionSpeed,collisionAngle];
-	}
-    else {
-	return [false];
-	}
-    }
 
+Ship.prototype.explode = function(x,y,speed){
+	this._isExploding = true;
+    var radius = this.getRadius();
+	var explRadius = radius + radius*speed/15 + (this.fuel/750)*radius;
+    this._explosionRadius = explRadius;
+    this._explosionX = x;
+    this._explosionY = y;
+    //this._explosionDuration = explRadius;
+    this._explosionDuration = 36;
+}
+    
 
 Ship.prototype.land = function(prevX,prevY) {
     this.cx = prevX
@@ -361,49 +400,79 @@ Ship.prototype.halt = function () {
 
 var NOMINAL_ROTATE_RATE = 0.1;
 
-Ship.prototype.updateRotation = function (du) {
+Ship.prototype.computeRotation = function (du) {
+    var rotation = this.rotation;
     if (keys[g_settings.keys.KEY_LEFT]) {
-        this.rotation = (this.rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
+        rotation = (rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
     if (keys[g_settings.keys.KEY_RIGHT]) {
-        this.rotation = (this.rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
+        rotation = (rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
     }
+    return rotation;
+
+};
+
+Ship.prototype._renderExplosion = function (ctx) {
+    if (g_settings.spriteExplosion) {
+	this._renderSpriteExplosion(ctx);
+    } else {
+	this._renderVectorExplosion(ctx);
+    }
+};
+
+Ship.prototype._renderVectorExplosion = function (ctx) {
+    ctx.save()
+    ctx.fillStyle = "white";
+    var radRatio = 1-Math.abs(2*this._timeFromExplosion/this._explosionDuration - 1);
+    var radius =  radRatio* this._explosionRadius;
+    util.fillCircle(ctx,this.cx,this.cy+this.getRadius(),radius);
+    ctx.restore();
+    
+};
+
+Ship.prototype._renderSpriteExplosion = function (ctx) {
+    var origSprite = this.sprite
+    this.sprite = g_sprites.explosion;
+    var origScale = this.sprite.scale;
+    // pass my scale into the sprite, for drawing
+    //this.sprite.scale = this._scale;
+    this.sprite.scale = this._scale*this._explosionRadius/32;
+    this.sprite.drawWrappedCentredAt(
+	ctx, this.cx, this.cy+this.getRadius(), this.rotation, this._explosionFrame
+    );
+    this.sprite.scale = origScale;
+    this.sprite = origSprite;
+};
+
+Ship.prototype._renderSprite = function (ctx) {
+    var origScale = this.sprite.scale;
+    // pass my scale into the sprite, for drawing
+    ctx.save()
+    var x = this.cx;
+    var y = this.cy;
+    var w = this.width;
+    var h = this.height;
+    var t = this.thrust/this.maxThrust;
+    var rot = this.rotation;
+    ctx.closePath();
+    ctx.strokeStyle = "yellow";
+    util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
+    ctx.strokeStyle = "red";
+    util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
+    ctx.restore()
+    this.sprite.scale = this._scale;
+    this.sprite.drawWrappedCentredAt(
+	ctx, this.cx, this.cy, this.rotation
+    );
+    this.sprite.scale = origScale;
 };
 
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){
-	var origSprite = this.sprite
-	this.sprite = g_sprites.explosion;
-	var origScale = this.sprite.scale;
-	// pass my scale into the sprite, for drawing
-	this.sprite.scale = this._scale;
-	this.sprite.drawWrappedCentredAt(
-	    ctx, this.cx, this.cy, this.rotation, this._explosionFrame
-	);
-	this.sprite.scale = origScale;
-	this.sprite = origSprite;
+	this._renderExplosion(ctx);
     } else {
-	var origScale = this.sprite.scale;
-	// pass my scale into the sprite, for drawing
-	ctx.save()
-	var x = this.cx;
-	var y = this.cy;
-	var w = this.width;
-	var h = this.height;
-	var t = this.thrust/this.maxThrust;
-	var rot = this.rotation;
-	ctx.closePath();
-	ctx.strokeStyle = "yellow";
-	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
-	ctx.strokeStyle = "red";
-	util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
-	ctx.restore()
-	this.sprite.scale = this._scale;
-	this.sprite.drawWrappedCentredAt(
-	    ctx, this.cx, this.cy, this.rotation
-	);
-	this.sprite.scale = origScale;
-	}
+	this._renderSprite(ctx);
+    }
 	
     
 };
