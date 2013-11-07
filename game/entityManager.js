@@ -217,6 +217,7 @@ render: function(ctx) {
 	//console.log((s.cx) + " "  + (s.cy));
     }
     Stars.render(ctx);
+    this._terrain.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
@@ -233,7 +234,6 @@ render: function(ctx) {
         }
         debugY += 10;
     }
-    this._terrain.render(ctx);
     ctx.restore();
 },
 
