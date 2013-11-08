@@ -157,6 +157,9 @@ lengthOfVector: function(a) {
     return Math.sqrt(util.dotProd(a,a));
 },
 
+angleOfVector: function(a) {
+    return Math.atan(a[1],a[0]);
+}, 
 angleBetweenVectors: function(a,b) {
     var dPScaled = util.dotProd(a,b)/(util.lengthOfVector(a)*util.lengthOfVector(b));
     return Math.acos(dPScaled);
@@ -206,7 +209,29 @@ translatePoint: function(x,y,tX,tY){
 rotatePoint: function (x,y,rot) {
     return [x*Math.cos(rot)-y*Math.sin(rot), x*Math.sin(rot)+y*Math.cos(rot)];
 },
+
+polarToCartesian: function(vector) {
+    return [vector[0]*Math.cos(vector[1]), vector[1]*Math.sin(vector[1])];
+},
+
+mulVecByScalar: function(scalar,vector){
+    return [scalar*vector[0],scalar*vector[1]];
+},
+
+vecPlus: function(a,b) {
+    return [a[0]+b[0], a[1]+b[1]]
+    },
     
+vecMinus: function(a,b) {
+    return [a[0]-b[0], a[1]-b[1]]
+    },
+    
+
+cartesianToPolar: function(vector) {
+    var ampl = util.lengthOfVector(vector);
+    var angle = util.angleOfVector(vector);
+    return [ampl,angle];
+},
 // CANVAS OPS
 // ==========
 
