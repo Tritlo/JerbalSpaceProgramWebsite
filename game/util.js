@@ -158,7 +158,7 @@ lengthOfVector: function(a) {
 },
 
 angleOfVector: function(a) {
-    return Math.atan(a[1],a[0]);
+    return Math.atan(a[1]/a[0]);
 }, 
 angleBetweenVectors: function(a,b) {
     var dPScaled = util.dotProd(a,b)/(util.lengthOfVector(a)*util.lengthOfVector(b));
@@ -211,7 +211,7 @@ rotatePoint: function (x,y,rot) {
 },
 
 polarToCartesian: function(vector) {
-    return [vector[0]*Math.cos(vector[1]), vector[1]*Math.sin(vector[1])];
+	return [vector[0]*Math.cos(vector[1]), vector[0]*Math.sin(vector[1])];
 },
 
 mulVecByScalar: function(scalar,vector){
@@ -220,6 +220,11 @@ mulVecByScalar: function(scalar,vector){
 
 vecPlus: function(a,b) {
     return [a[0]+b[0], a[1]+b[1]]
+    },
+
+rotateVector: function(a,rot){
+    var pol = util.cartesianToPolar(a);
+    return util.polarToCartesian([pol[0],pol[1]+rot]);
     },
     
 vecMinus: function(a,b) {
