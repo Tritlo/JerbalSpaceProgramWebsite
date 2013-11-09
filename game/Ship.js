@@ -243,10 +243,10 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
     this.angularVel += angularAccel*du;
     var newAngVel = this.angularVel;
     var intervalAngularVel = (oldAngVel + newAngVel)/2;
-    var newRot = this.rotation + intervalAngularVel*du;
+    var newRot = (this.rotation + intervalAngularVel*du)%(2*Math.PI);
     var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
     if (!(terrainHit[0])){
-        this.rotation = newRot % 2*Math.PI;
+        this.rotation = newRot;
     }
 };
 
