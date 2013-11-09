@@ -176,30 +176,34 @@ toggleRocks: function() {
 
 
 updateCamera: function () {
+    
+
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMIN]) {
-	this.cameraZoom += 0.1;
+	this.cameraZoom *= g_settings.cameraZoomRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMOUT]) {
-	this.cameraZoom -= 0.1;
-	this.cameraZoom = this.cameraZoom < 0.1 ? 0.1 : this.cameraZoom;
+	this.cameraZoom /= g_settings.cameraZoomRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
-	this.cameraRotation -= Math.PI/50
+	this.cameraRotation += g_settings.cameraRotateRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
-	this.cameraRotation += Math.PI/50
+	this.cameraRotation -= g_settings.cameraRotateRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_UP]) {
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([0,10/this.cameraZoom], -this.cameraRotation));
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_DOWN]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([0,-10/this.cameraZoom],-this.cameraRotation));
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
+	//this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([0,-10/this.cameraZoom],-this.cameraRotation));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_LEFT]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([-10/this.cameraZoom,0],-this.cameraRotation));
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
+	//this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([-10/this.cameraZoom,0],-this.cameraRotation));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_RIGHT]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([10/this.cameraZoom,0], -this.cameraRotation));
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
+	//this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([10/this.cameraZoom,0], -this.cameraRotation));
     }
     if (keys[g_settings.keys.KEY_CAMERA_RESET]) {
 	this.cameraOffset = [0,0]

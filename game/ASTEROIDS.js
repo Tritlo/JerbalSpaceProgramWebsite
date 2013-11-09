@@ -73,45 +73,48 @@ var g_useAveVel = true;
 var g_settings = {
           "useGravity": true,
           "useAveVel": true,
-	      "renderSpatialDebug":false,
+          "renderSpatialDebug":false,
           "hitBox": true,
           "spriteExplosion": true,
+          "cameraMoveRate": 10,
+          "cameraZoomRate": 1.1,
+          "cameraRotateRate" : Math.PI/50,
           "enableDebug" : false,
-		  "allowMixedActions": true,
-		  "enableRocks": false,
-		  "minLandingSpeed": 1.4,
-		  "minFrictSpeed": 0.1,
-		  "maxSafeSpeed" : 3,
-		  "maxSafeAngle" 	: 1,
-		  "hudSize": 1.5,
-                  "hudExtra": "",
-		  "hudColor": "lime",
-		  "pixelToMeterConstant": 0.08125,
+          "allowMixedActions": true,
+          "enableRocks": false,
+          "minLandingSpeed": 1.4,
+          "minFrictSpeed": 0.1,
+          "maxSafeSpeed" : 3,
+          "maxSafeAngle"    : 1,
+          "hudSize": 1.5,
+          "hudExtra": "",
+          "hudColor": "lime",
+          "pixelToMeterConstant": 0.08125,
           "doClear" : true,
           "doBox" : false,
           "undoBox" : false,
           "doFlipFlop" : false,
           "doRender" : true,
-		  "keys": {
-		      "KEY_THRUST": keyCode('W'),
-		      "KEY_RETRO": keyCode('S'),
-		      "KEY_KILLTHROTTLE": keyCode('E'),
-		      "KEY_LEFT": keyCode('A'),
-		      "KEY_RIGHT": keyCode('D'),
-			"KEY_TOGGLE_DEBUG": keyCode('B'),
-			"KEY_QUIT" : keyCode('Q'),
-			"KEY_PAUSE" :  keyCode('P'),
-			"KEY_STEP" :  keyCode('O'),
-			"KEY_CAMERA_RESET" : keyCode('N'),
-			"KEY_CAMERA_UP" : keyCode('I'),
-			"KEY_CAMERA_DOWN" : keyCode('K'),
-			"KEY_CAMERA_LEFT" : keyCode('L'),
-			"KEY_CAMERA_RIGHT" : keyCode('J'),
-			"KEY_CAMERA_ROTATE_CLOCKWISE" : keyCode('O'),
-			"KEY_CAMERA_ROTATE_COUNTERCLOCKWISE" : keyCode('U'),
-			"KEY_CAMERA_ZOOMIN" : keyCode('0'),
-			"KEY_CAMERA_ZOOMOUT" : keyCode('9')
-		      },
+          "keys": {
+              "KEY_THRUST": keyCode('W'),
+              "KEY_RETRO": keyCode('S'),
+              "KEY_KILLTHROTTLE": keyCode('E'),
+              "KEY_LEFT": keyCode('A'),
+              "KEY_RIGHT": keyCode('D'),
+            "KEY_TOGGLE_DEBUG": keyCode('B'),
+            "KEY_QUIT" : keyCode('Q'),
+            "KEY_PAUSE" :  keyCode('P'),
+            "KEY_STEP" :  keyCode('O'),
+            "KEY_CAMERA_RESET" : keyCode('N'),
+            "KEY_CAMERA_UP" : keyCode('K'),
+            "KEY_CAMERA_DOWN" : keyCode('J'),
+            "KEY_CAMERA_LEFT" : keyCode('H'),
+            "KEY_CAMERA_RIGHT" : keyCode('L'),
+            "KEY_CAMERA_ROTATE_CLOCKWISE" : keyCode('U'),
+            "KEY_CAMERA_ROTATE_COUNTERCLOCKWISE" : keyCode('I'),
+            "KEY_CAMERA_ZOOMIN" : keyCode('9'),
+            "KEY_CAMERA_ZOOMOUT" : keyCode('8')
+              },
           "debugKeys" : {
               "KEY_GRAVITY" : keyCode('G'),
               "KEY_AVE_VEL": keyCode('V'),
@@ -130,8 +133,8 @@ var g_settings = {
               "KEY_TOGGLE_RENDER"   : keyCode('R')
 
             },
-		  "seaLevel": g_canvas.height*2
-		 };
+          "seaLevel": g_canvas.height*2
+         };
 
 
 function processDiagnostics() {
@@ -206,13 +209,13 @@ var g_images = {};
 function requestPreloads() {
 
     var requiredImages = {
-	ship : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship.png",
-	ship2 : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship_2.png",
-	shipOld : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship_old.png",
-	rock : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/rock.png",
-	explosion : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/explosion.png",
-	lunarLander : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/lunarLander.png"
-	
+    ship : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship.png",
+    ship2 : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship_2.png",
+    shipOld : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/ship_old.png",
+    rock : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/rock.png",
+    explosion : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/explosion.png",
+    lunarLander : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/lunarLander.png"
+    
     };
 
     imagesPreload(requiredImages, g_images, preloadDone);
