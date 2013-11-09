@@ -55,7 +55,6 @@ function gatherInputs() {
 
 function updateSimulation(du) {
     
-    processDiagnostics();
     
     entityManager.update(du);
 
@@ -113,7 +112,8 @@ var g_settings = {
             "KEY_CAMERA_ROTATE_CLOCKWISE" : keyCode('U'),
             "KEY_CAMERA_ROTATE_COUNTERCLOCKWISE" : keyCode('I'),
             "KEY_CAMERA_ZOOMIN" : keyCode('9'),
-            "KEY_CAMERA_ZOOMOUT" : keyCode('8')
+            "KEY_CAMERA_ZOOMOUT" : keyCode('8'),
+            "KEY_CAMERA_LOCK" : keyCode('Y')
               },
           "debugKeys" : {
               "KEY_GRAVITY" : keyCode('G'),
@@ -171,8 +171,8 @@ function processDiagnostics() {
             sprite : g_sprites.ship2
             });
 
-        if (eatKey(g_settings.debugKeys.KEY_K)) entityManager.killNearestShip(
-            g_mouseX, g_mouseY);
+        //if (eatKey(g_settings.debugKeys.KEY_K)) entityManager.killNearestShip(
+        //    g_mouseX, g_mouseY);
     }
 }
 

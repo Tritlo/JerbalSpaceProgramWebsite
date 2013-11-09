@@ -38,11 +38,11 @@ _bShowRocks : true,
 
 cameraOffset: [0,0],
 mouseOffset: [0,0],
-
-// "PRIVATE" METHODS
 cameraRotation: 0,
 cameraZoom: 1,
+lockCamera: false,
 
+// "PRIVATE" METHODS
 _generateRocks : function() {
     var i,
         NUM_ROCKS = 4;
@@ -177,7 +177,9 @@ toggleRocks: function() {
 
 updateCamera: function () {
     
-
+    if (eatKey(g_settings.keys.KEY_CAMERA_LOCK)) {
+        this.lockCamera = !this.lockCamera;
+    }
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMIN]) {
 	this.cameraZoom *= g_settings.cameraZoomRate;
     }
@@ -195,27 +197,24 @@ updateCamera: function () {
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_DOWN]) {				     
 	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
-	//this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([0,-10/this.cameraZoom],-this.cameraRotation));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_LEFT]) {				     
 	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
-	//this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([-10/this.cameraZoom,0],-this.cameraRotation));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_RIGHT]) {				     
 	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
-	//this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([10/this.cameraZoom,0], -this.cameraRotation));
     }
     if (keys[g_settings.keys.KEY_CAMERA_RESET]) {
 	this.cameraOffset = [0,0]
 	this.cameraRotation = 0;
 	this.cameraZoom = 1;
+    this.lockCamera = false;
 	}
     
 },
 
 update: function(du) {
 
-    this.updateCamera();
 
     for (var c = 0; c < this._categories.length; ++c) {
 
@@ -250,13 +249,14 @@ getMainShip: function() {
 
 
 render: function(ctx) {
-
-
+    this.updateCamera();
     var debugX = 10, debugY = 100;
     ctx.save();
     if(this._ships[0]){
         var s = this._ships[0];
-	this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2]
+    if(!this.lockCamera){    
+        this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2];
+    }
 	this.trueOffset = util.vecPlus(this.offset,this.cameraOffset);
 	this.trueOffset = util.vecPlus(this.trueOffset,util.rotateVector(util.mulVecByScalar(1/this.cameraZoom,this.mouseOffset),-this.cameraRotation));
         //ctx.translate(-this.trueOffset[0],-this.trueOffset[1]);

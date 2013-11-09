@@ -29,7 +29,6 @@ function handleMouseMove(evt) {
 	g_mouse = [evt.clientX - g_canvas.offsetLeft,evt.clientY - g_canvas.offsetTop];
 	entityManager.mouseOffset = util.vecMinus(g_mouse,g_mouseClick);
 
-						      //util.rotateVector(util.mulVecByScalar(1/entityManager.cameraZoom,this.mouseOffset),entityManager.cameraRotation))
 	
 	}
     
