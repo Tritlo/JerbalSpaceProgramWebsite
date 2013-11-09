@@ -35,10 +35,11 @@ _terrain : [],
 
 _bShowRocks : true,
 
-// "PRIVATE" METHODS
 
 cameraOffset: [0,0],
+mouseOffset: [0,0],
 
+// "PRIVATE" METHODS
 cameraRotation: 0,
 cameraZoom: 1,
 
@@ -173,6 +174,7 @@ toggleRocks: function() {
     this._bShowRocks = !this._bShowRocks;
 },
 
+
 updateCamera: function () {
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMIN]) {
 	this.cameraZoom += 0.1;
@@ -252,6 +254,7 @@ render: function(ctx) {
         var s = this._ships[0];
 	this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2]
 	this.trueOffset = util.vecPlus(this.offset,this.cameraOffset);
+	this.trueOffset = util.vecPlus(this.trueOffset,util.rotateVector(util.mulVecByScalar(1/this.cameraZoom,this.mouseOffset),-this.cameraRotation));
         //ctx.translate(-this.trueOffset[0],-this.trueOffset[1]);
 	ctx.translate(g_canvas.width/2,g_canvas.height/2);
 	ctx.rotate(this.cameraRotation);
