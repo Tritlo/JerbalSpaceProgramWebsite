@@ -451,7 +451,7 @@ Ship.prototype._renderSpriteExplosion = function (ctx) {
     // pass my scale into the sprite, for drawing
     //this.sprite.scale = this._scale;
     this.sprite.scale = this._scale*this._explosionRadius/32;
-    this.sprite.drawWrappedCentredAt(
+    this.sprite.drawCentredAt(
 	ctx, this.cx, this.cy+this.getRadius(), this.rotation, this._explosionFrame
     );
     this.sprite.scale = origScale;
@@ -475,7 +475,7 @@ Ship.prototype._renderSprite = function (ctx) {
     util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
     ctx.restore()
     this.sprite.scale = this._scale;
-    this.sprite.drawWrappedCentredAt(
+    this.sprite.drawCentredAt(
 	ctx, this.cx, this.cy, this.rotation
     );
     this.sprite.scale = origScale;

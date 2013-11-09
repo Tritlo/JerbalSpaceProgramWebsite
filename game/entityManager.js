@@ -37,6 +37,11 @@ _bShowRocks : true,
 
 // "PRIVATE" METHODS
 
+cameraOffset: [0,0],
+
+cameraRotation: 0,
+cameraZoom: 1,
+
 _generateRocks : function() {
     var i,
         NUM_ROCKS = 4;
@@ -168,8 +173,43 @@ toggleRocks: function() {
     this._bShowRocks = !this._bShowRocks;
 },
 
+updateCamera: function () {
+    if (keys[g_settings.keys.KEY_CAMERA_ZOOMIN]) {
+	this.cameraZoom += 0.1;
+    }
+    if (keys[g_settings.keys.KEY_CAMERA_ZOOMOUT]) {
+	this.cameraZoom -= 0.1;
+	this.cameraZoom = this.cameraZoom < 0.1 ? 0.1 : this.cameraZoom;
+    }
+    if (keys[g_settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
+	this.cameraRotation -= Math.PI/50
+    }
+    if (keys[g_settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
+	this.cameraRotation += Math.PI/50
+    }
+    if (keys[g_settings.keys.KEY_CAMERA_UP]) {
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([0,10/this.cameraZoom], -this.cameraRotation));
+    }										     
+    if (keys[g_settings.keys.KEY_CAMERA_DOWN]) {				     
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([0,-10/this.cameraZoom],-this.cameraRotation));
+    }										     
+    if (keys[g_settings.keys.KEY_CAMERA_LEFT]) {				     
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([-10/this.cameraZoom,0],-this.cameraRotation));
+    }										     
+    if (keys[g_settings.keys.KEY_CAMERA_RIGHT]) {				     
+	this.cameraOffset = util.vecPlus(this.cameraOffset,util.rotateVector([10/this.cameraZoom,0], -this.cameraRotation));
+    }
+    if (keys[g_settings.keys.KEY_CAMERA_RESET]) {
+	this.cameraOffset = [0,0]
+	this.cameraRotation = 0;
+	this.cameraZoom = 1;
+	}
+    
+},
 
 update: function(du) {
+
+    this.updateCamera();
 
     for (var c = 0; c < this._categories.length; ++c) {
 
@@ -210,10 +250,14 @@ render: function(ctx) {
     ctx.save();
     if(this._ships[0]){
         var s = this._ships[0];
-	//virkar ekki, reyndu t.d. ad kveikja a collsiion,
-	//sem a ad teikna hring a skipinu, en gerir thad ekki.
 	this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2]
-        ctx.translate(this.offset[0],this.offset[1]); 
+	this.trueOffset = util.vecPlus(this.offset,this.cameraOffset);
+        //ctx.translate(-this.trueOffset[0],-this.trueOffset[1]);
+	ctx.translate(g_canvas.width/2,g_canvas.height/2);
+	ctx.rotate(this.cameraRotation);
+	ctx.scale(this.cameraZoom,this.cameraZoom);
+	ctx.translate(-g_canvas.width/2,-g_canvas.height/2);
+        ctx.translate(this.trueOffset[0],this.trueOffset[1]);
 	//console.log((s.cx) + " "  + (s.cy));
     }
     Stars.render(ctx);

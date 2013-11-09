@@ -158,7 +158,7 @@ lengthOfVector: function(a) {
 },
 
 angleOfVector: function(a) {
-    return Math.atan(a[1]/a[0]);
+    return Math.atan2(a[1],a[0]);
 }, 
 angleBetweenVectors: function(a,b) {
     var dPScaled = util.dotProd(a,b)/(util.lengthOfVector(a)*util.lengthOfVector(b));
