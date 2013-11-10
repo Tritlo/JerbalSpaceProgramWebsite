@@ -95,7 +95,7 @@ render: function(ctx) {
     ctx.strokeStyle = "red";
     if(entityManager.getMainShip()){
         var s = entityManager.getMainShip();
-        ctx.translate(entityManager.offset[0],entityManager.offset[1]); 
+        ctx.translate(entityManager.trueOffset[0],entityManager.trueOffset[1]); 
 	//console.log((s.cx) + " "  + (s.cy));
     }
 
@@ -107,22 +107,18 @@ render: function(ctx) {
 	    var pos = e.getPos()
         if (g_settings.hitBox){
             ctx.save();
-            ctx.translate(pos.posX,pos.posY);
+            ctx.translate(pos.posX-entityManager.cameraOffset[0],pos.posY-entityManager.cameraOffset[1]);
             ctx.rotate(e.rotation);
-            ctx.translate(-pos.posX,-pos.posY);
-            util.strokeBox(ctx, pos.posX-e.width/2, pos.posY-e.height/2, e.width, e.height);
+            ctx.rotate(entityManager.cameraRotation);
+            ctx.translate(-pos.posX+entityManager.cameraOffset[0],-pos.posY+entityManager.cameraOffset[1]);
+            //ctx.translate(-pos.posX,-pos.posY);
+            var w = e.width*entityManager.cameraZoom;
+            var h = e.height*entityManager.cameraZoom;
+            util.strokeBox(ctx, pos.posX-w/2, pos.posY-h/2, w, h);
             ctx.restore();
-            ctx.strokeStyle = "blue";
-            var hitBox = util.paramsToRectangle(pos.posX,pos.posY,e.width,e.height,e.rotation);
-            ctx.beginPath();
-            ctx.moveTo(hitBox[0][0],hitBox[0][1]);
-            for(var i = 1; i < hitBox.length;i++){
-                ctx.lineTo(hitBox[i][0],hitBox[i][1])
-            }
-            ctx.closePath();
             ctx.stroke();
         } else {
-            util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius());
+            util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius()*entityManager.cameraZoom);
         }
 	    }
     }

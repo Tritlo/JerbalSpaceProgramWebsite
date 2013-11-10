@@ -107,7 +107,10 @@ main._doTimerShow = false;
 main._debugRender = function (ctx) {
     
     if (eatKey(TOGGLE_TIMER_SHOW)) this._doTimerShow = !this._doTimerShow;
-    
+    //We have to be able to turn on and off debug
+    //while paused
+    processDiagnostics();
+
     if (!this._doTimerShow) return;
     
     var y = 350;
@@ -122,7 +125,7 @@ main.init = function () {
     // Grabbing focus is good, but it sometimes screws up jsfiddle,
     // so it's a risky option during "development"
     //
-    //window.focus(true);
+    window.focus(true);
 
     // We'll be working on a black background here,
     // so let's use a fillStyle which works against that...
