@@ -62,8 +62,8 @@ _generateTerrain : function() {
 	"maxX": 10000,
 	"minY": 300,
 	"maxY": sL/2,
-	"minLength": 1000,
-	"maxLength": 2000,
+	"minLength": 32,
+	"maxLength": 256,
 	"minAngle": Math.PI/30,
 	"maxAngle": Math.PI/2.2
 	});

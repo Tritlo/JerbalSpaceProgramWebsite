@@ -133,13 +133,10 @@ Terrain.prototype.genTerrain = function () {
 	maxlen =this.maxLength,
 	minAng =this.minAngle,
 	maxAng =this.maxAngle;
-	var yDiff = yMax-yMin,
-	lenDiff = maxlen-minlen;
-	var y_init = Math.random()*yDiff+yMin;
-	points[0]=[xMin,y_init];
+	var y_init = util.randRange(yMin,yMax);
 	var currX = xMin,
 		currY = y_init;
-	//console.log(currX,currY);
+	points[0]=[currX,currY];
 	var sameY = Math.floor(Math.random()*2),
 	up_down = 0;
 	while(currX < xMax) {
@@ -154,11 +151,16 @@ Terrain.prototype.genTerrain = function () {
 		}
 		else {
 			up_down = Math.floor(Math.random()*3-1);
+			if(up_down === 0) {
+				sameY = true;
+			}
 		}
-		//console.log(up_down);
+		if(currY > yMax || currY < yMin) {
+			up_down = util.sign(yMax - currY);
+		}
+		console.log(up_down);
 		var len = null;
-		var angle = up_down*(minAng+Math.random()*(maxAng-minAng));
-		//console.log(angle);
+		var angle = util.randRange(minAng,maxAng);
 		if(up_down) {
 			var maxDY = null;
 			if(up_down>0) {
@@ -167,27 +169,23 @@ Terrain.prototype.genTerrain = function () {
 			else {
 				maxDY = currY - yMin;
 			}
-			//console.log(maxDY);
-			var maxL = Math.pow((maxDY)/(Math.sin(angle)),2);
-			//console.log(maxL);
+			var maxL = maxDY/Math.sin(angle);
 			if (maxL<minlen) {
-				len = maxL;
+				len = minlen;
 			}
 			else {
-				len = minlen+Math.random()*(Math.min(maxlen,maxL)-minlen);
+				len = util.randRange(minlen,Math.min(maxlen,maxL));
 			}
 		}
 		else {
-			len = minlen+Math.random()*(maxlen-minlen);
+			len = util.randRange(minlen,maxlen);
 		}
-		//console.log(minlen);	
-		var rootlen = Math.sqrt(len);
-		var nextX = Math.min(xMax,currX+rootlen*Math.cos(angle));
-		var nextY = currY+rootlen*Math.sin(angle);	
+		angle = up_down*angle;
+		var nextX = Math.min(xMax,currX+len*Math.cos(angle));
+		var nextY = currY+len*Math.sin(angle);	
 		points.push([nextX,nextY]);
 		currX = nextX;
 		currY = nextY;
-		//console.log(currY,currX);
 	}
 	return points;
 }
