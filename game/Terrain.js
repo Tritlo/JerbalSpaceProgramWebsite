@@ -158,7 +158,6 @@ Terrain.prototype.genTerrain = function () {
 		if(currY > yMax || currY < yMin) {
 			up_down = util.sign(yMax - currY);
 		}
-		console.log(up_down);
 		var len = null;
 		var angle = util.randRange(minAng,maxAng);
 		if(up_down) {
