@@ -58,6 +58,9 @@ Ship.prototype.thrust = 0;
 Ship.prototype.fuel = 500;
 Ship.prototype.efficiency = 1;
 Ship.prototype.maxThrust = 0.2;
+Ship.prototype.mass = 1;
+Ship.prototype.angularVel = 0;
+Ship.prototype.torque = 0;
 
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
@@ -215,39 +218,37 @@ Ship.prototype.update = function (du) {
 };
 
 Ship.prototype.computeSubStep = function (du) {
-    
-    this.computeThrustMag();
-    this.fuel -= du*this.thrust/this.efficiency;
-    if (this.fuel <= 0){
-	this.fuel = 0;
-	this.thrust = 0;
-	}
-	
 
+    var accel = this.computeForces(du);
+    this.applyAccel(accel, du);
+};
+
+Ship.prototype.computeForces = function (du) {
+    this.computeThrustMag(du);
+    this.computeTorqueMag(du);
+    
     // Apply thrust directionally, based on our rotation
+    //TODO: use intervalRot;
     var accelX = +Math.sin(this.rotation) * this.thrust;
     var accelY = -Math.cos(this.rotation) * this.thrust;
     
     accelY += this.computeGravity();
-
-    this.applyAccel(accelX, accelY, du);
+    var accelRot = this.torque/this.mass;
     
-    //this.wrapPosition();
-    
-    if (this.thrust === 0 || g_allowMixedActions) {
-        var rotation = this.computeRotation(du);
-        this.applyRotation(rotation,du);
-    }
+    return [accelX,accelY,accelRot];
 };
 
-Ship.prototype.applyRotation = function(rotation,du) {
-    var oldRot = this.rotation;
-    var newRot = rotation;
+Ship.prototype.applyRotation = function(angularAccel,du) {
+    var oldAngVel = this.angularVel;
+    this.angularVel += angularAccel*du;
+    var newAngVel = this.angularVel;
+    var intervalAngularVel = (oldAngVel + newAngVel)/2;
+    var newRot = (this.rotation + intervalAngularVel*du)%(2*Math.PI);
     var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
     if (!(terrainHit[0])){
         this.rotation = newRot;
     }
-}
+};
 
 var NOMINAL_GRAVITY = 0.02;
 
@@ -256,7 +257,7 @@ Ship.prototype.computeGravity = function () {
 };
 
 
-Ship.prototype.computeThrustMag = function () {
+Ship.prototype.computeThrustMag = function (du) {
     
     if (keys[g_settings.keys.KEY_THRUST]) {
 	this.throttle += this.throttle < 100 ? 1 : 0;
@@ -269,10 +270,20 @@ Ship.prototype.computeThrustMag = function () {
 	}
     
     this.thrust = this.maxThrust*this.throttle/100;
+    this.fuel -= du*this.thrust/this.efficiency;
+    if (this.fuel <= 0){
+	this.fuel = 0;
+	this.thrust = 0;
+	}
     return this.thrust;
 };
 
-Ship.prototype.applyAccel = function (accelX, accelY, du) {
+Ship.prototype.applyAccel = function (accel,du) {
+    var accelX = accel[0];
+    var accelY = accel[1];
+    var accelRot = accel[2];
+
+    this.applyRotation(accelRot,du);
     
     // u = original velocity
     var oldVelX = this.velX;
@@ -347,7 +358,8 @@ Ship.prototype.land = function(prevX,prevY) {
     this.cy = prevY;
     this.velY = 0;
     this.velX = 0;
-    this.applyFriction();
+    this.angularVel = 0;
+    //this.applyFriction();
     }
 
 Ship.prototype.applyFriction = function (){
@@ -401,16 +413,16 @@ Ship.prototype.halt = function () {
 };
 
 var NOMINAL_ROTATE_RATE = 0.1;
+var NOMINAL_TORQUE_RATE = 0.001;
 
-Ship.prototype.computeRotation = function (du) {
-    var rotation = this.rotation;
+Ship.prototype.computeTorqueMag = function (du) {
+    this.torque = 0;
     if (keys[g_settings.keys.KEY_LEFT]) {
-        rotation = (rotation - NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
+	this.torque -= NOMINAL_TORQUE_RATE;
     }
     if (keys[g_settings.keys.KEY_RIGHT]) {
-        rotation = (rotation + NOMINAL_ROTATE_RATE * du)%(2*Math.PI);
+	this.torque += NOMINAL_TORQUE_RATE;
     }
-    return rotation;
 
 };
 

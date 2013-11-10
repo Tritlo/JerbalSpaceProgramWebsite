@@ -23,7 +23,7 @@ function renderLowerHud(ctx,ship){
     //Below
     ctx.translate(translation[0],translation[1]);
     ctx.scale(g_settings.hudSize, g_settings.hudSize);
-    renderGyroscope(ctx,cRad,speed,dirV,ship.rotation);
+    renderGyroscope(ctx,cRad,speed,dirV,ship.rotation,ship.angularVel);
     renderSpeed(ctx,cRad,speed);
     renderThrottle(ctx,cRad,ship.throttle);
     ctx.restore();
@@ -60,7 +60,7 @@ function renderAltitude(ctx,ship,yoffset) {
     ctx.stroke();
     }
 
-function renderGyroscope(ctx,cRad,speed,dirV,rotation){
+function renderGyroscope(ctx,cRad,speed,dirV,rotation,rotVel){
     var distFromC = speed > 5 ? cRad : cRad*speed/5;
     var indicPos = [dirV[0]*distFromC,dirV[1]*distFromC];
     util.strokeCircle(ctx, 0,0, cRad);
@@ -71,8 +71,13 @@ function renderGyroscope(ctx,cRad,speed,dirV,rotation){
 	util.strokeCircle(ctx,0,0,3);
 	}
     drawCross(ctx,[0,0], cRad,0,0,0,false);
-    
     drawCross(ctx,indicPos,3,5,rotation,true);
+    var angleORotInd = Math.abs(rotVel) > 0.05 ? util.sign(rotVel)*Math.PI/2 : (2*Math.PI*rotVel/0.2);
+    var rotCrossPos = util.rotateVector([0,-cRad-3],angleORotInd);
+    drawCross(ctx,
+	      rotCrossPos,
+	      cRad*0.2,3,angleORotInd+Math.PI,true,true);
+    g_settings.hudExtra = " " + angleORotInd;
     ctx.stroke();
     }
 
@@ -105,13 +110,15 @@ function renderThrottle(ctx,cRad,throttle) {
     ctx.stroke();
     }
 
-function drawCross(ctx,cPos,cRad,extra,rotation, skipBottom){
+function drawCross(ctx,cPos,cRad,extra,rotation, skipBottom,onlyLine){
     ctx.save()
     ctx.translate(cPos[0],cPos[1]);
     ctx.rotate(rotation);
     var cE = cRad + extra;
+    if(!onlyLine) {
     ctx.moveTo(-cE,0);
     ctx.lineTo(cE, 0);
+	}
     ctx.moveTo(0,-cE);
     if (skipBottom) {
 	ctx.lineTo(0,0);
