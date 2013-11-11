@@ -147,15 +147,6 @@ lineNormal: function(x0,y0,x1,y1){
 sideOfLine: function(a0,a1,b0,b1,p0,p1) {
     return util.sign( (b0-a0)*(p1-a1) - (b1-a1)*(p0-a0));
 },
-/*
-sideOfLine: function(x0,y0,x1,y1,p0,p1) {
-    var lN = util.lineNormal(x0,y0,x1,y1);
-    var lineV = util.normalOfVector(lN);
-    var projOfPOnLRatio = util.dotProd([p0,p1],lineV)/util.dotProd(lineV,lineV);
-    var projOfPOnL = [projOfPOnLRatio*lineV[0], projOfPOnLRatio*lineV[1]];
-    return util.signOfCrossProduct(lN,projOfPOnL);
-},
-*/
 
 projectionOfPointOnLine: function(x0,y0,x1,y1,p0,p1) {
     var lN = util.lineNormal(x0,y0,x1,y1);
@@ -168,6 +159,11 @@ projectionOfPointOnLine: function(x0,y0,x1,y1,p0,p1) {
 
 normalOfVector: function(a) {
     return [a[1],-1*a[0]];
+},
+
+normalizeVector: function(a) {
+    var len = util.lengthOfVector(a);
+    return util.mulVecByScalar(1/len,a);
 },
 
 dotProd: function(a,b) {
@@ -249,8 +245,10 @@ rotateVector: function(a,rot){
     },
     
 vecMinus: function(a,b) {
-    return [a[0]-b[0], a[1]-b[1]]
-    },
+    console.log(a,b);
+    var vec = [a[0]-b[0],a[1]-b[1]]
+    return vec
+},
     
 
 cartesianToPolar: function(vector) {

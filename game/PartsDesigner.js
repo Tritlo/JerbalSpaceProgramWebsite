@@ -60,14 +60,23 @@ PartsDesigner.prototype.newPart = function () {
     this.currentPart = new Part({
         "stroke" : "lime",
         "lineWidth" : 4,
+	"currentThrust" : 0.2
     });
     }
 
 PartsDesigner.prototype.setFlame = function () {
+    if(this.editing){
+	this.editing = false;
+	this.currentPart.outline.pop();
+	}
+    this.currentPart.currentThrust = this.currentPart.thrust;
+    this.flameSet = false;
+    this.flame = [];
     }
 
 PartsDesigner.prototype.savePart = function () {
     if(this.currentPart){
+	this.currentPart.currentThrust = 0;
 	console.log(this.currentPart);
 	}
     }
@@ -143,9 +152,14 @@ PartsDesigner.prototype.update = function (du) {
 	this.currentPart.name   = $('#in5').val();
 	this.currentPart.mass   = parseFloat($('#in4').val());
 	this.currentPart.fuel   = parseFloat($('#in3').val());
-	this.currentPart.thrust = parseFloat($('#in3').val());
+	this.currentPart.thrust = parseFloat($('#in2').val());
 	this.currentPart.type   = $('#in7').val();
+	
+	if(this.flame && this.flame.length === 3 && !this.flameSet) {
+	    this.currentPart.setFlame(this.flame);
+	    this.flameSet = true;
 	}
+    }
 };
 
 PartsDesigner.prototype.handleMouse = function (evt,type) {
@@ -161,22 +175,28 @@ PartsDesigner.prototype.handleMouse = function (evt,type) {
     if (type === "down") {
         if(evt.button === 0){
             if(this.currentPart) {
-                if(!(this.currentPart.outline)){
-                    this.currentPart.addPoint(this.closestPoint);
-                    this.currentPart.addPoint(this.closestPoint);
-                } else if (!this.editing) {
-                    if(util.inList(this.currentPart.outline,this.closestPoint)){
-                        this.currentPart.rotate(this.closestPoint);
-                        this.currentPart.setLastPoint(this.closestPoint);
-                    }
-                } else {
-                    this.currentPart.addPoint(this.closestPoint);
-                }
-                this.editing = true;
+		if (this.flame && this.flame.length < 3){
+		    this.flame.push(this.closestPoint);
+		} else {
+		    if(!(this.currentPart.outline)){
+			this.currentPart.addPoint(this.closestPoint);
+			this.currentPart.addPoint(this.closestPoint);
+		    } else if (!this.editing) {
+			if(util.inList(this.currentPart.outline,this.closestPoint)){
+			    this.currentPart.rotate(this.closestPoint);
+			    this.currentPart.setLastPoint(this.closestPoint);
+			}
+		    } else {
+			this.currentPart.addPoint(this.closestPoint);
+		    }
+		    this.editing = true;
+		    }
             }
         } else if (evt.button === 2) {
-            this.editing = false;
-            this.currentPart.outline.pop();
+	    if(this.editing){
+		this.editing = false;
+		this.currentPart.outline.pop();
+		}
         }
     } else if (type === "move") {
         if (this.editing && this.currentPart) {
