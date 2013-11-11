@@ -13,7 +13,7 @@ _tooHeavy: false,
 update: function(du){
     this._tooHeavy = entityManager.cameraZoom < 0.3;
     if(this._tooHeavy) return;
-    var os = entityManager.cameraOffset || [100,100];
+    var os = entityManager.trueOffset;
     //console.log("update: " + os);
     var bl = this._posToBlock(os[0],os[1]);
     this._rad=Math.floor(1/(entityManager.cameraZoom*Math.sqrt(2)))+1;
@@ -41,7 +41,7 @@ _maybeGenerateBlock: function(i,j){
 
 render: function(ctx){
     if(this._tooHeavy) return;
-    var os = entityManager.cameraOffset || [100,100];
+    var os = entityManager.trueOffset;
     //console.log("render: " + os);
     var bl = this._posToBlock(os[0],os[1]);
     for(var i = bl[0]-this._rad; i <= bl[0]+this._rad; i++){
@@ -52,6 +52,7 @@ render: function(ctx){
 },
 
 _starTween: function(x,y){
+    if(entityManager.lockCamera) return {x:0,y:0};
     var speed = Math.sqrt(x*x + y*y);
     var angle = Math.atan2(y,x);
     var newSpeed = Math.atan((Math.max(speed-15,0))/600)*650;
