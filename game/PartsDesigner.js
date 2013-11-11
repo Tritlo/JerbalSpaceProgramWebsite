@@ -22,13 +22,20 @@ PartsDesigner.prototype.init = function() {
 		"action" : function (state){
 		    state.savePart();
 		    },
-		    }
+		},
+		{
+		"text": "Set Flame",
+		"action" : function (state){
+		    state.setFlame();
+		    },
+		},
+		
 		
 	    ],
 	    "width" : 100,
 	    "height" : g_canvas.height*2,
 	    "itemHeight" : 25,
-		"location": [55,-g_canvas.height+50]
+		"location": [55,-g_canvas.height+60]
     });
 
     
@@ -56,6 +63,8 @@ PartsDesigner.prototype.newPart = function () {
     });
     }
 
+PartsDesigner.prototype.setFlame = function () {
+    }
 PartsDesigner.prototype.savePart = function () {
     if(this.currentPart){
 	console.log(this.currentPart);
@@ -71,14 +80,14 @@ PartsDesigner.prototype.onActivation = function () {
     $('#in6').show();
     $('#in7').show();
     var canvas_pos = util.findPos(g_canvas);
-    $('#in7').offset({top:canvas_pos.y+100, left: canvas_pos.x});
-    $('#in6').offset({top:canvas_pos.y+150, left: canvas_pos.x});
-    $('#in5').offset({top:canvas_pos.y+200, left: canvas_pos.x});
-    $('#in4').offset({top:canvas_pos.y+250, left: canvas_pos.x});
-    $('#in3').offset({top:canvas_pos.y+300, left: canvas_pos.x});
-    
-    $('#in2').offset({top:canvas_pos.y+350, left: canvas_pos.x});
-    $('#in1').offset({top:canvas_pos.y+400, left: canvas_pos.x});
+    var offsetFromMenu = 50;
+    $('#in7').offset({top:canvas_pos.y + offsetFromMenu+100, left: canvas_pos.x});
+    $('#in6').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x});
+    $('#in5').offset({top:canvas_pos.y + offsetFromMenu+200, left: canvas_pos.x});
+    $('#in4').offset({top:canvas_pos.y + offsetFromMenu+250, left: canvas_pos.x});
+    $('#in3').offset({top:canvas_pos.y + offsetFromMenu+300, left: canvas_pos.x});
+    $('#in2').offset({top:canvas_pos.y + offsetFromMenu+350, left: canvas_pos.x});
+    $('#in1').offset({top:canvas_pos.y + offsetFromMenu+400, left: canvas_pos.x});
     $('#in5').attr("placeholder","Part Name");
     $('#in4').attr("placeholder","Mass");
     $('#in4').get(0).type = "number";
