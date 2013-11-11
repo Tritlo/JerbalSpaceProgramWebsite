@@ -1,14 +1,12 @@
-var Menu = { 
+function Menu(descr) {
+    this.setup(descr);
+};
 
-    "items":  [ {
-            "text": "Start",
-            "location": [g_canvas.width/2,g_canvas.height/2],
-            "hitBox" : false, //Set on render as dependent on measureText
-            "state" : "simulation",
-            "selected" : false
-        }],
+Menu.prototype = new State();
 
-    "render": function(ctx) {
+Menu.prototype.items = [];
+
+Menu.prototype.render = function(ctx) {
         ctx.save();
         ctx.fillStyle = "lime";
         ctx.strokeStyle = "lime";
@@ -18,8 +16,8 @@ var Menu = {
         ctx.font = h+"px Quantico";
         ctx.fillText("JERBAL SPACE PROGRAM", g_canvas.width/2,0);
         ctx.textBaseline = "middle";
-        for(var i = 0; i < Menu.items.length; i++) {
-            var item = Menu.items[i];
+        for(var i = 0; i < this.items.length; i++) {
+            var item = this.items[i];
             var loc = item.location;
             var w = ctx.measureText(item.text).width;
             ctx.fillText(item.text,loc[0],loc[1] );
@@ -32,33 +30,43 @@ var Menu = {
         }
         ctx.stroke();
         ctx.restore();
-    },
+    };
 
 
 
-    "update" : function (du) {
-    },
+Menu.prototype.update = function (du) {
+};
 
-    "handleMouse" : function (evt, type) {
+Menu.prototype.handleMouse = function (evt, type) {
         if (type === "down"){
         } else if (type === "move") {
             var pos = util.findPos(g_canvas);
             g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
-            for (var i = 0; i < Menu.items.length; i++){
-                var item = Menu.items[i];
+            for (var i = 0; i < this.items.length; i++){
+                var item = this.items[i];
                 item.selected = false;
                 if (util.circInBox(g_mouse[0],g_mouse[1],1,item.hitBox[0],item.hitBox[1])) {
                     item.selected = true;
                 }
             }
         } else if (type === "up") {
-            for (var i = 0; i < Menu.items.length; i++){
-                var item = Menu.items[i];
+            for (var i = 0; i < this.items.length; i++){
+                var item = this.items[i];
                 if (item.selected){
                     stateManager.switchState(item.state);
                     break;
                 }
             }
         }
+};
+
+var mainMenu = new Menu({
+    "items": [ {
+	    "text": "Start",
+	    "location": [g_canvas.width/2,g_canvas.height/2],
+	    "hitBox" : false, //Set on render as dependent on measureText
+	    "state" : "mainSimulation",
+	    "selected" : false
+	}]
     }
-}
+);

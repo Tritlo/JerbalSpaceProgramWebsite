@@ -1,40 +1,29 @@
 stateManager = {
-    "currentState": "menu",
-    "updateFuncs" :  {
-        "menu" : Menu.update,
-        "simulation": Simulation.update
-    },
-
-    "states": ["menu","simulation"],
+    "currentState": "mainMenu",
+    "states": { "mainMenu" : mainMenu,
+		"mainSimulation" : mainSimulation
+		},
 
     update: function(du){
-        this.updateFuncs[this.currentState](du);
-    },
-
-    "renderFuncs" : {
-        "menu" : Menu.render,
-        "simulation" : Simulation.render
+        this.states[this.currentState].update(du);
     },
 
     render: function(ctx) {
-        this.renderFuncs[this.currentState](ctx);
+        this.states[this.currentState].render(ctx);
     },
 
-    "handleMouseFuncs" : {
-        "menu" : Menu.handleMouse,
-        "simulation" : Simulation.handleMouse
-    },
     handleMouse : function(evt,type) {
-        this.handleMouseFuncs[this.currentState](evt,type)
+        this.states[this.currentState].handleMouse(evt,type)
     },
 
     switchState : function(state) {
+	var keys = Object.keys(this.states);
         if (state) {
-            if (this.states.indexOf(state) > -1){
+            if (keys.indexOf(state) > -1){
                 this.currentState = state;
             }
         } else {
-            this.currentState = states[ (states.indexOf(currentState) + 1) % states.length];
+            this.currentState = states[ keys[keys.indexOf((currentState) + 1) % keys.length]]
         }
     }
 }
