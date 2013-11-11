@@ -17,6 +17,10 @@ function Menu(descr) {
 
 Menu.prototype = new State();
 
+Menu.prototype.titleHeight = 50;
+Menu.prototype.itemHeight = 25;
+Menu.prototype.margin_bottom = 5;
+
 //Must take in context to compute properties
 Menu.prototype.init = function (ctx) {
     //For computing properties
@@ -24,7 +28,7 @@ Menu.prototype.init = function (ctx) {
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.font = this.itemHeight+"px " +this.font;
-    var offsetFromTitle = this.height - (this.itemHeight + this.margin_bottom)*this.items.length;
+    var offsetFromTitle = this.height/2 - (this.itemHeight + this.margin_bottom)*this.items.length/2;
     ctx.textBaseline = "middle";
     for(var i = 0; i < this.items.length; i++){
         this.items[i] = new MenuItem(this.items[i]);
@@ -35,10 +39,10 @@ Menu.prototype.init = function (ctx) {
         var w = this.items[i].width
         var h = this.itemHeight;
         this.items[i].hitBox = [[loc[0]-w/2,loc[1]-h/2],[loc[0]+w/2,loc[1]+h/2]];
-
     }
     ctx.restore();
 
+    this.hitBox = [[this.location[0] - this.width/2, this.location[1]], [this.location[0]+this.width/2, this.location[1]+this.height]]
     this.initialized = true;
 }
 
@@ -59,8 +63,10 @@ Menu.prototype.render = function(ctx) {
         ctx.strokeStyle = this.stroke;
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
-        ctx.font = this.titleHeight+"px " +this.font;
-        ctx.fillText(this.title, this.location[0],this.location[1],this.width);
+        if(this.title){
+            ctx.font = this.titleHeight+"px " +this.font;
+            ctx.fillText(this.title, this.location[0],this.location[1],this.width);
+        }
         ctx.font = this.itemHeight+"px " +this.font;
         ctx.textBaseline = "middle";
         for(var i = 0; i < this.items.length; i++) {
@@ -73,7 +79,9 @@ Menu.prototype.render = function(ctx) {
                 util.strokeBox(ctx,item.hitBox[0][0],item.hitBox[0][1],w,h);
             }
         }
+        if(g_settings.enableDebug) util.strokeBox(ctx,this.hitBox[0][0],this.hitBox[0][1],this.width,this.height);
         ctx.stroke();
+        ctx.fill();
         ctx.restore();
     };
 
@@ -124,7 +132,7 @@ var mainMenu = new Menu({
     "titleHeight" : 50,
     "itemHeight" : 42,
     "width" : g_canvas.width,
-    "height" : g_canvas.height - g_canvas.height/3,
+    "height" : g_canvas.height,
     "margin_bottom" : 5,
     "onSelected" : function (item) {
          stateManager.switchState(item.state);

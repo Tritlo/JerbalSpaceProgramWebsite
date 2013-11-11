@@ -118,7 +118,7 @@ var g_settings = {
               "KEY_2" : keyCode('2'),
               "KEY_K" : keyCode('K'),
               "KEY_TOGGLE_CLEAR"    : keyCode('C'),
-              "KEY_TOGGLE_BOX"      : keyCode('B'),
+              //"KEY_TOGGLE_BOX"      : keyCode('B'),
               "KEY_TOGGLE_UNDO_BOX" : keyCode('U'),
               "KEY_TOGGLE_FLIPFLOP" : keyCode('F'),
               "KEY_TOGGLE_RENDER"   : keyCode('R')
