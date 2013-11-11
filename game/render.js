@@ -29,7 +29,7 @@ function render(ctx) {
     
     // The core rendering of the actual game / simulation
     //
-    if (g_settings.doRender) renderSimulation(ctx);
+    if (g_settings.doRender)  stateManager.render(ctx);
     
     
     // This flip-flip mechanism illustrates the pattern of alternation

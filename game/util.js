@@ -37,6 +37,27 @@ isBetween: function(value, lowBound, highBound) {
     return true;
 },
 
+circInBox: function (x,y,radius,topLeftCorner,bottomRightCorner){
+    var TLC = topLeftCorner;
+    var BRC = bottomRightCorner;
+    var eTLC = [x-radius, y-radius];
+    var eBRC = [x+radius, y+radius];
+    return ( !(eBRC[1] < TLC[1]) && !(eTLC[1] > BRC[1]) &&
+	     !(eBRC[0] < TLC[0]) && !(eTLC[0] > BRC[0]));
+},
+
+findPos : function(obj) {
+    var curleft = 0, curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+            } while (obj = obj.offsetParent);
+        return { x: curleft, y: curtop };
+    }
+    return undefined;
+},
+
 
 // RANDOMNESS
 // ==========
