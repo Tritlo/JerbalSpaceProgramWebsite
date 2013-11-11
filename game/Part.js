@@ -10,7 +10,10 @@ Part.prototype.setup = function (descr) {
 }
 
 Part.prototype.name = "NO NAME";
-Part.prototype.mass = 0.1;
+Part.prototype.baseMass = 0.1;
+Part.prototype.mass = this.baseMass;
+Part.prototype.thrust = 0;
+Part.prototype.fuel = 0;
 
 //Rotates the outline,
 //so that ind becomes the
@@ -27,6 +30,13 @@ Part.prototype.addPoint = function(pt){
     } else {
         this.outline = [pt];
     }
+    //maybe add to baseMass
+}
+
+Part.prototype.setFuel = function (fl){
+    var fuelMass = 0.01;
+    this.fuel = fl;
+    this.mass = this.baseMass + this.fuel*fuelMass;
 }
 
 Part.prototype.setLastPoint = function (pt) {
@@ -36,6 +46,18 @@ Part.prototype.setLastPoint = function (pt) {
         this.outline = [pt];
     }
 
+}
+
+Part.prototype.finalize = function(){
+    var l = this.outline.length;
+    if(l === 0) return; //maybe some error-handling? I dunno.
+    var x = 0;
+    var y = 0;
+    for(var i = 0; i < l; i++){
+        x += this.outline[i][0];
+	y += this.outline[i][1];
+    }
+    this.centerOfMass = {x: x/l, y: y/l};
 }
 
 Part.prototype.render = function (ctx) {
