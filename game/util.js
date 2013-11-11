@@ -258,6 +258,22 @@ cartesianToPolar: function(vector) {
     var angle = util.angleOfVector(vector);
     return [ampl,angle];
 },
+
+//rotates a list so that element at ind
+//becomes the last element
+rotateList: function(li,ind) {
+    if(li && ind >= 0 && ind < li.length) {
+        var s = li.slice(0,ind+1);
+        var e = li.slice(ind+1,li.length);
+        li = e.concat(s);
+    }
+    return li;
+},
+
+inList: function(li,item) {
+    return (li && (li.indexOf(item) > -1));
+},
+
 // CANVAS OPS
 // ==========
 
@@ -272,12 +288,14 @@ strokeCircle: function (ctx, x, y, r) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.stroke();
+    //ctx.closePath();
 },
 
 fillCircle: function (ctx, x, y, r) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
+    ctx.closePath();
 },
 
 
@@ -308,7 +326,7 @@ drawTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry,strokeNotFill) {
     ctx.moveTo(x0,y0);
     ctx.lineTo(x1,y1);
     ctx.lineTo(x2,y2);
-    ctx.lineTo(x0,y0);
+    ctx.closePath();
     if (strokeNotFill) {
 	ctx.stroke();
     }
