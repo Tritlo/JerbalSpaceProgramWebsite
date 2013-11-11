@@ -65,6 +65,7 @@ PartsDesigner.prototype.newPart = function () {
 
 PartsDesigner.prototype.setFlame = function () {
     }
+
 PartsDesigner.prototype.savePart = function () {
     if(this.currentPart){
 	console.log(this.currentPart);
@@ -103,10 +104,8 @@ PartsDesigner.prototype.onActivation = function () {
     $('#in1').attr("step","0.1");
     $('#in6').val("#00ff00");
     $('#in7').val("Type");
-    //var pseudoPart = new Part();
-    var types = ["Engine", "Fuel Tank", "Other"]
-    //$.each(pseudoPart.types, function (value) {
-    $.each(types, function (key,value) {
+    var pseudoPart = new Part();
+    $.each(pseudoPart.types, function (key,value) {
     $("#in7").append('<option value="'+value+'">'+value+'</option>');});
     
     }
@@ -119,6 +118,7 @@ PartsDesigner.prototype.onDeactivation = function() {
     $('#in5').hide();
     $('#in6').hide();
     }
+
 PartsDesigner.prototype.render = function(ctx) {
     this.menu.render(ctx);
     this.grid.render(ctx);

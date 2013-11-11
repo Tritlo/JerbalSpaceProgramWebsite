@@ -118,7 +118,7 @@ binarySearch: function(val,list) {
 // =========
 
 distSq: function(x1, y1, x2, y2) {
-    return this.square(x2-x1) + this.square(y2-y1);
+    return util.square(x2-x1) + util.square(y2-y1);
 },
 
 wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {

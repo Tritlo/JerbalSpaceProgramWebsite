@@ -11,16 +11,20 @@ Part.prototype.setup = function (descr) {
 
 Part.prototype.name = "NO NAME";
 Part.prototype.baseMass = 0.1;
-Part.prototype.mass = this.baseMass;
+Part.prototype.mass = 0.1
 Part.prototype.thrust = 0;
 Part.prototype.fuel = 0;
 Part.prototype.fuelDensity = 0.01;
-Part.prototype.types = ["other","fuelTank","engine"];
-Part.prototype.type = this.types[0]; 
+Part.prototype.types = ["Other","Fuel Tank","Engine"];
+Part.prototype.type = "Other";
 
 //Rotates the outline,
 //so that ind becomes the
 //last point.
+
+Part.prototype.setFlame = function (ps) {
+    this.flame = ps;
+    }
 Part.prototype.rotate = function(ind){
     this.outline = util.rotateList(this.outline,this.outline.lastIndexOf(ind));
     console.log(this.outline);
