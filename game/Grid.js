@@ -42,21 +42,47 @@ Grid.prototype.findNearestPoint = function (x,y) {
     return [i,j];
     }
 
-Grid.prototype.color = "lime";
+Grid.prototype.color = "#0000ff";
 
 Grid.prototype.render = function (ctx) {
 	ctx.save();
-    ctx.strokeStyle = this.color;
+        ctx.strokeStyle = this.color;
 	//ctx.beginPath()
-	for(var i = 0; i < this.points[0].length; i++){
+        var n = this.points[0].length
+        var m = this.points.length
+	for(var i = 1; i < n-1; i++){
+	    if (i % (n/4) === 0){
+		ctx.lineWidth *= 2;
+		}
+	    if (i % (n/8) === 0){
+		ctx.lineWidth *= 2;
+		}
 	    var p = this.points[0][i];
 	    var p1 = this.points[this.points.length-1][i];
 	    util.drawLine(ctx,p[0],p[1],p1[0],p1[1]);
+	    if (i % (n/8) === 0){
+		ctx.lineWidth /= 2;
+		}
+	    if (i % (n/4) === 0){
+		ctx.lineWidth /= 2;
+		}
 	    }
-	for(var j = 0; j < this.points.length; j++){
+	for(var j = 1; j < m-1; j++){
+	    if (j % (m/4) === 0){
+		ctx.lineWidth *= 2;
+		}
+	    if (j % (m/8) === 0){
+		ctx.lineWidth *= 2;
+		}
 	    var p = this.points[j][0];
 	    var p1 = this.points[j][this.points[0].length-1];
 	    util.drawLine(ctx,p[0],p[1],p1[0],p1[1]);
+	    if (j % (m/8) === 0){
+		ctx.lineWidth /= 2;
+		}
+	    if (j % (m/4) === 0){
+		ctx.lineWidth /= 2;
+		}
 	    }
 	//ctx.closePath()
 	ctx.restore()
