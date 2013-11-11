@@ -1,16 +1,23 @@
 var Stars = {
 
-_blockSize: {x: g_canvas.width*2, y: g_canvas.height*2},
+_blockSize: {x: g_canvas.width, y: g_canvas.height},
 
 _STpBL: {min: 50, max: 100},
 
 _blocks: [],
 
+_rad: 0,
+
+_tooHeavy: false,
+
 update: function(du){
-    var s = entityManager.getMainShip();
-    var bl = this._posToBlock(s.cx,s.cy);
-    for(var i = bl[0]-1; i <= bl[0]+1; i++){
-        for(var j = bl[1]-1; j <= bl[1]+1; j++){
+    this._tooHeavy = entityManager.cameraZoom < 0.3;
+    if(this._tooHeavy) return;
+    var os = entityManager.cameraOffset;
+    var bl = this._posToBlock(os[0],os[1]);
+    this._rad=Math.floor(1/(entityManager.cameraZoom*Math.sqrt(2)))+1;
+    for(var i = bl[0]-this._rad; i <= bl[0]+this._rad; i++){
+        for(var j = bl[1]-this._rad; j <= bl[1]+this._rad; j++){
 	    this._maybeGenerateBlock(i,j);
 	}
     }
@@ -32,10 +39,11 @@ _maybeGenerateBlock: function(i,j){
 },
 
 render: function(ctx){
-    var s = entityManager.getMainShip();
-    var bl = this._posToBlock(s.cx,s.cy);
-    for(var i = bl[0]-1; i <= bl[0]+1; i++){
-        for(var j = bl[1]-1; j <= bl[1]+1; j++){
+    if(this._tooHeavy) return;
+    var os = entityManager.cameraOffset;
+    var bl = this._posToBlock(os[0],os[1]);
+    for(var i = bl[0]-this._rad; i <= bl[0]+this._rad; i++){
+        for(var j = bl[1]-this._rad; j <= bl[1]+this._rad; j++){
 	    this._renderBlock(ctx,this._blocks[i][j]);
 	}
     }
