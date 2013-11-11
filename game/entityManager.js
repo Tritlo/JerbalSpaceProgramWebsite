@@ -239,6 +239,7 @@ update: function(du) {
     }
     
     if (g_settings.enableRocks && this._rocks.length === 0) this._generateRocks();
+    this.updateCamera();
     Stars.update(du);
 
 },
@@ -249,7 +250,6 @@ getMainShip: function() {
 
 
 render: function(ctx) {
-    this.updateCamera();
     var debugX = 10, debugY = 100;
     ctx.save();
     if(this._ships[0]){
