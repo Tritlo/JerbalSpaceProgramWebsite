@@ -60,4 +60,4 @@ Simulation.prototype.handleMouse = function (evt,type) {
     }
  };
 
-var mainSimulation = new Simulation();
+var simulation = new Simulation();

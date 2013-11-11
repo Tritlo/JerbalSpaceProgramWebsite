@@ -1,7 +1,9 @@
 stateManager = {
-    "currentState": "mainMenu",
-    "states": { "mainMenu" : mainMenu,
-		"mainSimulation" : mainSimulation
+    "currentState": "menu",
+    "states": {
+        "menu" : mainMenu,
+        "simulation" : simulation,
+        "partsDesigner" : partsDesigner
 		},
 
     update: function(du){

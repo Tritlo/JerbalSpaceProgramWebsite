@@ -1,29 +1,74 @@
+function MenuItem(descr) {
+    this.setup(descr);
+};
+MenuItem.prototype.setup = function (descr) {
+    for (var property in descr) {
+        this[property] = descr[property];
+    }
+}
+
+MenuItem.prototype.hitBox = false;
+MenuItem.prototype.selected = false;
+
+
 function Menu(descr) {
     this.setup(descr);
 };
 
 Menu.prototype = new State();
 
+//Must take in context to compute properties
+Menu.prototype.init = function (ctx) {
+    //For computing properties
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.font = this.itemHeight+"px " +this.font;
+    var offsetFromTitle = this.height - (this.itemHeight + this.margin_bottom)*this.items.length;
+    ctx.textBaseline = "middle";
+    for(var i = 0; i < this.items.length; i++){
+        this.items[i] = new MenuItem(this.items[i]);
+        this.items[i].location = [this.location[0],this.location[1] + offsetFromTitle + i*(this.itemHeight + this.margin_bottom)];
+        var wiOText = ctx.measureText(this.items[i].text).width
+        this.items[i].width = wiOText < this.width ? wiOText : this.width;
+        var loc = this.items[i].location;
+        var w = this.items[i].width
+        var h = this.itemHeight;
+        this.items[i].hitBox = [[loc[0]-w/2,loc[1]-h/2],[loc[0]+w/2,loc[1]+h/2]];
+
+    }
+    ctx.restore();
+
+    this.initialized = true;
+}
+
+Menu.prototype.initialized = false;
+
 Menu.prototype.items = [];
 
+Menu.prototype.fill = "lime";
+Menu.prototype.stroke = "lime";
+Menu.prototype.font = "Quantico";
+Menu.prototype.height = 0;
+Menu.prototype.width = 0;
+
 Menu.prototype.render = function(ctx) {
+        if (!this.initialized) { this.init(ctx);}
         ctx.save();
-        ctx.fillStyle = "lime";
-        ctx.strokeStyle = "lime";
-        ctx.textAlign ="center";
+        ctx.fillStyle = this.fill;
+        ctx.strokeStyle = this.stroke;
+        ctx.textAlign = "center";
         ctx.textBaseline = "top";
-        var h = 50;
-        ctx.font = h+"px Quantico";
-        ctx.fillText("JERBAL SPACE PROGRAM", g_canvas.width/2,0);
+        ctx.font = this.titleHeight+"px " +this.font;
+        ctx.fillText(this.title, this.location[0],this.location[1],this.width);
+        ctx.font = this.itemHeight+"px " +this.font;
         ctx.textBaseline = "middle";
         for(var i = 0; i < this.items.length; i++) {
             var item = this.items[i];
             var loc = item.location;
-            var w = ctx.measureText(item.text).width;
-            ctx.fillText(item.text,loc[0],loc[1] );
-            if (!item.hitBox) {
-                item.hitBox = [[loc[0]-w/2,loc[1]-h/2],[loc[0]+w/2,loc[1]+w/2]];
-            }
+            var w = item.width;
+            var h = this.itemHeight;
+            ctx.fillText(item.text,loc[0],loc[1],this.width);
             if (item.selected) {
                 util.strokeBox(ctx,item.hitBox[0][0],item.hitBox[0][1],w,h);
             }
@@ -37,6 +82,10 @@ Menu.prototype.render = function(ctx) {
 Menu.prototype.update = function (du) {
 };
 
+Menu.prototype.onSelected = function (item) {
+    console.log(item);
+}
+
 Menu.prototype.handleMouse = function (evt, type) {
         if (type === "down"){
         } else if (type === "move") {
@@ -45,7 +94,7 @@ Menu.prototype.handleMouse = function (evt, type) {
             for (var i = 0; i < this.items.length; i++){
                 var item = this.items[i];
                 item.selected = false;
-                if (util.circInBox(g_mouse[0],g_mouse[1],1,item.hitBox[0],item.hitBox[1])) {
+                if (util.circInBox(g_mouse[0],g_mouse[1],0,item.hitBox[0],item.hitBox[1])) {
                     item.selected = true;
                 }
             }
@@ -53,20 +102,31 @@ Menu.prototype.handleMouse = function (evt, type) {
             for (var i = 0; i < this.items.length; i++){
                 var item = this.items[i];
                 if (item.selected){
-                    stateManager.switchState(item.state);
+                    this.onSelected(item);
                     break;
                 }
             }
         }
 };
 
+
 var mainMenu = new Menu({
+    "title" : "JERBAL SPACE PROGRAM",
     "items": [ {
 	    "text": "Start",
-	    "location": [g_canvas.width/2,g_canvas.height/2],
-	    "hitBox" : false, //Set on render as dependent on measureText
-	    "state" : "mainSimulation",
-	    "selected" : false
-	}]
+	    "state" : "simulation",
+	    },
+        { "text": "Parts Design",
+	      "state" : "partsDesigner"
+        }
+    ],
+	"location": [g_canvas.width/2,0],
+    "titleHeight" : 50,
+    "itemHeight" : 42,
+    "width" : g_canvas.width,
+    "height" : g_canvas.height - g_canvas.height/3,
+    "margin_bottom" : 5,
+    "onSelected" : function (item) {
+         stateManager.switchState(item.state);
     }
-);
+    });

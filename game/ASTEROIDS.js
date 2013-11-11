@@ -211,5 +211,7 @@ function preloadDone() {
     main.init();
 }
 
+//Disable right click on canvas.
+$('body').on('contextmenu','#myCanvas', function(e) {return false;})
 // Kick it off
 requestPreloads();
