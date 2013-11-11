@@ -69,14 +69,16 @@ PartsDesigner.prototype.onActivation = function () {
     $('#in4').show();
     $('#in5').show();
     $('#in6').show();
+    $('#in7').show();
     var canvas_pos = util.findPos(g_canvas);
-    $('#in6').offset({top:canvas_pos.y+100, left: canvas_pos.x});
-    $('#in5').offset({top:canvas_pos.y+150, left: canvas_pos.x});
-    $('#in4').offset({top:canvas_pos.y+200, left: canvas_pos.x});
-    $('#in3').offset({top:canvas_pos.y+250, left: canvas_pos.x});
+    $('#in7').offset({top:canvas_pos.y+100, left: canvas_pos.x});
+    $('#in6').offset({top:canvas_pos.y+150, left: canvas_pos.x});
+    $('#in5').offset({top:canvas_pos.y+200, left: canvas_pos.x});
+    $('#in4').offset({top:canvas_pos.y+250, left: canvas_pos.x});
+    $('#in3').offset({top:canvas_pos.y+300, left: canvas_pos.x});
     
-    $('#in2').offset({top:canvas_pos.y+300, left: canvas_pos.x});
-    $('#in1').offset({top:canvas_pos.y+350, left: canvas_pos.x});
+    $('#in2').offset({top:canvas_pos.y+350, left: canvas_pos.x});
+    $('#in1').offset({top:canvas_pos.y+400, left: canvas_pos.x});
     $('#in5').attr("placeholder","Part Name");
     $('#in4').attr("placeholder","Mass");
     $('#in4').get(0).type = "number";
@@ -91,8 +93,11 @@ PartsDesigner.prototype.onActivation = function () {
     $('#in1').get(0).type = "number";
     $('#in1').attr("step","0.1");
     $('#in6').val("#00ff00");
-    var pseudoPart = new Part();
-    $.each(pseudoPart.types, function (value) {
+    $('#in7').val("Type");
+    //var pseudoPart = new Part();
+    var types = ["Engine", "Fuel Tank", "Other"]
+    //$.each(pseudoPart.types, function (value) {
+    $.each(types, function (key,value) {
     $("#in7").append('<option value="'+value+'">'+value+'</option>');});
     
     }
@@ -126,10 +131,11 @@ PartsDesigner.prototype.render = function(ctx) {
 PartsDesigner.prototype.update = function (du) {
     if (this.currentPart){
 	this.currentPart.stroke = $('#in6').val();
-	this.currentPart.name = $('#in5').val();
-	this.currentpart.mass = $('#in4').val();
-	this.currentPart.fuel = $('#in3').val();
-	this.currentPart.Thrust = $('#in3').val();
+	this.currentPart.name   = $('#in5').val();
+	this.currentPart.mass   = parseFloat($('#in4').val());
+	this.currentPart.fuel   = parseFloat($('#in3').val());
+	this.currentPart.thrust = parseFloat($('#in3').val());
+	this.currentPart.type   = $('#in7').val();
 	}
 };
 
