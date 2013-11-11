@@ -210,6 +210,15 @@ updateCamera: function () {
 	this.cameraZoom = 1;
     this.lockCamera = false;
 	}
+
+    if(this._ships[0]){
+        var s = this._ships[0];
+    if(!this.lockCamera){    
+        this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2];
+    }
+	this.trueOffset = util.vecPlus(this.offset,this.cameraOffset);
+	this.trueOffset = util.vecPlus(this.trueOffset,util.rotateVector(util.mulVecByScalar(1/this.cameraZoom,this.mouseOffset),-this.cameraRotation));
+    }
     
 },
 
@@ -254,17 +263,12 @@ render: function(ctx) {
     ctx.save();
     if(this._ships[0]){
         var s = this._ships[0];
-    if(!this.lockCamera){    
-        this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2];
-    }
-	this.trueOffset = util.vecPlus(this.offset,this.cameraOffset);
-	this.trueOffset = util.vecPlus(this.trueOffset,util.rotateVector(util.mulVecByScalar(1/this.cameraZoom,this.mouseOffset),-this.cameraRotation));
         //ctx.translate(-this.trueOffset[0],-this.trueOffset[1]);
 	ctx.translate(g_canvas.width/2,g_canvas.height/2);
 	ctx.rotate(this.cameraRotation);
 	ctx.scale(this.cameraZoom,this.cameraZoom);
 	ctx.translate(-g_canvas.width/2,-g_canvas.height/2);
-        ctx.translate(this.trueOffset[0],this.trueOffset[1]);
+    ctx.translate(this.trueOffset[0],this.trueOffset[1]);
 	//console.log((s.cx) + " "  + (s.cy));
     }
     Stars.render(ctx);
