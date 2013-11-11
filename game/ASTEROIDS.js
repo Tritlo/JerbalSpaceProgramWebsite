@@ -1,4 +1,4 @@
-    // =========
+// =========
 // ASTEROIDS
 // =========
 /*
@@ -51,16 +51,7 @@ function gatherInputs() {
 // It then delegates the game-specific logic to `updateSimulation`
 
 
-// GAME-SPECIFIC UPDATE LOGIC
 
-function updateSimulation(du) {
-    
-    
-    entityManager.update(du);
-
-    // Prevent perpetual firing!
-    eatKey(g_settings.keys.KEY_FIRE);
-}
 
 // GAME-SPECIFIC DIAGNOSTICS
 
@@ -177,27 +168,6 @@ function processDiagnostics() {
 }
 
 
-// =================
-// RENDER SIMULATION
-// =================
-
-// We take a very layered approach here...
-//
-// The primary `render` routine handles generic stuff such as
-// the diagnostic toggles (including screen-clearing).
-//
-// It then delegates the game-specific logic to `gameRender`
-
-
-// GAME-SPECIFIC RENDERING
-
-function renderSimulation(ctx) {
-
-    entityManager.render(ctx);
-    renderHUD(ctx);
-
-    if (g_settings.renderSpatialDebug) spatialManager.render(ctx);
-}
 
 
 // =============

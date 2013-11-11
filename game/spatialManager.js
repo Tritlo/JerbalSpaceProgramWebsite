@@ -29,19 +29,8 @@ _entities : [],
 
 _inBox : function (entity, topLeftCorner, bottomRightCorner) {
     if (!(entity)) return;
-    var TLC = topLeftCorner;
-    var BRC = bottomRightCorner;
     var ePos = entity.getPos()
-    var eTLC = [ePos["posX"]-entity.getRadius(), ePos["posY"]-entity.getRadius()];
-    var eBRC = [ePos["posX"]+entity.getRadius(), ePos["posY"]+entity.getRadius()];
-    var hey = ( !(eBRC[1] < TLC[1]) && !(eTLC[1] > BRC[1]) &&
-	     !(eBRC[0] < TLC[0]) && !(eTLC[0] > BRC[0]));
-
-    return hey;
-	
-    
-
-    
+    return util.circInBox(ePos["posX"],ePos["posY"],entity.getRadius(), topLeftCorner,bottomRightCorner);
     },
 
 
