@@ -14,6 +14,7 @@ Part.prototype.baseMass = 0.1;
 Part.prototype.mass = this.baseMass;
 Part.prototype.thrust = 0;
 Part.prototype.fuel = 0;
+Part.prototype.fuelDensity = 0.01;
 
 //Rotates the outline,
 //so that ind becomes the
@@ -34,9 +35,9 @@ Part.prototype.addPoint = function(pt){
 }
 
 Part.prototype.setFuel = function (fl){
-    var fuelMass = 0.01;
+    fl = fl || this.fuel;
     this.fuel = fl;
-    this.mass = this.baseMass + this.fuel*fuelMass;
+    this.mass = this.baseMass + this.fuel*this.fuelDensity;
 }
 
 Part.prototype.setLastPoint = function (pt) {
