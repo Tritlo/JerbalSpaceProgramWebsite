@@ -245,7 +245,6 @@ rotateVector: function(a,rot){
     },
     
 vecMinus: function(a,b) {
-    console.log(a,b);
     var vec = [a[0]-b[0],a[1]-b[1]]
     return vec
 },
@@ -268,8 +267,64 @@ rotateList: function(li,ind) {
     return li;
 },
 
-inList: function(li,item) {
-    return (li && (li.indexOf(item) > -1));
+compEq: function(a,b,akeys,bkeys){
+    if( typeof a === "object" && typeof b === "object"){
+        var akeys = akeys || Object.keys(a);
+        var bkeys = bkeys || Object.keys(b);
+        if( akeys.length !== bkeys.length){ 
+            return false;
+        }
+        for (var i = 0; i < akeys.length; i++)
+        {
+            if (!(util.compEq(a[akeys[i]],b[akeys[i]]))){
+                return false;
+            }
+        }
+        return true;
+    } else
+        return a === b
+
+},
+
+indexOfObj: function(li,item) {
+    if(li){
+        if(typeof item === "object"){
+            var ikeys = Object.keys(item);
+            for(var i = 0; i < li.length; i++)
+            {
+                if (util.compEq(item,li[i],ikeys))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        } else {
+            return (li.indexOf(item));
+        }
+    } else {
+        return -1;
+    }
+},
+
+lastIndexOfObj: function(li,item) {
+    if(li){
+        if(typeof item === "object"){
+            var ikeys = Object.keys(item);
+            var ind = -1;
+            for(var i = 0; i < li.length; i++)
+            {
+                if (util.compEq(item,li[i],ikeys))
+                {
+                    ind = i;
+                }
+            }
+            return ind;
+        } else {
+            return (li.indexOf(item));
+        }
+    } else {
+        return -1;
+    }
 },
 
 // CANVAS OPS

@@ -136,7 +136,6 @@ PartsDesigner.prototype.addAttachmentPointMode = function () {
         this.flameSet = true;
     }
     this.addingAttachmentPoint = true;
-    console.log(this.addingAttachmentPoint);
     }
 
 PartsDesigner.prototype.savePart = function () {
@@ -148,10 +147,8 @@ PartsDesigner.prototype.savePart = function () {
 	} else {
 	    parts = [this.currentPart];
 	    }
-	console.log(parts);
 	util.storageSave("parts",parts);
 	var parts = util.storageLoad("parts");
-	console.log(parts);
 	$("#in9").empty();
 	$.each(parts, function (key,value) {
 	    $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
@@ -257,7 +254,6 @@ PartsDesigner.prototype.render = function(ctx) {
         var x = this.currentAttachmentPoint[0];
         var y = this.currentAttachmentPoint[1];
         ctx.save();
-        console.log("curr");
         ctx.strokeStyle = "red";
         util.strokeCircle(ctx,x,y,7)
         ctx.restore();
@@ -331,7 +327,7 @@ PartsDesigner.prototype.addToOutline = function(){
         this.currentPart.addPoint(this.closestPoint);
         this.currentPart.addPoint(this.closestPoint);
     } else if (!this.editing) {
-        if(util.inList(this.currentPart.outline,this.closestPoint)) {
+        if(util.indexOfObj(this.currentPart.outline,this.closestPoint) > -1) {
             this.currentPart.rotate(this.closestPoint);
             this.currentPart.setLastPoint(this.closestPoint);
         }
@@ -341,8 +337,6 @@ PartsDesigner.prototype.addToOutline = function(){
 }
 
 PartsDesigner.prototype.addAttachmentPoint = function(){
-    console.log("adding point");
-    console.log(this.currentPart.attachmentPoints);
     this.addingAttachmentPoint = false;
     if(this.currentPart){
         this.currentPart.addAttachmentPoint(this.closestPoint);

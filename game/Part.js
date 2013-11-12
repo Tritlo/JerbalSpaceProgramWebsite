@@ -43,7 +43,7 @@ Part.prototype.setFlame = function (ps) {
     
     }
 Part.prototype.rotate = function(ind){
-    this.outline = util.rotateList(this.outline,this.outline.lastIndexOf(ind));
+    this.outline = util.rotateList(this.outline,util.lastIndexOfObj(this.outline,ind));
 }
 
 
