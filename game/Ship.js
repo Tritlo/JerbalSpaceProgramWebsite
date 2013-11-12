@@ -21,9 +21,11 @@ function Ship(descr) {
     this.rememberResets();
     
     // Default sprite, if not otherwise specified
-    //this.sprite = this.sprite || g_sprites.lunarLander;
-    //this.width = this.sprite.width;
-    //this.height = this.sprite.height;
+	/*
+    this.sprite = this.sprite || g_sprites.lunarLander;
+    this.width = this.sprite.width;
+    this.height = this.sprite.height;
+	*/
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
@@ -63,10 +65,19 @@ Ship.prototype.angularVel = 0;
 Ship.prototype.torque = 0;
 
 Ship.prototype.assemble = function(grid) {
-	for(var i = 0; i<this.parts.length; i++) {
+	numParts = this.parts.length;
+	for(var i = 0; i<numParts; i++) {
 		this.mass+=this.parts[i].mass;
 		this.fuel+=this.parts[i].fuel;
+		this.thrust+=this.parts[i].thrust;
 	}
+	var weightedXCenters = this.parts.map(function (x){return x.mass*x.center[0]});
+	var weightedYCenters = this.parts.map(function (x){return x.mass*x.center[1]});
+	this.cx = weightedXCenters.reduce(function (x,y) {return x+y})/numParts;
+	this.cy = weightedYCenters.reduce(function (x,y){return x+y})/numParts;
+	this.center = [this.cx,this.cy];
+	this.height = Math.max.apply(null, this.parts.map(function (p){ return p.center[1]+p.height/2}));
+	this.width = Math.max.apply(null, this.parts.map(function (p){return p.center[0]+p.width/2}));
 }
 Ship.prototype.disassemble = function() {
 }
@@ -255,6 +266,7 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
     var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
     if (!(terrainHit[0])){
         this.rotation = newRot;
+		this.parts.map(function (x){ x.rotation = newRot});
     }
 };
 
@@ -343,6 +355,8 @@ Ship.prototype.applyAccel = function (accel,du) {
     }
     
     // s = s + v_ave * t
+	this.parts.map(function (p){ p.cx+=du * intervalVelX});
+	this.parts.map(function (p){ p.cy+=du * intervalVelY});
     this.cx += du * intervalVelX;
     this.cy += du * intervalVelY;
 };
@@ -480,7 +494,7 @@ Ship.prototype._renderSprite = function (ctx) {
     util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
     ctx.strokeStyle = "red";
     util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
-    ctx.restore()
+    ctx.restore();
     this.sprite.scale = this._scale;
     this.sprite.drawCentredAt(
 	ctx, this.cx, this.cy, this.rotation
@@ -492,7 +506,8 @@ Ship.prototype.render = function (ctx) {
     if (this._isExploding){
 	this._renderExplosion(ctx);
     } else {
-	this._renderSprite(ctx);
+		this.parts.map(function (x) {x.render});
+	//this._renderSprite(ctx);
     }
 	
     
