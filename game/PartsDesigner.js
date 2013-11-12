@@ -71,8 +71,8 @@ PartsDesigner.prototype.init = function() {
         "height" : 525,
         "location": [375,375],
 	});
-    this.newPart();
 
+    this.newPart();
     }
 
 PartsDesigner.prototype.newPart = function () {
@@ -181,7 +181,7 @@ PartsDesigner.prototype.onDeactivation = function() {
     for(var i = 1; i < 10; i++){
 	$('#in'+i).hide();
 	}
-    this.currentPart = undefined;
+    //this.currentPart = undefined;
 	    
     }
 
