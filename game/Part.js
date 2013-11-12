@@ -102,7 +102,9 @@ Part.prototype.setLastPoint = function (pt) {
 
 Part.prototype.toDesigner = function(grid){
     this.outline = grid.fromGridCoords(this.outline);    
-    console.log(this.outline);
+    if(this.attachmentPoints){
+        this.attachmentPoints = grid.fromGridCoords(this.attachmentPoints);    
+    }
     if(this.flame){
         this.setFlame(grid.fromGridCoords(this.flame.points));  
     }
@@ -113,6 +115,9 @@ Part.prototype.toDesigner = function(grid){
 
 Part.prototype.finalize = function(grid){
     this.outline = grid.toGridCoords(this.outline);
+    if (this.attachmentPoints){
+        this.attachmentPoints = grid.toGridCoords(this.attachmentPoints);
+    }
     if(this.flame){
         this.setFlame(grid.toGridCoords(this.flame.points));  
     }
@@ -143,6 +148,15 @@ Part.prototype.finalize = function(grid){
     this.outline = this.outline.map(function (x) {
         return util.vecMinus(x,[minx,miny]);
     });
+    if(this.attachmentPoints){
+        this.attachmentPoints = this.attachmentPoints.map(
+                function (x) {
+            return util.vecMinus(x,[minx,miny]);
+        });
+    }
+    if(this.flame){
+        this.setFlame(this.flame.points.map( function (x) { return util.vecMinus(x,[minx,miny]); }));
+    }
     this.centerOfMass = {x: x/l, y: y/l};
     this.currentThrust = 0;
     this.currentFuel = 0;

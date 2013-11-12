@@ -438,6 +438,10 @@ storageSave: function(key,value){
     util.setStorage(sto);
 },
 
+echoJSON: function(value){
+    console.log(JSON.stringify(value));
+},
+
 storageLoad: function(key){
     if(typeof Storage === "undefined") return null;
     var sto = util.fetchStorage();

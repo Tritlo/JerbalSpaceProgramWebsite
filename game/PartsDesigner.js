@@ -31,6 +31,14 @@ PartsDesigner.prototype.init = function() {
 	    "action" : function (state) {
             state.addAttachmentPointMode();
 		}
+        },
+        {
+	    "text" : "Echo Part JSON",
+	    "action" : function (state) {
+            var part = state.currentPart.finalize(state.grid);
+            util.echoJSON(state.currentPart);
+            state.currentPart.toDesigner(state.grid);
+		}
 	    }
         ],
 	"width" : 200,
@@ -140,20 +148,25 @@ PartsDesigner.prototype.addAttachmentPointMode = function () {
 
 PartsDesigner.prototype.savePart = function () {
     if(this.currentPart){
-	this.currentPart.finalize(this.grid);
-	var parts = util.storageLoad("parts");
-	if (parts){
-	    parts.push(this.currentPart);
-	} else {
-	    parts = [this.currentPart];
-	    }
-	util.storageSave("parts",parts);
-	this.currentPart.toDesigner(this.grid);
-	var parts = util.storageLoad("parts");
-	$("#in9").empty();
-	$.each(parts, function (key,value) {
-	    $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
-	}
+        this.currentPart.finalize(this.grid);
+        var parts = util.storageLoad("parts");
+        if (parts){
+            parts.push(this.currentPart);
+        } else {
+            parts = [this.currentPart];
+            }
+        util.storageSave("parts",parts);
+        this.currentPart.toDesigner(this.grid);
+        this.flame = undefined;
+        if(this.currentPart.flame){
+            this.currentPart.currentThrust = this.currentPart.thrust;
+            this.flame = this.currentPart.flame.points
+        }
+        var parts = util.storageLoad("parts");
+        $("#in9").empty();
+        $.each(parts, function (key,value) {
+            $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    }
     }
 
 PartsDesigner.prototype.loadPart = function () {
@@ -161,14 +174,19 @@ PartsDesigner.prototype.loadPart = function () {
     var part = new Part(parts[$('#in9').val()]);
     this.currentPart = part.toDesigner(this.grid);
     if (this.currentPart){
-	$('#in8').val(this.currentPart.fill);
-	$('#in7').val(this.currentPart.type);
-	$('#in6').val(this.currentPart.stroke);
-	$('#in5').val(this.currentPart.name);
-	$('#in4').val(this.currentPart.mass);
-	$('#in3').val(this.currentPart.fuel);
-	$('#in2').val(this.currentPart.thrust);
-	$('#in1').val(this.currentPart.efficiency);
+        $('#in8').val(this.currentPart.fill);
+        $('#in7').val(this.currentPart.type);
+        $('#in6').val(this.currentPart.stroke);
+        $('#in5').val(this.currentPart.name);
+        $('#in4').val(this.currentPart.mass);
+        $('#in3').val(this.currentPart.fuel);
+        $('#in2').val(this.currentPart.thrust);
+        $('#in1').val(this.currentPart.efficiency);
+        this.flame = undefined;
+        if(this.currentPart.flame){
+            this.currentPart.currentThrust = this.currentPart.thrust;
+            this.flame = this.currentPart.flame.points
+        }
 	} else this.newPart();
     
     }

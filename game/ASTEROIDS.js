@@ -60,6 +60,10 @@ var g_allowMixedActions = true;
 var g_useGravity = true;
 var g_useAveVel = true;
 
+
+
+
+
 var g_settings = {
           "useGravity": true,
           "useAveVel": true,
@@ -190,6 +194,24 @@ function requestPreloads() {
 
     imagesPreload(requiredImages, g_images, preloadDone);
 }
+
+g_defaultParts = [
+                     '{"stroke":"#00ff00","lineWidth":4,"currentThrust":0,"name":"Cockpit","mass":0.3,"fuel":null,"efficiency":null,"thrust":null,"type":"Other","outline":[[0,3],[4,0],[4,8],[0,5]],"attachmentPoints":[[0,4],[4,4]],"height":8,"width":4,"centerOfMass":{"x":2,"y":4},"currentFuel":0,"radius":8}'
+                    ,'{"stroke":"#00ff00","lineWidth":4,"currentThrust":0,"name":"Fuel tank","mass":0.1,"fuel":150,"efficiency":null,"thrust":null,"type":"Fuel Tank","outline":[[0,8],[0,0],[4,0],[4,8]],"attachmentPoints":[[0,4],[4,4]],"height":8,"width":4,"centerOfMass":{"x":2,"y":4},"currentFuel":0,"radius":8}'
+                    ,'{"stroke":"#00ff00","lineWidth":4,"currentThrust":0,"name":"Engine","mass":0.3,"fuel":null,"efficiency":0.9,"thrust":0.4,"type":"Other","outline":[[4,0],[2,2],[2,1],[0,0],[0,6],[2,5],[2,4],[4,6]],"flame":{"points":[[4,0],[4,6],[8,3]],"center":[4,3],"direction":[1,0],"length":4},"attachmentPoints":[[0,3]],"height":6,"width":4,"centerOfMass":{"x":2,"y":3},"currentFuel":0,"radius":6} '
+
+                 ]
+
+
+//Load default parts;
+g_defaultParts = g_defaultParts.map(function (str) {
+    return new Part($.parseJSON(str));
+});
+
+if(util.storageLoad('parts') === null){
+    util.storageSave('parts',g_defaultParts);
+}
+
 
 var g_sprites = {};
 
