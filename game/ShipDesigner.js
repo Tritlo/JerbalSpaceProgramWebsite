@@ -32,6 +32,12 @@ ShipDesigner.prototype.init = function() {
                 util.echoJSON(state.currentShip);
                 state.currentShip.disassemble(state.grid);
 		    }
+	    },
+	    {
+	        "text" : "Add Selected Part",
+		"action" : function(state){
+		    state.addPart($("#in7").val());
+		}
 	    }
         ],
 	"width" : 200,
@@ -55,7 +61,7 @@ ShipDesigner.prototype.init = function() {
 		    },
 		},
 		{
-		"text": "Load Part",
+		"text": "Load Ship",
 		"action" : function (state){
 		    state.loadShip();
 		    },
@@ -97,6 +103,14 @@ ShipDesigner.prototype.newShip = function ()
 }
 
 
+ShipDesigner.prototype.addPart = function (partInd){
+    var parts = util.storageLoad("parts");
+    var part = new Part(parts[partInd]);
+    this.heldPart = part.toDesigner(this.grid);
+    console.log(part);
+}
+
+
 
 ShipDesigner.prototype.saveShip = function ()
 {
@@ -134,10 +148,12 @@ ShipDesigner.prototype.onActivation = function ()
 {
 	$('#in9').show();
 	$('#in5').show();
+	$('#in7').show();
     var canvas_pos = util.findPos(g_canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
-    $('#in5').offset({top:canvas_pos.y + offsetFromMenu +50, left: canvas_pos.x+5});
+    $('#in5').offset({top:canvas_pos.y + offsetFromMenu +100, left: canvas_pos.x+5});
+    $('#in7').offset({top:canvas_pos.y + offsetFromMenu +50, left: canvas_pos.x+5});
 	$('#in5').val("");
 	$('#in5').attr("placeholder","Ship Name");
     var ships = util.storageLoad("ships");
@@ -145,6 +161,12 @@ ShipDesigner.prototype.onActivation = function ()
     {
         $.each(ships, function (key,value) {
         $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    }
+    var parts = util.storageLoad("parts");
+    if(parts){
+        $.each(parts, function(key,value){
+	    $("#in7").append('<option value="'+key+'">'+value.name+'</option>');
+	});
     }
 }
 
@@ -163,6 +185,9 @@ ShipDesigner.prototype.render = function(ctx) {
     this.menu2.render(ctx);
     this.back.render(ctx);
     this.grid.render(ctx);
+    if(this.heldPart){
+        this.heldPart.render(ctx);
+    }
     if (this.currentShip)
     {
         //this.currentShip.render(ctx);
@@ -220,6 +245,7 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
     } else if (type === "move") {
         if(this.heldPart){
             //TODO: move part
+	    //this.heldPart
         }
     } 
 };
