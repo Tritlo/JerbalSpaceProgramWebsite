@@ -13,6 +13,26 @@
       margin: 0;
       padding: 0;
       }
+      input {
+      border: 1px solid #00ff00;
+      background: black;
+      width: 100px;
+      color: lime;
+      }
+      select {
+      border: 1px solid #00ff00;
+      background: #00a300;
+      width: 100px;
+      color: black;
+      }
+      *::-webkit-input-placeholder {
+	    color: green;
+	}
+
+	*:-moz-placeholder {
+	    color: green;
+	}
+
       </style>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -31,10 +51,20 @@
     <div class="wrapper">
 
       <section>
+	<div id="canvas">
 	<canvas id="myCanvas" width="650" height="650"
 		style="border: 1px solid black;">
 	Sorry, but your browser does not support the HTML5 canvas tag.
 	</canvas>
+	  <select id="in7" style="display:none;"></select>
+	  <input id="in6" type="color" value="#00ff00" style="display: none;"></input>
+	  <input id="in5" type="text"  style="display: none;" ></input>
+	  <input id="in4" type="text"  style="display: none;" ></input>
+	  <input id="in3" type="text"  style="display: none;" ></input>
+	  <input id="in2" type="text"  style="display: none;" ></input>
+	  <input id="in1" type="text"  style="display: none;" ></input>
+	  <input id="in8" type="text"  style="display: none;" ></input>
+	</div>
 	<div id="output"></div>
 	<script src="game/globals.js"></script>
 	<script src="game/consts.js"></script>

@@ -22,10 +22,14 @@ stateManager = {
 	var keys = Object.keys(this.states);
         if (state) {
             if (keys.indexOf(state) > -1){
+		this.states[this.currentState].onDeactivation();
                 this.currentState = state;
+		this.states[this.currentState].onActivation();
             }
         } else {
+	    this.states[this.currentState].onDeactivation();
             this.currentState = states[ keys[keys.indexOf((currentState) + 1) % keys.length]]
+	    this.states[this.currentState].onActivation();
         }
     }
 }
