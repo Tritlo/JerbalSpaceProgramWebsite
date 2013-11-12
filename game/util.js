@@ -368,29 +368,30 @@ drawLine: function(ctx,x1,y1,x2,y2){
 _storageName: "JerbalSpaceProgramStorage",
 
 fetchStorage: function(){
-    return $.parseJSON(localStorage[this._storageName] || "{}");
+    return $.parseJSON(localStorage[util._storageName] || "{}");
 },
 
 setStorage: function(obj){
-    localStorage[this._storageName] = JSON.stringify(obj);
+    localStorage[util._storageName] = JSON.stringify(obj);
 },
+
 
 storageSave: function(key,value){
     if(typeof Storage === "undefined") return;
-    var sto = this.fetchStorage();
+    var sto = util.fetchStorage();
     sto[key] = value;
-    this.setStorage(sto);
+    util.setStorage(sto);
 },
 
 storageLoad: function(key){
     if(typeof Storage === "undefined") return null;
-    var sto = this.fetchStorage();
+    var sto = util.fetchStorage();
     return sto[key];
 },
 
 storageReset: function(){
     if(typeof Storage === "undefined") return;
-    this.setStorage("{}");
+    util.setStorage("{}");
 },
 
 //Inputs
