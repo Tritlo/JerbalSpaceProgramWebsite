@@ -24,6 +24,20 @@ PartsDesigner.prototype.init = function() {
 		    },
 		},
 		{
+		"text": "Load Part",
+		"action" : function (state){
+		    state.loadPart();
+		    },
+		},
+		{
+		"text": "Clear Storage",
+		"action" : function (state){
+		    util.storageSave("parts",null);
+		    $("#in9").empty();
+		    console.log("parts storage cleared");
+		    },
+		},
+		{
 		"text": "Set Flame",
 		"action" : function (state){
 		    state.setFlame();
@@ -35,7 +49,7 @@ PartsDesigner.prototype.init = function() {
 	    "width" : 100,
 	    "height" : g_canvas.height*2,
 	    "itemHeight" : 25,
-		"location": [55,-g_canvas.height+60]
+		"location": [55,-g_canvas.height+85]
     });
 
     
@@ -52,13 +66,15 @@ PartsDesigner.prototype.init = function() {
 PartsDesigner.prototype.newPart = function () {
     console.log("new part");
     console.log(this.currentPart);
+    console.log("old parts");
+    console.log(util.storageLoad("parts"));
     $('#in1').val("");
     $('#in2').val("");
     $('#in3').val("");
     $('#in4').val("");
     $('#in5').val("");
     $('#in6').val("#00ff00");
-    $('#in8').val("");
+    $('#in8').val("#000000");
     this.flame = undefined;
     this.currentPart = new Part({
         "stroke" : "lime",
@@ -79,21 +95,44 @@ PartsDesigner.prototype.setFlame = function () {
 
 PartsDesigner.prototype.savePart = function () {
     if(this.currentPart){
-	console.log(this.currentPart);
+	this.currentPart.finalize();
+	var parts = util.storageLoad("parts");
+	if (parts){
+	    parts.push(this.currentPart);
+	} else {
+	    parts = [this.currentPart];
+	    }
+	util.storageSave("parts",parts);
+	var parts = util.storageLoad("parts");
+	$("#in9").empty();
+	$.each(parts, function (key,value) {
+	    $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
 	}
     }
 
+PartsDesigner.prototype.loadPart = function () {
+    var parts = util.storageLoad("parts");
+    this.currentPart = new Part(parts[$('#in9').val()]);
+    if (this.currentPart){
+	$('#in8').val(this.currentPart.fill);
+	$('#in7').val(this.currentPart.type);
+	$('#in6').val(this.currentPart.stroke);
+	$('#in5').val(this.currentPart.name);
+	$('#in4').val(this.currentPart.mass);
+	$('#in3').val(this.currentPart.fuel);
+	$('#in2').val(this.currentPart.thrust);
+	$('#in1').val(this.currentPart.efficiency);
+	} else this.newPart();
+    
+    }
+
 PartsDesigner.prototype.onActivation = function () {
-    $('#in1').show();
-    $('#in2').show();
-    $('#in3').show();
-    $('#in4').show();
-    $('#in5').show();
-    $('#in6').show();
-    $('#in7').show();
-    $('#in8').show();
+    for(var i = 1; i < 10; i++){
+	$('#in'+i).show();
+	}
     var canvas_pos = util.findPos(g_canvas);
-    var offsetFromMenu = 50;
+    var offsetFromMenu = 150;
+    $('#in9').offset({top:canvas_pos.y + offsetFromMenu, left: canvas_pos.x});
     $('#in8').offset({top:canvas_pos.y + offsetFromMenu+450, left: canvas_pos.x});
     $('#in7').offset({top:canvas_pos.y + offsetFromMenu+100, left: canvas_pos.x});
     $('#in6').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x});
@@ -117,23 +156,20 @@ PartsDesigner.prototype.onActivation = function () {
     $('#in1').attr("step","0.1");
     $('#in6').val("#00ff00");
     $('#in7').val("Type");
-    $('#in8').attr("placeholder","Fill (empty for none)");
-    $('#in8').val("");
+    $('#in8').val("#000000");
     var pseudoPart = new Part();
     $.each(pseudoPart.types, function (key,value) {
-    $("#in7").append('<option value="'+value+'">'+value+'</option>');});
-    
+	$("#in7").append('<option value="'+value+'">'+value+'</option>');});
+    var parts = util.storageLoad("parts");
+    $.each(parts, function (key,value) {
+	$("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
     }
 
 PartsDesigner.prototype.onDeactivation = function() {
-    $('#in1').hide();
-    $('#in2').hide();
-    $('#in3').hide();
-    $('#in4').hide();
-    $('#in5').hide();
-    $('#in6').hide();
-    $('#in7').hide();
-    $('#in8').hide();
+    for(var i = 1; i < 10; i++){
+	$('#in'+i).hide();
+	}
+	    
     }
 
 PartsDesigner.prototype.render = function(ctx) {
@@ -167,10 +203,15 @@ PartsDesigner.prototype.render = function(ctx) {
 PartsDesigner.prototype.update = function (du) {
     if (this.currentPart){
 	this.currentPart.stroke = $('#in6').val();
-	this.currentPart.fill   = $('#in8').val();
+	if ($('#in8').val() != "#000000"){
+	    this.currentPart.fill   = $('#in8').val() ;
+	    } else {
+	    this.currentPart.fill   = undefined;
+		}
 	this.currentPart.name   = $('#in5').val();
 	this.currentPart.mass   = parseFloat($('#in4').val());
 	this.currentPart.fuel   = parseFloat($('#in3').val());
+	this.currentPart.efficiency   = parseFloat($('#in1').val());
 	this.currentPart.thrust = parseFloat($('#in2').val());
 	this.currentPart.type   = $('#in7').val();
 	
