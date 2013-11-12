@@ -468,7 +468,6 @@ Ship.prototype._renderSprite = function (ctx) {
     var h = this.height;
     var t = this.thrust/this.maxThrust;
     var rot = this.rotation;
-    ctx.closePath();
     ctx.strokeStyle = "yellow";
     util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
     ctx.strokeStyle = "red";

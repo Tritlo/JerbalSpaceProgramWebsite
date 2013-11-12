@@ -118,7 +118,7 @@ binarySearch: function(val,list) {
 // =========
 
 distSq: function(x1, y1, x2, y2) {
-    return this.square(x2-x1) + this.square(y2-y1);
+    return util.square(x2-x1) + util.square(y2-y1);
 },
 
 wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {
@@ -147,15 +147,6 @@ lineNormal: function(x0,y0,x1,y1){
 sideOfLine: function(a0,a1,b0,b1,p0,p1) {
     return util.sign( (b0-a0)*(p1-a1) - (b1-a1)*(p0-a0));
 },
-/*
-sideOfLine: function(x0,y0,x1,y1,p0,p1) {
-    var lN = util.lineNormal(x0,y0,x1,y1);
-    var lineV = util.normalOfVector(lN);
-    var projOfPOnLRatio = util.dotProd([p0,p1],lineV)/util.dotProd(lineV,lineV);
-    var projOfPOnL = [projOfPOnLRatio*lineV[0], projOfPOnLRatio*lineV[1]];
-    return util.signOfCrossProduct(lN,projOfPOnL);
-},
-*/
 
 projectionOfPointOnLine: function(x0,y0,x1,y1,p0,p1) {
     var lN = util.lineNormal(x0,y0,x1,y1);
@@ -168,6 +159,11 @@ projectionOfPointOnLine: function(x0,y0,x1,y1,p0,p1) {
 
 normalOfVector: function(a) {
     return [a[1],-1*a[0]];
+},
+
+normalizeVector: function(a) {
+    var len = util.lengthOfVector(a);
+    return util.mulVecByScalar(1/len,a);
 },
 
 dotProd: function(a,b) {
@@ -249,8 +245,9 @@ rotateVector: function(a,rot){
     },
     
 vecMinus: function(a,b) {
-    return [a[0]-b[0], a[1]-b[1]]
-    },
+    var vec = [a[0]-b[0],a[1]-b[1]]
+    return vec
+},
     
 
 cartesianToPolar: function(vector) {
@@ -258,6 +255,78 @@ cartesianToPolar: function(vector) {
     var angle = util.angleOfVector(vector);
     return [ampl,angle];
 },
+
+//rotates a list so that element at ind
+//becomes the last element
+rotateList: function(li,ind) {
+    if(li && ind >= 0 && ind < li.length) {
+        var s = li.slice(0,ind+1);
+        var e = li.slice(ind+1,li.length);
+        li = e.concat(s);
+    }
+    return li;
+},
+
+compEq: function(a,b,akeys,bkeys){
+    if( typeof a === "object" && typeof b === "object"){
+        var akeys = akeys || Object.keys(a);
+        var bkeys = bkeys || Object.keys(b);
+        if( akeys.length !== bkeys.length){ 
+            return false;
+        }
+        for (var i = 0; i < akeys.length; i++)
+        {
+            if (!(util.compEq(a[akeys[i]],b[akeys[i]]))){
+                return false;
+            }
+        }
+        return true;
+    } else
+        return a === b
+
+},
+
+indexOfObj: function(li,item) {
+    if(li){
+        if(typeof item === "object"){
+            var ikeys = Object.keys(item);
+            for(var i = 0; i < li.length; i++)
+            {
+                if (util.compEq(item,li[i],ikeys))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        } else {
+            return (li.indexOf(item));
+        }
+    } else {
+        return -1;
+    }
+},
+
+lastIndexOfObj: function(li,item) {
+    if(li){
+        if(typeof item === "object"){
+            var ikeys = Object.keys(item);
+            var ind = -1;
+            for(var i = 0; i < li.length; i++)
+            {
+                if (util.compEq(item,li[i],ikeys))
+                {
+                    ind = i;
+                }
+            }
+            return ind;
+        } else {
+            return (li.indexOf(item));
+        }
+    } else {
+        return -1;
+    }
+},
+
 // CANVAS OPS
 // ==========
 
@@ -272,12 +341,14 @@ strokeCircle: function (ctx, x, y, r) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.stroke();
+    //ctx.closePath();
 },
 
 fillCircle: function (ctx, x, y, r) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
+    ctx.closePath();
 },
 
 
@@ -308,7 +379,7 @@ drawTriangle: function (ctx,x0,y0,x1,y1,x2,y2,rot,rx,ry,strokeNotFill) {
     ctx.moveTo(x0,y0);
     ctx.lineTo(x1,y1);
     ctx.lineTo(x2,y2);
-    ctx.lineTo(x0,y0);
+    ctx.closePath();
     if (strokeNotFill) {
 	ctx.stroke();
     }
@@ -344,6 +415,50 @@ drawLine: function(ctx,x1,y1,x2,y2){
     ctx.lineTo(x2,y2);
     ctx.stroke();
     ctx.closePath();
-}
+},
+// =======
+// Storage
+// =======
 
+_storageName: "JerbalSpaceProgramStorage",
+
+fetchStorage: function(){
+	if (localStorage[util._storageName]){
+    	return $.parseJSON(localStorage[util._storageName]);
+	}
+	return {};
+},
+
+setStorage: function(obj){
+    localStorage[util._storageName] = JSON.stringify(obj);
+},
+
+
+storageSave: function(key,value){
+    if(typeof Storage === "undefined") return;
+    var sto = util.fetchStorage();
+    sto[key] = value;
+    util.setStorage(sto);
+},
+
+echoJSON: function(value){
+    console.log(JSON.stringify(value));
+},
+
+storageLoad: function(key){
+    if(typeof Storage === "undefined") return null;
+    var sto = util.fetchStorage();
+    return sto[key];
+},
+
+storageReset: function(){
+    if(typeof Storage === "undefined") return;
+    util.setStorage({});
+},
+
+//Inputs
+hideAllInputs: function () {
+    $('input').hide();
+    },
 };
+

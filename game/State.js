@@ -1,4 +1,6 @@
-function State() {
+function State(descr) {
+    this.setup(descr);
+    this.init();
  };
 
 State.prototype.setup = function (descr) {
@@ -7,6 +9,17 @@ State.prototype.setup = function (descr) {
         this[property] = descr[property];
     }
 };
+
+State.prototype.init = function () {
+    }
+
+//To be done when activaed
+State.prototype.onActivation = function() {
+    }
+
+//To be done when deactivated
+State.prototype.onDeactivation = function() {
+    }
 
 State.prototype.render = function (ctx) {
     console.log("ERROR: RENDER NOT OVERWRITTEN FOR:");

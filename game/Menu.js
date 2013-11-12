@@ -15,7 +15,17 @@ function Menu(descr) {
     this.setup(descr);
 };
 
-Menu.prototype = new State();
+Menu.prototype.setup = function (descr) {
+    for (var property in descr) {
+        this[property] = descr[property];
+    }
+}
+
+Menu.prototype.inMenu = function(x,y) {
+     return (this.initialized &&  util.circInBox(x,y,0,this.hitBox[0],this.hitBox[1]));
+    }
+    
+    
 
 Menu.prototype.titleHeight = 50;
 Menu.prototype.itemHeight = 25;
@@ -80,8 +90,6 @@ Menu.prototype.render = function(ctx) {
             }
         }
         if(g_settings.enableDebug) util.strokeBox(ctx,this.hitBox[0][0],this.hitBox[0][1],this.width,this.height);
-        ctx.stroke();
-        ctx.fill();
         ctx.restore();
     };
 
@@ -91,50 +99,68 @@ Menu.prototype.update = function (du) {
 };
 
 Menu.prototype.onSelected = function (item) {
-    console.log(item);
+    item.action(this.state);
 }
 
 Menu.prototype.handleMouse = function (evt, type) {
-        if (type === "down"){
-        } else if (type === "move") {
-            var pos = util.findPos(g_canvas);
-            g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
-            for (var i = 0; i < this.items.length; i++){
-                var item = this.items[i];
-                item.selected = false;
-                if (util.circInBox(g_mouse[0],g_mouse[1],0,item.hitBox[0],item.hitBox[1])) {
-                    item.selected = true;
-                }
-            }
-        } else if (type === "up") {
-            for (var i = 0; i < this.items.length; i++){
-                var item = this.items[i];
-                if (item.selected){
-                    this.onSelected(item);
-                    break;
-                }
-            }
-        }
+	var pos = util.findPos(g_canvas);
+	g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+        if (this.inMenu(g_mouse[0],g_mouse[1])){
+	    if (type === "down"){
+	    } else if (type === "move") {
+		for (var i = 0; i < this.items.length; i++){
+		    var item = this.items[i];
+		    item.selected = false;
+		    if (util.circInBox(g_mouse[0],g_mouse[1],0,item.hitBox[0],item.hitBox[1])) {
+			item.selected = true;
+		    }
+		}
+	    } else if (type === "up") {
+		for (var i = 0; i < this.items.length; i++){
+		    var item = this.items[i];
+		    if (item.selected){
+			this.onSelected(item);
+			break;
+		    }
+		}
+	    }
+	    }
 };
 
 
-var mainMenu = new Menu({
-    "title" : "JERBAL SPACE PROGRAM",
-    "items": [ {
-	    "text": "Start",
-	    "state" : "simulation",
-	    },
-        { "text": "Parts Design",
-	      "state" : "partsDesigner"
-        }
-    ],
-	"location": [g_canvas.width/2,0],
-    "titleHeight" : 50,
-    "itemHeight" : 42,
-    "width" : g_canvas.width,
-    "height" : g_canvas.height,
-    "margin_bottom" : 5,
-    "onSelected" : function (item) {
-         stateManager.switchState(item.state);
-    }
+			    
+
+var mainMenu = new State({
+    "render" : function (ctx){
+	this.menu.render(ctx);
+	},
+    "handleMouse" : function(evt,type) {
+	this.menu.handleMouse(evt,type);
+	},
+    "update" : function(du) {
+	this.menu.update(du);
+	},
+    "init" : function () {
+	this.menu = new Menu({
+	"state" : this,
+	"title" : "JERBAL SPACE PROGRAM",
+	"items": [ {
+		"text": "Start",
+		"state" : "simulation"
+		},
+		{ "text": "Parts Design",
+		  "state" : "partsDesigner"
+		}
+	],
+	    "location": [g_canvas.width/2,0],
+	"titleHeight" : 50,
+	"itemHeight" : 42,
+	"width" : g_canvas.width,
+	"height" : g_canvas.height,
+	"margin_bottom" : 5,
+	"onSelected" : function (item) {
+	     stateManager.switchState(item.state);
+	}
+	});
+	}
     });
