@@ -1,16 +1,24 @@
 var Stars = {
 
-_blockSize: {x: g_canvas.width*2, y: g_canvas.height*2},
+_blockSize: {x: g_canvas.width, y: g_canvas.height},
 
 _STpBL: {min: 50, max: 100},
 
 _blocks: [],
 
+_rad: 0,
+
+_tooHeavy: false,
+
 update: function(du){
-    var s = entityManager.getMainShip();
-    var bl = this._posToBlock(s.cx,s.cy);
-    for(var i = bl[0]-1; i <= bl[0]+1; i++){
-        for(var j = bl[1]-1; j <= bl[1]+1; j++){
+    this._tooHeavy = entityManager.cameraZoom < 0.3;
+    if(this._tooHeavy) return;
+    var os = entityManager.trueOffset;
+    //console.log("update: " + os);
+    var bl = this._posToBlock(os[0],os[1]);
+    this._rad=Math.floor(1/(entityManager.cameraZoom*Math.sqrt(2)))+1;
+    for(var i = bl[0]-this._rad; i <= bl[0]+this._rad; i++){
+        for(var j = bl[1]-this._rad; j <= bl[1]+this._rad; j++){
 	    this._maybeGenerateBlock(i,j);
 	}
     }
@@ -32,16 +40,19 @@ _maybeGenerateBlock: function(i,j){
 },
 
 render: function(ctx){
-    var s = entityManager.getMainShip();
-    var bl = this._posToBlock(s.cx,s.cy);
-    for(var i = bl[0]-1; i <= bl[0]+1; i++){
-        for(var j = bl[1]-1; j <= bl[1]+1; j++){
-	    this._renderBlock(ctx,this._blocks[i][j]);
+    if(this._tooHeavy) return;
+    var os = entityManager.trueOffset;
+    //console.log("render: " + os);
+    var bl = this._posToBlock(os[0],os[1]);
+    for(var i = bl[0]-this._rad; i <= bl[0]+this._rad; i++){
+        for(var j = bl[1]-this._rad; j <= bl[1]+this._rad; j++){
+	    this._renderBlock(ctx,i,j);
 	}
     }
 },
 
 _starTween: function(x,y){
+    if(entityManager.lockCamera) return {x:0,y:0};
     var speed = Math.sqrt(x*x + y*y);
     var angle = Math.atan2(y,x);
     var newSpeed = Math.atan((Math.max(speed-15,0))/600)*650;
@@ -64,16 +75,17 @@ _renderStar: function(ctx,x,y){
 },
 
 
-_renderBlock: function(ctx,block){
-    if(!block) return;
+_renderBlock: function(ctx,i,j){
+    if(!(this._blocks[i] && this._blocks[i][j])) return;
+    var block = this._blocks[i][j]
     for(var i = 0; i < block.length;i++){
         this._renderStar(ctx,block[i].x,block[i].y);
     }
 },
 
 _posToBlock: function(x,y){
-    var bx = Math.floor(x/this._blockSize.x);
-    var by = Math.floor(y/this._blockSize.y);
+    var bx = -Math.floor(x/this._blockSize.x);
+    var by = -Math.floor(y/this._blockSize.y);
     return [bx,by];
 },
 };

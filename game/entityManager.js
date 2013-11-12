@@ -37,6 +37,7 @@ _bShowRocks : true,
 
 
 cameraOffset: [0,0],
+trueOffset: [100,100],
 mouseOffset: [0,0],
 cameraRotation: 0,
 cameraZoom: 1,
