@@ -90,7 +90,6 @@ Menu.prototype.render = function(ctx) {
             }
         }
         if(g_settings.enableDebug) util.strokeBox(ctx,this.hitBox[0][0],this.hitBox[0][1],this.width,this.height);
-        ctx.stroke();
         ctx.restore();
     };
 

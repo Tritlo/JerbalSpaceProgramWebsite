@@ -8,6 +8,18 @@ function PartsDesigner(descr) {
 PartsDesigner.prototype = new State();
 
 PartsDesigner.prototype.init = function() {
+    this.back = new Menu({
+	"state" : this,
+	"items" : [{
+	    "text" : "Back",
+	    "action" : function (state) {
+		stateManager.switchState("menu");
+		}
+	    }],
+	"width" : 50,
+	"height" : 25,
+	"location" : [ g_canvas.width - 50, 25]
+	});
     this.menu = new Menu({
 	    "state" : this,
 	    "items" : [
@@ -133,14 +145,14 @@ PartsDesigner.prototype.onActivation = function () {
     var canvas_pos = util.findPos(g_canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu, left: canvas_pos.x});
-    $('#in8').offset({top:canvas_pos.y + offsetFromMenu+450, left: canvas_pos.x});
+    $('#in8').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x});
     $('#in7').offset({top:canvas_pos.y + offsetFromMenu+100, left: canvas_pos.x});
-    $('#in6').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x});
-    $('#in5').offset({top:canvas_pos.y + offsetFromMenu+200, left: canvas_pos.x});
-    $('#in4').offset({top:canvas_pos.y + offsetFromMenu+250, left: canvas_pos.x});
-    $('#in3').offset({top:canvas_pos.y + offsetFromMenu+300, left: canvas_pos.x});
-    $('#in2').offset({top:canvas_pos.y + offsetFromMenu+350, left: canvas_pos.x});
-    $('#in1').offset({top:canvas_pos.y + offsetFromMenu+400, left: canvas_pos.x});
+    $('#in6').offset({top:canvas_pos.y + offsetFromMenu+200, left: canvas_pos.x});
+    $('#in5').offset({top:canvas_pos.y + offsetFromMenu+250, left: canvas_pos.x});
+    $('#in4').offset({top:canvas_pos.y + offsetFromMenu+300, left: canvas_pos.x});
+    $('#in3').offset({top:canvas_pos.y + offsetFromMenu+350, left: canvas_pos.x});
+    $('#in2').offset({top:canvas_pos.y + offsetFromMenu+400, left: canvas_pos.x});
+    $('#in1').offset({top:canvas_pos.y + offsetFromMenu+450, left: canvas_pos.x});
     $('#in5').attr("placeholder","Part Name");
     $('#in4').attr("placeholder","Mass");
     $('#in4').get(0).type = "number";
@@ -169,11 +181,13 @@ PartsDesigner.prototype.onDeactivation = function() {
     for(var i = 1; i < 10; i++){
 	$('#in'+i).hide();
 	}
+    this.currentPart = undefined;
 	    
     }
 
 PartsDesigner.prototype.render = function(ctx) {
     this.menu.render(ctx);
+    this.back.render(ctx);
     this.grid.render(ctx);
     if (this.closest) {
         var i = this.closest[0];
@@ -227,7 +241,9 @@ PartsDesigner.prototype.handleMouse = function (evt,type) {
     g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if (this.menu.inMenu(g_mouse[0],g_mouse[1])){
 	this.menu.handleMouse(evt,type);
-	}
+	} else if (this.back.inMenu(g_mouse[0],g_mouse[1])){
+	this.back.handleMouse(evt,type);
+	    }
     else {
 	this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
 	this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]]
