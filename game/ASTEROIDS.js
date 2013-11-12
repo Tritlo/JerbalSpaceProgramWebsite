@@ -208,7 +208,7 @@ g_defaultParts = g_defaultParts.map(function (str) {
     return new Part($.parseJSON(str));
 });
 
-if(util.storageLoad('parts') === null){
+if(util.storageLoad('parts') === undefined){
     util.storageSave('parts',g_defaultParts);
 }
 

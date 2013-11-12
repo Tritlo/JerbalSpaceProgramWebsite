@@ -70,7 +70,7 @@ PartsDesigner.prototype.init = function() {
 		{
 		"text": "Clear Storage",
 		"action" : function (state){
-		    util.storageSave("parts",null);
+		    util.storageSave("parts",undefined);
 		    $("#in9").empty();
 		    console.log("parts storage cleared");
 		    },
