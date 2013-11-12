@@ -8,7 +8,6 @@ Part.prototype.setup = function (descr) {
     }
 
 }
-
 Part.prototype.name = "NO NAME";
 Part.prototype.mass = 0.1;
 Part.prototype.currentMass = 0.1
@@ -17,9 +16,15 @@ Part.prototype.currentThrust = 0;
 Part.prototype.fuel = 0;
 Part.prototype.currentFuel = 0;
 Part.prototype.fuelDensity = 0.01;
+Part.prototype.efficiency = 0;
 Part.prototype.types = ["Other","Fuel Tank","Engine"];
 Part.prototype.type = "Other";
 Part.prototype.rotation = 0;
+Part.prototype.width = 0;
+Part.prototype.height = 0;
+Part.prototype.radius = 0;
+Part.prototype.fill = undefined;
+Part.prototype.stroke = undefined;
 
 //Rotates the outline,
 //so that ind becomes the
@@ -71,7 +76,7 @@ Part.prototype.setType = function(tp){
 }
 
 Part.prototype.setFuel = function (fl){
-    if(this.type !== "fuelTank") return; //perhaps keep the fuel, but handle this elsewhere
+    if(this.type !== "Fuel Tank") return; //perhaps keep the fuel, but handle this elsewhere
     fl = fl || this.fuel;
     this.fuel = fl;
     this.mass = this.baseMass + this.fuel*this.fuelDensity;
@@ -108,11 +113,39 @@ Part.prototype.finalize = function(){
     this.height = maxy - miny;
     this.width = maxx - minx;
     this.centerOfMass = {x: x/l, y: y/l};
+    this.currentThrust = 0;
+    this.currentFuel = 0;
+    this.radius = Math.max(this.height,this.width);
 }
+
+Part.prototype._renderFlame = function (ctx) {
+    if (this.flame && this.thrust != 0) {
+	var t = this.currentThrust/this.thrust;
+	var rot = this.rotation;
+	ctx.save();
+	ctx.lineWidth = 2;
+	var ps = this.flame.points;
+	var c = this.flame.center;
+	var l = this.flame.length;
+	var dir = this.flame.direction;
+	ctx.strokeStyle = "blue";
+	var tip = util.vecPlus(c,util.mulVecByScalar(0.2*l*t,dir));
+	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
+	ctx.strokeStyle = "yellow";
+	var tip = util.vecPlus(c,util.mulVecByScalar(0.6*l*t,dir));
+	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
+	ctx.strokeStyle = "red";
+	var tip = util.vecPlus(c,util.mulVecByScalar(1.0*l*t,dir));
+	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
+	ctx.restore();
+	}
+    
+    }
 
 Part.prototype.render = function (ctx) {
     if(this.outline){
         ctx.save();
+	this._renderFlame(ctx);
         if(this.fill){
             ctx.fillStyle = this.fill;
         }
@@ -130,25 +163,8 @@ Part.prototype.render = function (ctx) {
         }
         ctx.closePath();
         ctx.stroke();
-	if (this.flame && this.thrust != 0) {
-	    var t = this.currentThrust/this.thrust;
-	    var rot = this.rotation;
-	    ctx.save();
-	    ctx.lineWidth = 1;
-	    var ps = this.flame.points;
-	    var c = this.flame.center;
-	    var l = this.flame.length;
-	    var dir = this.flame.direction;
-	    ctx.strokeStyle = "blue";
-	    var tip = util.vecPlus(c,util.mulVecByScalar(0.2*l*t,dir));
-	    util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
-	    ctx.strokeStyle = "yellow";
-	    var tip = util.vecPlus(c,util.mulVecByScalar(0.6*l*t,dir));
-	    util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
-	    ctx.strokeStyle = "red";
-	    var tip = util.vecPlus(c,util.mulVecByScalar(1.0*l*t,dir));
-	    util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
-	    ctx.restore();
+	if(this.fill) {
+	    ctx.fill()
 	    }
         ctx.restore();
     }
