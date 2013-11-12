@@ -100,7 +100,24 @@ Part.prototype.setLastPoint = function (pt) {
 
 }
 
-Part.prototype.finalize = function(){
+Part.prototype.toDesigner = function(grid){
+    this.outline = grid.fromGridCoords(this.outline);    
+    console.log(this.outline);
+    if(this.flame){
+        this.setFlame(grid.fromGridCoords(this.flame.points));  
+    }
+   return this;
+}
+
+
+
+Part.prototype.finalize = function(grid){
+    this.outline = grid.toGridCoords(this.outline);
+    if(this.flame){
+        this.setFlame(grid.toGridCoords(this.flame.points));  
+    }
+    // so they make sense when drawn
+    // (otherwise dims become crazy);
     var l = this.outline.length;
     if(l === 0) return; //maybe some error-handling? I dunno.
     var x = 0;
@@ -121,6 +138,11 @@ Part.prototype.finalize = function(){
     }
     this.height = maxy - miny;
     this.width = maxx - minx;
+
+    //Translate
+    this.outline = this.outline.map(function (x) {
+        return util.vecMinus(x,[minx,miny]);
+    });
     this.centerOfMass = {x: x/l, y: y/l};
     this.currentThrust = 0;
     this.currentFuel = 0;

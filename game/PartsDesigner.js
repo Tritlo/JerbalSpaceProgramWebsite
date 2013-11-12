@@ -1,4 +1,4 @@
-    function PartsDesigner(descr) {
+function PartsDesigner(descr) {
     this.setup(descr);
     this.init();
 };
@@ -84,10 +84,10 @@ PartsDesigner.prototype.init = function() {
 
     
     this.grid = new Grid({
-	"dims" : [32,32],
+	    "dims" : [32,32],
         "width" : 525,
         "height" : 525,
-        "location": [375,375],
+        "location": [375,375]
 	});
 
     this.newPart();
@@ -140,7 +140,7 @@ PartsDesigner.prototype.addAttachmentPointMode = function () {
 
 PartsDesigner.prototype.savePart = function () {
     if(this.currentPart){
-	this.currentPart.finalize();
+	this.currentPart.finalize(this.grid);
 	var parts = util.storageLoad("parts");
 	if (parts){
 	    parts.push(this.currentPart);
@@ -148,6 +148,7 @@ PartsDesigner.prototype.savePart = function () {
 	    parts = [this.currentPart];
 	    }
 	util.storageSave("parts",parts);
+	this.currentPart.toDesigner(this.grid);
 	var parts = util.storageLoad("parts");
 	$("#in9").empty();
 	$.each(parts, function (key,value) {
@@ -157,7 +158,8 @@ PartsDesigner.prototype.savePart = function () {
 
 PartsDesigner.prototype.loadPart = function () {
     var parts = util.storageLoad("parts");
-    this.currentPart = new Part(parts[$('#in9').val()]);
+    var part = new Part(parts[$('#in9').val()]);
+    this.currentPart = part.toDesigner(this.grid);
     if (this.currentPart){
 	$('#in8').val(this.currentPart.fill);
 	$('#in7').val(this.currentPart.type);

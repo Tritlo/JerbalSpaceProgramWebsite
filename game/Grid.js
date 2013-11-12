@@ -15,12 +15,46 @@ Grid.prototype.init = function () {
     for(var i = 0; i < this.dims[0]; i++){
 	this.points[i] = [];
 	for(var j = 0; j < this.dims[1]; j++){
-	    this.points[i][j] = [j*this.width/this.dims[0] + this.location[0] - this.width/2,i*this.height/this.dims[1]+ this.location[1] - this.height/2];
+	    this.points[i][j] = this.fromGridCoord(i,j);
 	    }
 	}
+    console.log(this.points);
 }
 
-Grid.prototype.findNearestPoint = function (x,y) {
+Grid.prototype.toGridCoords = function(points){
+    var grid = this;
+    var coords = points.map(function(p) {
+        return grid.findNearestPoint(p);
+    }
+    );
+    return coords;
+}
+
+Grid.prototype.fromGridCoord = function(iorpoint,j){
+    if(j === undefined){
+        var i = iorpoint[0];
+        var j = iorpoint[1];
+    } else {
+        var i = iorpoint;
+    }
+    return [j*this.width/this.dims[0] + this.location[0] - this.width/2,i*this.height/this.dims[1]+ this.location[1] - this.height/2];
+}
+
+Grid.prototype.fromGridCoords = function(coords){
+    var grid = this;
+    var points = coords.map(function(p) {
+        return grid.fromGridCoord(p);
+    });
+    return points;
+}
+
+Grid.prototype.findNearestPoint = function (xorpoint,y) {
+    if(y === undefined){
+        var x = xorpoint[0];
+        var y = xorpoint[1];
+    } else {
+        var x = xorpoint;
+    }
     var line = this.points[0];
     var xs = [];
     var ys = [];
