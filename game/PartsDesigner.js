@@ -164,8 +164,11 @@ PartsDesigner.prototype.savePart = function () {
         }
         var parts = util.storageLoad("parts");
         $("#in9").empty();
-        $.each(parts, function (key,value) {
-            $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+        if(parts)
+        {
+            $.each(parts, function (key,value) {
+                $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+        }
     }
     }
 
@@ -228,8 +231,11 @@ PartsDesigner.prototype.onActivation = function () {
     $.each(pseudoPart.types, function (key,value) {
 	$("#in7").append('<option value="'+value+'">'+value+'</option>');});
     var parts = util.storageLoad("parts");
-    $.each(parts, function (key,value) {
-	$("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    if(parts)
+    {
+        $.each(parts, function (key,value) {
+        $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    }
     }
 
 PartsDesigner.prototype.onDeactivation = function() {

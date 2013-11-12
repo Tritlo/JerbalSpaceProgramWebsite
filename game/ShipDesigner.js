@@ -88,10 +88,12 @@ ShipDesigner.prototype.init = function() {
 
 ShipDesigner.prototype.newShip = function ()
 {
+    /*
     this.currentShip = new Ship(
             {
 
             });
+            */
 }
 
 
@@ -100,7 +102,7 @@ ShipDesigner.prototype.saveShip = function ()
 {
     if(this.currentShip)
     {
-        this.currentShip.assemble(this.grid,this.parts);
+        this.currentShip.assemble(this.grid);
         var ships = util.storageLoad("ship");
         if (ships){
             ships.push(this.currentShip);
@@ -111,12 +113,15 @@ ShipDesigner.prototype.saveShip = function ()
         this.currentPart.disassemble(this.grid);
         var ships = util.storageLoad("ships");
         $("#in9").empty();
-        $.each(ships, function (key,value) {
-            $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+        if(ships)
+        {
+            $.each(ships, function (key,value) {
+                $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+        }
     }
 }
 
-ShipDesigner.prototype.loadPart = function ()
+ShipDesigner.prototype.loadShip = function ()
 {
     var ships = util.storageLoad("ships");
     var ship = new Ship(ships[$('#in9').val()]);
@@ -136,8 +141,11 @@ ShipDesigner.prototype.onActivation = function ()
 	$('#in5').val("");
 	$('#in5').attr("placeholder","Ship Name");
     var ships = util.storageLoad("ships");
-    $.each(ships, function (key,value) {
-	$("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    if(ships)
+    {
+        $.each(ships, function (key,value) {
+        $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    }
 }
 
 ShipDesigner.prototype.onDeactivation = function()
@@ -157,12 +165,12 @@ ShipDesigner.prototype.render = function(ctx) {
     this.grid.render(ctx);
     if (this.currentShip)
     {
-        this.currentShip.render(ctx);
+        //this.currentShip.render(ctx);
     }
 };
 
 ShipDesigner.prototype.update = function (du) {
-	this.currentShip.name   = $('#in5').val();
+	//this.currentShip.name   = $('#in5').val();
 };
 
 ShipDesigner.prototype.handleMenus = function(evt,type){
@@ -216,4 +224,4 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
     } 
 };
 
-var shipDesigner = new ShipDesigner();
+var shipDesigner = new ShipDesigner()
