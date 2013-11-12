@@ -423,7 +423,10 @@ drawLine: function(ctx,x1,y1,x2,y2){
 _storageName: "JerbalSpaceProgramStorage",
 
 fetchStorage: function(){
-    return $.parseJSON(localStorage[util._storageName] || {});
+	if (localStorage[util._storageName]){
+    	return $.parseJSON(localStorage[util._storageName]);
+	}
+	return {};
 },
 
 setStorage: function(obj){
