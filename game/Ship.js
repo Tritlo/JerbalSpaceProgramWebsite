@@ -21,9 +21,9 @@ function Ship(descr) {
     this.rememberResets();
     
     // Default sprite, if not otherwise specified
-    this.sprite = this.sprite || g_sprites.lunarLander;
-    this.width = this.sprite.width;
-    this.height = this.sprite.height;
+    //this.sprite = this.sprite || g_sprites.lunarLander;
+    //this.width = this.sprite.width;
+    //this.height = this.sprite.height;
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
@@ -62,6 +62,14 @@ Ship.prototype.mass = 1;
 Ship.prototype.angularVel = 0;
 Ship.prototype.torque = 0;
 
+Ship.prototype.assemble = function(grid) {
+	for(var i = 0; i<this.parts.length; i++) {
+		this.mass+=this.parts[i].mass;
+		this.fuel+=this.parts[i].fuel;
+	}
+}
+Ship.prototype.disassemble = function() {
+}
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
     "sounds/shipWarp.ogg");
