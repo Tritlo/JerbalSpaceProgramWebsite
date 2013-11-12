@@ -178,15 +178,15 @@ PartsDesigner.prototype.onActivation = function () {
 	}
     var canvas_pos = util.findPos(g_canvas);
     var offsetFromMenu = 150;
-    $('#in9').offset({top:canvas_pos.y + offsetFromMenu, left: canvas_pos.x});
-    $('#in8').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x});
-    $('#in7').offset({top:canvas_pos.y + offsetFromMenu+100, left: canvas_pos.x});
-    $('#in6').offset({top:canvas_pos.y + offsetFromMenu+200, left: canvas_pos.x});
-    $('#in5').offset({top:canvas_pos.y + offsetFromMenu+250, left: canvas_pos.x});
-    $('#in4').offset({top:canvas_pos.y + offsetFromMenu+300, left: canvas_pos.x});
-    $('#in3').offset({top:canvas_pos.y + offsetFromMenu+350, left: canvas_pos.x});
-    $('#in2').offset({top:canvas_pos.y + offsetFromMenu+400, left: canvas_pos.x});
-    $('#in1').offset({top:canvas_pos.y + offsetFromMenu+450, left: canvas_pos.x});
+    $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
+    $('#in8').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x+5});
+    $('#in7').offset({top:canvas_pos.y + offsetFromMenu+100, left: canvas_pos.x+5});
+    $('#in6').offset({top:canvas_pos.y + offsetFromMenu+200, left: canvas_pos.x+5});
+    $('#in5').offset({top:canvas_pos.y + offsetFromMenu+250, left: canvas_pos.x+5});
+    $('#in4').offset({top:canvas_pos.y + offsetFromMenu+300, left: canvas_pos.x+5});
+    $('#in3').offset({top:canvas_pos.y + offsetFromMenu+350, left: canvas_pos.x+5});
+    $('#in2').offset({top:canvas_pos.y + offsetFromMenu+400, left: canvas_pos.x+5});
+    $('#in1').offset({top:canvas_pos.y + offsetFromMenu+450, left: canvas_pos.x+5});
     $('#in5').attr("placeholder","Part Name");
     $('#in4').attr("placeholder","Mass");
     $('#in4').get(0).type = "number";
@@ -256,7 +256,7 @@ PartsDesigner.prototype.render = function(ctx) {
         var y = this.currentAttachmentPoint[1];
         ctx.save();
         console.log("curr");
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = "red";
         util.strokeCircle(ctx,x,y,7)
         ctx.restore();
     }
@@ -265,7 +265,7 @@ PartsDesigner.prototype.render = function(ctx) {
         this.currentPart.render(ctx);
         if(this.currentPart.attachmentPoints){
             ctx.save();
-            ctx.strokeStyle = "white";
+            ctx.strokeStyle = "red";
             this._renderAttachmentPoints(this.currentPart.attachmentPoints, ctx);
             ctx.restore();
         }
