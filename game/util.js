@@ -368,7 +368,7 @@ drawLine: function(ctx,x1,y1,x2,y2){
 _storageName: "JerbalSpaceProgramStorage",
 
 fetchStorage: function(){
-    return $.parseJSON(localStorage[util._storageName] || "{}");
+    return $.parseJSON(localStorage[util._storageName] || {});
 },
 
 setStorage: function(obj){
@@ -391,7 +391,7 @@ storageLoad: function(key){
 
 storageReset: function(){
     if(typeof Storage === "undefined") return;
-    util.setStorage("{}");
+    util.setStorage({});
 },
 
 //Inputs

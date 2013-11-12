@@ -148,8 +148,10 @@ PartsDesigner.prototype.savePart = function () {
 	} else {
 	    parts = [this.currentPart];
 	    }
+	console.log(parts);
 	util.storageSave("parts",parts);
 	var parts = util.storageLoad("parts");
+	console.log(parts);
 	$("#in9").empty();
 	$.each(parts, function (key,value) {
 	    $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
