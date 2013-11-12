@@ -56,6 +56,15 @@ Part.prototype.addPoint = function(pt){
     //maybe add to baseMass
 }
 
+Part.prototype.addAttachmentPoint = function (point){
+    if(this.attachmentPoints){
+        this.attachmentPoints.push(point);
+    }
+    else{
+        this.attachmentPoints = [point];
+    }
+}
+
 Part.prototype.setType = function(tp){
     if(!tp) return;
     var valid = false;

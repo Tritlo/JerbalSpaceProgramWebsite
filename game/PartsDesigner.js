@@ -1,4 +1,4 @@
-function PartsDesigner(descr) {
+    function PartsDesigner(descr) {
     this.setup(descr);
     this.init();
 };
@@ -10,16 +10,34 @@ PartsDesigner.prototype = new State();
 PartsDesigner.prototype.init = function() {
     this.back = new Menu({
 	"state" : this,
-	"items" : [{
+	"items" : [
+        {
 	    "text" : "Back",
 	    "action" : function (state) {
 		stateManager.switchState("menu");
 		}
-	    }],
-	"width" : 50,
-	"height" : 25,
-	"location" : [ g_canvas.width - 50, 25]
+	    },
+        ],
+	"width" : 100,
+	"height" : 100,
+	"location" : [ g_canvas.width - 100, 0]
 	});
+
+    this.menu2 = new Menu({
+	"state" : this,
+	"items" : [
+        {
+	    "text" : "Add Attachment Points",
+	    "action" : function (state) {
+            state.addAttachmentPointMode();
+		}
+	    }
+        ],
+	"width" : 200,
+	"height" : 100,
+	"location" : [ 260, 0]
+	});
+
     this.menu = new Menu({
 	    "state" : this,
 	    "items" : [
@@ -91,18 +109,34 @@ PartsDesigner.prototype.newPart = function () {
     this.currentPart = new Part({
         "stroke" : "lime",
         "lineWidth" : 4,
-	"currentThrust" : 0.2
+	    "currentThrust" : 0.2
     });
     }
 
 PartsDesigner.prototype.setFlame = function () {
     if(this.editing){
-	this.editing = false;
-	this.currentPart.outline.pop();
+        this.editing = false;
+        this.currentPart.outline.pop();
 	}
+    if (this.addingAddtachmentPoint){
+        this.addingAddtachmentPoint = false;
+    }
     this.currentPart.currentThrust = this.currentPart.thrust;
     this.flameSet = false;
     this.flame = [];
+    }
+
+PartsDesigner.prototype.addAttachmentPointMode = function () {
+    if(this.editing){
+	this.editing = false;
+	this.currentPart.outline.pop();
+	}
+	if(this.flame && this.flame.length === 3 && !this.flameSet) {
+        this.flame = undefined;
+        this.flameSet = true;
+    }
+    this.addingAttachmentPoint = true;
+    console.log(this.addingAttachmentPoint);
     }
 
 PartsDesigner.prototype.savePart = function () {
@@ -166,9 +200,11 @@ PartsDesigner.prototype.onActivation = function () {
     $('#in1').attr("placeholder","Efficiency");
     $('#in1').get(0).type = "number";
     $('#in1').attr("step","0.1");
-    $('#in6').val("#00ff00");
+    if (!this.currentPart){
+        $('#in6').val("#00ff00");
+        $('#in8').val("#000000");
+    }
     $('#in7').val("Type");
-    $('#in8').val("#000000");
     var pseudoPart = new Part();
     $.each(pseudoPart.types, function (key,value) {
 	$("#in7").append('<option value="'+value+'">'+value+'</option>');});
@@ -180,13 +216,19 @@ PartsDesigner.prototype.onActivation = function () {
 PartsDesigner.prototype.onDeactivation = function() {
     for(var i = 1; i < 10; i++){
 	$('#in'+i).hide();
+	$('#in'+i).empty();
 	}
     //this.currentPart = undefined;
 	    
     }
 
+//RENDER
+//=====
+
+
 PartsDesigner.prototype.render = function(ctx) {
     this.menu.render(ctx);
+    this.menu2.render(ctx);
     this.back.render(ctx);
     this.grid.render(ctx);
     if (this.closest) {
@@ -209,10 +251,35 @@ PartsDesigner.prototype.render = function(ctx) {
         ctx.restore();
 	
 	}
+    if(this.currentAttachmentPoint){
+        var x = this.currentAttachmentPoint[0];
+        var y = this.currentAttachmentPoint[1];
+        ctx.save();
+        console.log("curr");
+        ctx.strokeStyle = "white";
+        util.strokeCircle(ctx,x,y,7)
+        ctx.restore();
+    }
+
     if (this.currentPart) {
         this.currentPart.render(ctx);
+        if(this.currentPart.attachmentPoints){
+            ctx.save();
+            ctx.strokeStyle = "white";
+            this._renderAttachmentPoints(this.currentPart.attachmentPoints, ctx);
+            ctx.restore();
+        }
     }
 };
+
+PartsDesigner.prototype._renderAttachmentPoints = function(points,ctx){
+    for(var i = 0; i < points.length; i++){
+        var x = points[i][0];
+        var y = points[i][1];
+        util.strokeCircle(ctx,x,y,7);
+        
+    }
+}
 
 PartsDesigner.prototype.update = function (du) {
     if (this.currentPart){
@@ -236,51 +303,92 @@ PartsDesigner.prototype.update = function (du) {
     }
 };
 
-PartsDesigner.prototype.handleMouse = function (evt,type) {
+PartsDesigner.prototype.handleMenus = function(evt,type){
     var pos = util.findPos(g_canvas);
     g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if (this.menu.inMenu(g_mouse[0],g_mouse[1])){
-	this.menu.handleMouse(evt,type);
-	} else if (this.back.inMenu(g_mouse[0],g_mouse[1])){
-	this.back.handleMouse(evt,type);
+        this.menu.handleMouse(evt,type);
+        return true;
+	}
+    else if (this.back.inMenu(g_mouse[0],g_mouse[1])){
+        this.back.handleMouse(evt,type);
+        return true;
+	    }
+    else if (this.menu2.inMenu(g_mouse[0],g_mouse[1])){
+        this.menu2.handleMouse(evt,type);
+        return true;
 	    }
     else {
-	this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
-	this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]]
+        return false;
+    }
+}
 
-    if (type === "down") {
-        if(evt.button === 0){
+
+PartsDesigner.prototype.addToOutline = function(){
+    if(!(this.currentPart.outline)) {
+        this.currentPart.addPoint(this.closestPoint);
+        this.currentPart.addPoint(this.closestPoint);
+    } else if (!this.editing) {
+        if(util.inList(this.currentPart.outline,this.closestPoint)) {
+            this.currentPart.rotate(this.closestPoint);
+            this.currentPart.setLastPoint(this.closestPoint);
+        }
+    } else {
+        this.currentPart.addPoint(this.closestPoint);
+    }
+}
+
+PartsDesigner.prototype.addAttachmentPoint = function(){
+    console.log("adding point");
+    console.log(this.currentPart.attachmentPoints);
+    this.addingAttachmentPoint = false;
+    if(this.currentPart){
+        this.currentPart.addAttachmentPoint(this.closestPoint);
+    }
+}
+
+
+PartsDesigner.prototype.handleDown = function(evt,type) {
+        if(evt.button === 0) {
             if(this.currentPart) {
-		if (this.flame && this.flame.length < 3){
-		    this.flame.push(this.closestPoint);
-		} else {
-		    if(!(this.currentPart.outline)){
-			this.currentPart.addPoint(this.closestPoint);
-			this.currentPart.addPoint(this.closestPoint);
-		    } else if (!this.editing) {
-			if(util.inList(this.currentPart.outline,this.closestPoint)){
-			    this.currentPart.rotate(this.closestPoint);
-			    this.currentPart.setLastPoint(this.closestPoint);
-			}
-		    } else {
-			this.currentPart.addPoint(this.closestPoint);
-		    }
-		    this.editing = true;
-		    }
+                var flame = this.flame && this.flame.length < 3
+                if (flame) {
+                    this.flame.push(this.closestPoint);
+                } else {
+                    if (this.addingAttachmentPoint){
+                        this.addAttachmentPoint();
+                        this.currentAttachmentPoint = undefined;
+                    } else {
+                        this.addToOutline();
+                        this.editing = true;
+                    }
+                }
             }
         } else if (evt.button === 2) {
-	    if(this.editing){
-		this.editing = false;
-		this.currentPart.outline.pop();
-		}
+            if(this.editing){
+                this.editing = false;
+                this.currentPart.outline.pop();
+            }
         }
+}
+
+PartsDesigner.prototype.handleMouse = function (evt,type) {
+    var pos = util.findPos(g_canvas);
+    g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+    if(this.handleMenus(evt,type)){
+        return true;
+    }
+	this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
+	this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]]
+    if (type === "down") {
+        this.handleDown(evt,type);
     } else if (type === "move") {
         if (this.editing && this.currentPart) {
             this.currentPart.setLastPoint(this.closestPoint);
+        } else if (this.addingAttachmentPoint){
+            this.currentAttachmentPoint = this.closestPoint;
         }
     } 
-
-	}
 };
 
 var partsDesigner = new PartsDesigner();
