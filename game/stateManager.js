@@ -4,6 +4,7 @@ stateManager = {
         "menu" : mainMenu,
         "simulation" : simulation,
         "partsDesigner" : partsDesigner
+        "shipDesigner" : shipDesigner
 		},
 
     update: function(du){

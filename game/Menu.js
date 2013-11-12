@@ -148,8 +148,11 @@ var mainMenu = new State({
 		"text": "Start",
 		"state" : "simulation"
 		},
-		{ "text": "Parts Design",
+		{ "text": "Part Design",
 		  "state" : "partsDesigner"
+		},
+		{ "text": "Ship Design",
+		  "state" : "shipDesigner"
 		}
 	],
 	    "location": [g_canvas.width/2,0],
