@@ -161,6 +161,22 @@ Part.prototype.finalize = function(grid){
     this.currentThrust = 0;
     this.currentFuel = 0;
     this.radius = Math.max(this.height,this.width);
+    this.finalizeNumbers();
+}
+
+Part.prototype.finalizeNumbers = function(){
+    if(isNan(this.mass)){
+        this.mass = 0;
+    }
+    if(isNan(this.fuel)){
+        this.fuel = 0;
+    }
+    if(isNan(this.thrust)){
+        this.thrust = 0;
+    }
+    if(isNan(this.efficiency)){
+        this.efficiency = 0;
+    }
 }
 
 Part.prototype._renderFlame = function (ctx) {
