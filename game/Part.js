@@ -25,6 +25,7 @@ Part.prototype.height = 0;
 Part.prototype.radius = 0;
 Part.prototype.fill = undefined;
 Part.prototype.stroke = undefined;
+Part.prototype.centerOfRot = [0,0];
 
 //Rotates the outline,
 //so that ind becomes the
@@ -108,12 +109,35 @@ Part.prototype.toDesigner = function(grid){
     if(this.flame){
         this.setFlame(grid.fromGridCoords(this.flame.points));  
     }
-   return this;
+    this.center = grid.fromGridCoord(this.center);
+    this.gridCenterOffset[0] *= grid.cellDim[0]
+    this.gridCenterOffset[1] *= grid.cellDim[0]
+    this.hitBox = grid.fromGridCoords(this.hitBox);    
+    this.lineWidth = 4;
+    return this;
 }
 
+Part.prototype.scale = function(scale){
+    this.mapFuncOverAll(function(x) { return util.mulVecByScalar(scale,x);}, true);
+}
 
+Part.prototype.mapFuncOverAll = function (f,alsoHitbox) {
+    this.outline = this.outline.map(f);
+    if (this.attachmentPoints){
+        this.attachmentPoints = this.attachmentPoints.map(f);
+    }
+    if(this.flame){
+        this.setFlame(this.flame.points.map(f));  
+    }
+    if(alsoHitbox){
+        this.hitBox = this.hitBox.map(f);
+    }
+}
 
-Part.prototype.finalize = function(grid){
+Part.prototype.finalize = function(grid,translate){
+    if(translate === undefined){
+        translate = true;
+    }
     this.outline = grid.toGridCoords(this.outline);
     if (this.attachmentPoints){
         this.attachmentPoints = grid.toGridCoords(this.attachmentPoints);
@@ -125,8 +149,6 @@ Part.prototype.finalize = function(grid){
     // (otherwise dims become crazy);
     var l = this.outline.length;
     if(l === 0) return; //maybe some error-handling? I dunno.
-    var x = 0;
-    var y = 0;
     var minx = Number.MAX_VALUE;
     var maxx = Number.MIN_VALUE;
     var miny = Number.MAX_VALUE;
@@ -138,37 +160,79 @@ Part.prototype.finalize = function(grid){
 	if(nx < minx) minx = nx;
 	if(ny > maxy) maxy = ny;
 	if(ny < miny) miny = ny;
-        x += nx;
-        y += ny;
     }
     this.height = maxy - miny;
     this.width = maxx - minx;
 
     //Translate
-    this.outline = this.outline.map(function (x) {
-        return util.vecMinus(x,[minx,miny]);
-    });
-    if(this.attachmentPoints){
-        this.attachmentPoints = this.attachmentPoints.map(
-                function (x) {
-            return util.vecMinus(x,[minx,miny]);
-        });
+    if(translate){
+        var trans = function (x) { return util.vecMinus(x,[minx,miny]); }
+        this.mapFuncOverAll(trans);
     }
-    if(this.flame){
-        this.setFlame(this.flame.points.map( function (x) { return util.vecMinus(x,[minx,miny]); }));
+    var x = 0;
+    var y = 0;
+    for(var i = 0; i < l; i++){
+        var nx = this.outline[i][0];
+	var ny = this.outline[i][1];
+        x += nx;
+        y += ny;
     }
-    this.centerOfMass = {x: x/l, y: y/l};
+    
+    this.center = [ x/l, y/l];
+    this.gridCenterOffset = util.vecMinus(
+                            [Math.floor(this.center[0]), 
+                            Math.floor(this.center[1])],
+			    this.center
+			    );
+			    
     this.currentThrust = 0;
     this.currentFuel = 0;
     this.radius = Math.max(this.height,this.width);
+    this.finalizeNumbers();
+    this.hitBox = [
+                   [this.center[0] - this.width/2, this.center[1]-this.height/2],
+                   [this.center[0] + this.width/2, this.center[1]+this.height/2]
+                    ];
+    this.lineWidth = 1;
+}
+
+Part.prototype.updateCenter = function(newCenter)
+{
+    var translation = util.vecMinus(newCenter,this.center);
+    var tx = translation[0];
+    var ty = translation[1];
+    var trans =  function(point){
+        return util.translatePoint(point[0],point[1],tx,ty);
+	}
+    this.center = trans(this.center);
+    this.centerOfRot = trans(this.centerOfRot);
+    console.log(this.centerOfRot);
+    this.mapFuncOverAll(trans);
+    this.hitBox = this.hitBox.map(trans);
+}
+
+Part.prototype.finalizeNumbers = function(){
+    if(isNaN(this.mass)){
+        this.mass = 0;
+    }
+    if(isNaN(this.fuel)){
+        this.fuel = 0;
+    }
+    if(isNaN(this.thrust)){
+        this.thrust = 0;
+    }
+    if(isNaN(this.efficiency)){
+        this.efficiency = 0;
+    }
 }
 
 Part.prototype._renderFlame = function (ctx) {
     if (this.flame && this.thrust != 0) {
 	var t = this.currentThrust/this.thrust;
 	var rot = this.rotation;
+	var rot = 0;
 	ctx.save();
-	ctx.lineWidth = 2;
+	ctx.lineWidth = 1;
 	var ps = this.flame.points;
 	var c = this.flame.center;
 	var l = this.flame.length;
@@ -187,10 +251,36 @@ Part.prototype._renderFlame = function (ctx) {
     
     }
 
+
+Part.prototype._renderHitbox = function (ctx){
+            ctx.save();
+            var w = this.width;
+            var h = this.height;
+            ctx.strokeStyle = "red";
+            util.strokeBox(ctx, this.hitBox[0][0], this.hitBox[0][1], Math.abs(this.hitBox[1][0]-this.hitBox[0][0]), Math.abs(this.hitBox[0][1] - this.hitBox[1][1]));
+            ctx.stroke();
+            ctx.restore();
+}
+    
+Part.prototype._renderAttachmentPoints = function (ctx){
+    var points = this.attachmentPoints;
+    if(points) {
+	    ctx.save();
+	    ctx.strokeStyle = "red";
+	    for(var i = 0; i < points.length; i++){
+		var x = points[i][0];
+		var y = points[i][1];
+		util.strokeCircle(ctx,x,y,7);
+	    }
+	    ctx.restore();
+	    }
+    
+}
+
 Part.prototype.render = function (ctx) {
     if(this.outline){
         ctx.save();
-	this._renderFlame(ctx);
+	    this._renderFlame(ctx);
         if(this.fill){
             ctx.fillStyle = this.fill;
         }

@@ -164,8 +164,11 @@ PartsDesigner.prototype.savePart = function () {
         }
         var parts = util.storageLoad("parts");
         $("#in9").empty();
-        $.each(parts, function (key,value) {
-            $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+        if(parts)
+        {
+            $.each(parts, function (key,value) {
+                $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+        }
     }
     }
 
@@ -228,8 +231,11 @@ PartsDesigner.prototype.onActivation = function () {
     $.each(pseudoPart.types, function (key,value) {
 	$("#in7").append('<option value="'+value+'">'+value+'</option>');});
     var parts = util.storageLoad("parts");
-    $.each(parts, function (key,value) {
-	$("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    if(parts)
+    {
+        $.each(parts, function (key,value) {
+        $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+    }
     }
 
 PartsDesigner.prototype.onDeactivation = function() {
@@ -281,23 +287,9 @@ PartsDesigner.prototype.render = function(ctx) {
 
     if (this.currentPart) {
         this.currentPart.render(ctx);
-        if(this.currentPart.attachmentPoints){
-            ctx.save();
-            ctx.strokeStyle = "red";
-            this._renderAttachmentPoints(this.currentPart.attachmentPoints, ctx);
-            ctx.restore();
-        }
+	this.currentPart._renderAttachmentPoints(ctx);
     }
 };
-
-PartsDesigner.prototype._renderAttachmentPoints = function(points,ctx){
-    for(var i = 0; i < points.length; i++){
-        var x = points[i][0];
-        var y = points[i][1];
-        util.strokeCircle(ctx,x,y,7);
-        
-    }
-}
 
 PartsDesigner.prototype.update = function (du) {
     if (this.currentPart){

@@ -3,7 +3,8 @@ stateManager = {
     "states": {
         "menu" : mainMenu,
         "simulation" : simulation,
-        "partsDesigner" : partsDesigner
+        "partsDesigner" : partsDesigner,
+        "shipDesigner" : shipDesigner
 		},
 
     update: function(du){

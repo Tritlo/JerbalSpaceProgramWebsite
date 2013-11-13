@@ -17,13 +17,18 @@ function Ship(descr) {
 
     // Common inherited setup logic from Entity
     this.setup(descr);
-
+    this.parts = this.parts.map(function(x){
+        var p =  new Part(x);
+        return p;
+    });
     this.rememberResets();
     
     // Default sprite, if not otherwise specified
+	/*
     this.sprite = this.sprite || g_sprites.lunarLander;
     this.width = this.sprite.width;
     this.height = this.sprite.height;
+	*/
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
@@ -55,13 +60,53 @@ Ship.prototype._explCraterAdded = false;
 Ship.prototype._isExploding = false;
 Ship.prototype.throttle = 0;
 Ship.prototype.thrust = 0;
-Ship.prototype.fuel = 500;
+Ship.prototype.fuel = 0;
 Ship.prototype.efficiency = 1;
 Ship.prototype.maxThrust = 0.2;
 Ship.prototype.mass = 1;
 Ship.prototype.angularVel = 0;
 Ship.prototype.torque = 0;
+Ship.prototype.parts = [];
+Ship.prototype.sizeGrid;
 
+Ship.prototype.assemble = function(grid) {
+    this.parts.map(function(x) { x.finalize(grid,false);});
+    this.parts.map(function(x) { x.scale(2)});
+    this.parts.map(function(x) { x.lineWidth = 1;});
+	var numParts = this.parts.length;
+    var totalMass = 0;
+	for(var i = 0; i<numParts; i++) {
+		this.mass+=this.parts[i].mass;
+		totalMass+=this.parts[i].mass;
+		this.fuel+=this.parts[i].fuel;
+		this.maxThrust+=this.parts[i].thrust;
+	}
+	var maxy = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0]}));
+	var miny = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
+	var maxx = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
+	var minx = Math.min.apply(null, this.parts.map(function (p){return p.hitBox[0][1]}));
+	this.height = Math.abs(maxx-minx);
+	this.width = Math.abs(maxy-miny);
+	var weightedXCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[0]});
+	var weightedYCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[1]});
+	this.cx = weightedXCenters.reduce(function (x,y) {return x+y});
+	this.cy = weightedYCenters.reduce(function (x,y){return x+y});
+	this.center = [this.cx,this.cy];
+    var cen = this.center;
+	this.radius = Math.max(this.height,this.width);
+    this.parts.map(function(x) { x.centerOfRot = cen;});
+    this.parts.map(function(x) { x.updateCenter(util.vecMinus(x.center,cen))});
+    this.parts.map(function(x) { x.updateCenter(util.vecMinus(x.center,cen))});
+}
+Ship.prototype.disassemble = function(grid) {
+    var cen = this.center;
+    this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
+    this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
+    this.parts.map(function(x) { x.scale(0.5)});
+    this.parts.map(function(x) { x.lineWidth = 4;});
+    this.parts.map(function(x) { x.toDesigner(grid);});
+    return this;
+}
 // HACKED-IN AUDIO (no preloading)
 Ship.prototype.warpSound = new Audio(
     "sounds/shipWarp.ogg");
@@ -247,6 +292,7 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
     var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
     if (!(terrainHit[0])){
         this.rotation = newRot;
+		this.parts.map(function (x){ x.rotation = newRot});
     }
 };
 
@@ -270,6 +316,9 @@ Ship.prototype.computeThrustMag = function (du) {
 	}
     
     this.thrust = this.maxThrust*this.throttle/100;
+    var t = this.thrust;
+    var mt = this.maxThrust;
+    this.parts.map(function (p) { p.currentThrust = t*p.thrust/mt});
     this.fuel -= du*this.thrust/this.efficiency;
     if (this.fuel <= 0){
 	this.fuel = 0;
@@ -335,8 +384,10 @@ Ship.prototype.applyAccel = function (accel,du) {
     }
     
     // s = s + v_ave * t
+	//this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
     this.cx += du * intervalVelX;
     this.cy += du * intervalVelY;
+    this.center = [this.cx,this.cy];
 };
 
 
@@ -472,7 +523,7 @@ Ship.prototype._renderSprite = function (ctx) {
     util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
     ctx.strokeStyle = "red";
     util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
-    ctx.restore()
+    ctx.restore();
     this.sprite.scale = this._scale;
     this.sprite.drawCentredAt(
 	ctx, this.cx, this.cy, this.rotation
@@ -484,7 +535,15 @@ Ship.prototype.render = function (ctx) {
     if (this._isExploding){
 	this._renderExplosion(ctx);
     } else {
-	this._renderSprite(ctx);
+        ctx.save()
+        //ctx.strokeStyle = "white";
+        //util.strokeCircle(ctx,this.cx,this.cy,5);
+        ctx.translate(this.cx, this.cy);
+        ctx.rotate(this.rotation);
+		this.parts.map(function (x) {x.render(ctx)});
+		//this.parts.map(function (x) {x._renderHitbox(ctx)});
+        ctx.restore()
+	//this._renderSprite(ctx);
     }
 	
     
