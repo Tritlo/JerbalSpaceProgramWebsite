@@ -63,6 +63,7 @@ Ship.prototype.maxThrust = 0.2;
 Ship.prototype.mass = 1;
 Ship.prototype.angularVel = 0;
 Ship.prototype.torque = 0;
+Ship.prototype.parts = [];
 
 Ship.prototype.assemble = function(grid) {
 	numParts = this.parts.length;
@@ -76,8 +77,13 @@ Ship.prototype.assemble = function(grid) {
 	this.cx = weightedXCenters.reduce(function (x,y) {return x+y})/numParts;
 	this.cy = weightedYCenters.reduce(function (x,y){return x+y})/numParts;
 	this.center = [this.cx,this.cy];
-	this.height = Math.max.apply(null, this.parts.map(function (p){ return p.center[1]+p.height/2}));
-	this.width = Math.max.apply(null, this.parts.map(function (p){return p.center[0]+p.width/2}));
+	var maxheight = Math.max.apply(null, this.parts.map(function (p){ return p.center[1]+p.height/2}));
+	var minheight = Math.min.apply(null, this.parts.map(function (p){ return p.center[1]+p.height/2}));
+	this.height = Math.abs(maxheight-minheight);
+	var maxwidth = Math.max.apply(null, this.parts.map(function (p){return p.center[0]+p.width/2}));
+	var minwidth = Math.min.apply(null, this.parts.map(function (p){return p.center[0]+p.width/2}));
+	this.width = Math.abs(maxwidth-minwidth);
+	this.radius = Math.max(this.height,this.width);
 }
 Ship.prototype.disassemble = function() {
 }
@@ -355,8 +361,8 @@ Ship.prototype.applyAccel = function (accel,du) {
     }
     
     // s = s + v_ave * t
-	this.parts.map(function (p){ p.cx+=du * intervalVelX});
-	this.parts.map(function (p){ p.cy+=du * intervalVelY});
+	this.parts.map(function (p){ p.center[0]+=du * intervalVelX});
+	this.parts.map(function (p){ p.center[1]+=du * intervalVelY});
     this.cx += du * intervalVelX;
     this.cy += du * intervalVelY;
 };
@@ -506,7 +512,7 @@ Ship.prototype.render = function (ctx) {
     if (this._isExploding){
 	this._renderExplosion(ctx);
     } else {
-		this.parts.map(function (x) {x.render});
+		this.parts.map(function (x) {x.render(ctx)});
 	//this._renderSprite(ctx);
     }
 	
