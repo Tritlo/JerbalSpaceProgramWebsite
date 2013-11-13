@@ -34,7 +34,7 @@ function Ship(descr) {
     this._isWarping = false;
 };
 
-Ship.prototype = new Entity();
+    Ship.prototype = new Entity();
 
 Ship.prototype.rememberResets = function () {
     // Remember my reset positions
@@ -81,12 +81,12 @@ Ship.prototype.assemble = function(grid) {
 		this.fuel+=this.parts[i].fuel;
 		this.maxThrust+=this.parts[i].thrust;
 	}
-	var maxy = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0]}));
-	var miny = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
-	var maxx = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
-	var minx = Math.min.apply(null, this.parts.map(function (p){return p.hitBox[0][1]}));
-	this.height = Math.abs(maxx-minx);
-	this.width = Math.abs(maxy-miny);
+	var maxx = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0]}));
+	var minx = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
+	var maxy = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
+	var miny = Math.min.apply(null, this.parts.map(function (p){return p.hitBox[0][1]}));
+	this.height = Math.abs(maxy-miny);
+	this.width = Math.abs(maxx-minx);
 	var weightedXCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[0]});
 	var weightedYCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[1]});
 	this.cx = weightedXCenters.reduce(function (x,y) {return x+y});
@@ -107,76 +107,7 @@ Ship.prototype.disassemble = function(grid) {
     this.parts.map(function(x) { x.toDesigner(grid);});
     return this;
 }
-// HACKED-IN AUDIO (no preloading)
-Ship.prototype.warpSound = new Audio(
-    "sounds/shipWarp.ogg");
 
-Ship.prototype.warp = function () {
-
-    this._isWarping = true;
-    this._scaleDirn = -1;
-    this.warpSound.play();
-    
-    // Unregister me from my old posistion
-    // ...so that I can't be collided with while warping
-    spatialManager.unregister(this);
-};
-
-Ship.prototype._updateWarp = function (du) {
-
-    var SHRINK_RATE = 3 / SECS_TO_NOMINALS;
-    this._scale += this._scaleDirn * SHRINK_RATE * du;
-    
-    if (this._scale < 0.2) {
-    
-        this._moveToASafePlace();
-        this.halt();
-        this._scaleDirn = 1;
-        
-    } else if (this._scale > 1) {
-    
-        this._scale = 1;
-        this._isWarping = false;
-        
-        // Reregister me from my old posistion
-        // ...so that I can be collided with again
-        spatialManager.register(this);
-        
-    }
-};
-
-Ship.prototype._moveToASafePlace = function () {
-
-    // Move to a safe place some suitable distance away
-    var origX = this.cx,
-        origY = this.cy,
-        MARGIN = 40,
-        isSafePlace = false;
-
-    for (var attempts = 0; attempts < 100; ++attempts) {
-    
-        var warpDistance = 100 + Math.random() * g_canvas.width /2;
-        var warpDirn = Math.random() * consts.FULL_CIRCLE;
-        
-        this.cx = origX + warpDistance * Math.sin(warpDirn);
-        this.cy = origY - warpDistance * Math.cos(warpDirn);
-        
-        this.wrapPosition();
-        
-        // Don't go too near the edges, and don't move into a collision!
-        if (!util.isBetween(this.cx, MARGIN, g_canvas.width - MARGIN)) {
-            isSafePlace = false;
-        } else if (!util.isBetween(this.cy, MARGIN, g_canvas.height - MARGIN)) {
-            isSafePlace = false;
-        } else {
-            isSafePlace = !this.isColliding();
-        }
-
-        // Get out as soon as we find a safe place
-        if (isSafePlace) break;
-        
-    }
-};
 
 Ship.prototype.getAltitude = function () {
     return -(this.cy - g_settings.seaLevel/2 + this.height/2);
@@ -204,9 +135,9 @@ Ship.prototype._updateSpriteExplosion = function (du) {
 }
 
 Ship.prototype._updateVectorExplosion = function (du){
-    if(this._timeFromExplosion > this._explosionDuration/2 && !(this._explCraterAdded)){
-	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius, this._explosionSpeed);
-        this._explCraterAdded = true;
+    if(this._timeFromExplosion < this._explosionDuration/2){
+	    //entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius, this._explosionSpeed);
+	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
     }
     if (this._timeFromExplosion > this._explosionDuration){
 	this._isExploding = false;
@@ -316,14 +247,14 @@ Ship.prototype.computeThrustMag = function (du) {
 	}
     
     this.thrust = this.maxThrust*this.throttle/100;
-    var t = this.thrust;
-    var mt = this.maxThrust;
-    this.parts.map(function (p) { p.currentThrust = t*p.thrust/mt});
     this.fuel -= du*this.thrust/this.efficiency;
     if (this.fuel <= 0){
 	this.fuel = 0;
 	this.thrust = 0;
 	}
+    var t = this.thrust;
+    var mt = this.maxThrust;
+    this.parts.map(function (p) { p.currentThrust = t*p.thrust/mt});
     return this.thrust;
 };
 
@@ -385,9 +316,11 @@ Ship.prototype.applyAccel = function (accel,du) {
     
     // s = s + v_ave * t
 	//this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
-    this.cx += du * intervalVelX;
-    this.cy += du * intervalVelY;
-    this.center = [this.cx,this.cy];
+    if(! this._isExploding){
+        this.cx += du * intervalVelX;
+        this.cy += du * intervalVelY;
+        this.center = [this.cx,this.cy];
+    }
 };
 
 
@@ -420,27 +353,6 @@ Ship.prototype.applyFriction = function (){
 	}
     }
     
-
-Ship.prototype.maybeFireBullet = function () {
-
-    if (keys[g_settings.keys.KEY_FIRE]) {
-    
-        var dX = +Math.sin(this.rotation);
-        var dY = -Math.cos(this.rotation);
-        var launchDist = this.getRadius() * 1.2;
-        
-        var relVel = this.launchVel;
-        var relVelX = dX * relVel;
-        var relVelY = dY * relVel;
-
-        entityManager.fireBullet(
-           this.cx + dX * launchDist, this.cy + dY * launchDist,
-           this.velX + relVelX, this.velY + relVelY,
-           this.rotation);
-           
-    }
-    
-};
 
 Ship.prototype.getRadius = function () {
     
@@ -489,8 +401,8 @@ Ship.prototype._renderVectorExplosion = function (ctx) {
     ctx.save()
     ctx.fillStyle = "white";
     var radRatio = 1-Math.abs(2*this._timeFromExplosion/this._explosionDuration - 1);
-    var radius =  radRatio* this._explosionRadius;
-    util.fillCircle(ctx,this.cx,this.cy+this.getRadius(),radius);
+    this.currentExplosionRadius =  radRatio* this._explosionRadius;
+    util.fillCircle(ctx,this.cx,this.cy+this.getRadius(),this.currentExplosionRadius);
     ctx.restore();
     
 };
@@ -531,19 +443,27 @@ Ship.prototype._renderSprite = function (ctx) {
     this.sprite.scale = origScale;
 };
 
+Ship.prototype.renderParts = function(ct){
+    ctx.save()
+    //ctx.strokeStyle = "white";
+    //util.strokeCircle(ctx,this.cx,this.cy,5);
+    ctx.translate(this.cx, this.cy);
+    ctx.rotate(this.rotation);
+    this.parts.map(function (x) {x.render(ctx)});
+    //this.parts.map(function (x) {x._renderHitbox(ctx)});
+    ctx.restore()
+	//this._renderSprite(ctx);
+}
+
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){
+    if(this._timeFromExplosion < this._explosionDuration/2){
+        this.renderParts(ctx)
+    }
 	this._renderExplosion(ctx);
+
     } else {
-        ctx.save()
-        //ctx.strokeStyle = "white";
-        //util.strokeCircle(ctx,this.cx,this.cy,5);
-        ctx.translate(this.cx, this.cy);
-        ctx.rotate(this.rotation);
-		this.parts.map(function (x) {x.render(ctx)});
-		//this.parts.map(function (x) {x._renderHitbox(ctx)});
-        ctx.restore()
-	//this._renderSprite(ctx);
+        this.renderParts(ctx);
     }
 	
     

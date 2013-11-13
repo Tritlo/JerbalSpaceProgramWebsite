@@ -7,6 +7,10 @@ stateManager = {
         "shipDesigner" : shipDesigner
 		},
 
+    cameraUpdate: function(du){
+        this.states[this.currentState].cameraUpdate();
+    },
+
     update: function(du){
         this.states[this.currentState].update(du);
     },

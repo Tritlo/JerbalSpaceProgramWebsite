@@ -43,6 +43,11 @@ Simulation.prototype.update = function (du){
     updateSimulation(du);
     };
 
+Simulation.prototype.cameraUpdate = function(du) {
+    entityManager.updateCamera();
+    Stars.update(du);
+};
+
 Simulation.prototype.handleMouse = function (evt,type) {
     if (type === "down"){
 	g_mouseClick = [evt.clientX - g_canvas.offsetLeft,evt.clientY - g_canvas.offsetTop];
