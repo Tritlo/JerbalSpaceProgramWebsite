@@ -71,6 +71,7 @@ ShipDesigner.prototype.init = function() {
 		"action" : function (state){
 		    util.storageSave("ships",undefined);
 		    $("#in9").empty();
+		    $("#in7").empty();
 		    console.log("ship storage cleared");
 		    },
 		}
@@ -83,7 +84,7 @@ ShipDesigner.prototype.init = function() {
 
     
     this.grid = new Grid({
-	    "dims" : [64,64],
+	    "dims" : [32,32],
         "width" : 525,
         "height" : 525,
         "location": [375,375]
@@ -107,6 +108,11 @@ ShipDesigner.prototype.addPart = function (partInd){
     var parts = util.storageLoad("parts");
     var part = new Part(parts[partInd]);
     this.heldPart = part.toDesigner(this.grid);
+    if(this.addedParts){
+        this.addedParts.push(this.heldPart);
+    } else {
+        this.addedParts = [this.heldPart];
+    }
     console.log(part);
 }
 
@@ -174,6 +180,9 @@ ShipDesigner.prototype.onDeactivation = function()
 {
 	$('#in9').hide();
 	$('#in5').hide();
+	$('#in7').hide();
+	$('#in9').empty();
+	$('#in7').empty();
 }
 
 //RENDER
@@ -185,8 +194,11 @@ ShipDesigner.prototype.render = function(ctx) {
     this.menu2.render(ctx);
     this.back.render(ctx);
     this.grid.render(ctx);
-    if(this.heldPart){
-        this.heldPart.render(ctx);
+    if(this.addedParts){
+        this.addedParts.map(function (part) {
+	    part.render(ctx);
+            part._renderAttachmentPoints(ctx);
+	    });
     }
     if (this.currentShip)
     {
@@ -220,12 +232,22 @@ ShipDesigner.prototype.handleMenus = function(evt,type){
 
 ShipDesigner.prototype.handleDown = function(evt,type) {
         if(evt.button === 0) {
-            if(this.currentShip)
+            if(this.addedParts)
             {
-                //TODO: find part thats held
+                var pos = util.findPos(g_canvas);
+                g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+		for(var i = 0; i < this.addedParts.length; i++){
+		   var p = this.addedParts[i];
+		   if(util.circInBox(g_mouse[0],g_mouse[1],
+		      0, p.hitBox[0], p.hitBox[1])){
+		      this.heldPart = p;
+		      break;
+		      }
+		}
                 this.editing = true;
             }
         } else if (evt.button === 2) {
+	    this.heldPart = undefined;
             if(this.editing){
                 this.editing = false;
             }
@@ -245,7 +267,10 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
     } else if (type === "move") {
         if(this.heldPart){
             //TODO: move part
-	    //this.heldPart
+	    
+	    var newC = util.vecMinus(this.closestPoint, this.heldPart.gridCenterOffset);
+	    this.heldPart.updateCenter(newC);
+	    //this.heldPart.center = 
         }
     } 
 };

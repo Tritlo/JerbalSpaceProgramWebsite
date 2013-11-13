@@ -18,7 +18,8 @@ Grid.prototype.init = function () {
 	    this.points[i][j] = this.fromGridCoord(i,j);
 	    }
 	}
-    console.log(this.points);
+    this.cellDim = [this.width/this.dims[0],this.height/this.dims[1]];
+	
 }
 
 Grid.prototype.toGridCoords = function(points){

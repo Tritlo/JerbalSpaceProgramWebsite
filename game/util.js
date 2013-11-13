@@ -212,15 +212,15 @@ paramsToRectangle: function(x,y,w,h,rot) {
     var h2 = h/2;
     var ps = [[x+w2,y+h2],[x-w2,y+h2],[x-w2,y-w2],[x+w2,y-w2]];
     ps = ps.map(function(p) {
-        p = util.translatePoint(p[0],p[1],x,y);
-        p = util.rotatePoint(p[0],p[1],rot);
         p = util.translatePoint(p[0],p[1],-x,-y);
+        p = util.rotatePoint(p[0],p[1],rot);
+        p = util.translatePoint(p[0],p[1],x,y);
         return p;
     });
     return ps;
 },
 translatePoint: function(x,y,tX,tY){
-    return [x-tX,y-tY];
+    return [x+tX,y+tY];
 },
 
 rotatePoint: function (x,y,rot) {
