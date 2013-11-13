@@ -15,7 +15,7 @@ Grid.prototype.init = function () {
     for(var i = 0; i < this.dims[0]; i++){
 	this.points[i] = [];
 	for(var j = 0; j < this.dims[1]; j++){
-	    this.points[i][j] = this.fromGridCoord(i,j);
+	    this.points[i][j] = this.fromGridCoord(j,i);
 	    }
 	}
     this.cellDim = [this.width/this.dims[0],this.height/this.dims[1]];
@@ -38,7 +38,7 @@ Grid.prototype.fromGridCoord = function(iorpoint,j){
     } else {
         var i = iorpoint;
     }
-    return [j*this.width/this.dims[0] + this.location[0] - this.width/2,i*this.height/this.dims[1]+ this.location[1] - this.height/2];
+    return [i*this.width/this.dims[0] + this.location[0] - this.width/2,j*this.height/this.dims[1]+ this.location[1] - this.height/2];
 }
 
 Grid.prototype.fromGridCoords = function(coords){
@@ -51,8 +51,8 @@ Grid.prototype.fromGridCoords = function(coords){
 
 Grid.prototype.findNearestPoint = function (xorpoint,y) {
     if(y === undefined){
-        var x = xorpoint[0];
-        var y = xorpoint[1];
+        var x = xorpoint[1];
+        var y = xorpoint[0];
     } else {
         var x = xorpoint;
     }

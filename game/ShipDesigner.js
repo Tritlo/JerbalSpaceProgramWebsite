@@ -71,7 +71,6 @@ ShipDesigner.prototype.init = function() {
 		"action" : function (state){
 		    util.storageSave("ships",undefined);
 		    $("#in9").empty();
-		    $("#in7").empty();
 		    console.log("ship storage cleared");
 		    },
 		}
@@ -95,12 +94,9 @@ ShipDesigner.prototype.init = function() {
 
 ShipDesigner.prototype.newShip = function ()
 {
-    /*
     this.currentShip = new Ship(
             {
-
             });
-            */
 }
 
 
@@ -120,6 +116,11 @@ ShipDesigner.prototype.addPart = function (partInd){
 
 ShipDesigner.prototype.saveShip = function ()
 {
+    this.currentShip = new Ship({"parts"
+    : this.addedParts,
+    "name": $('#in5').val()
+    });
+
     if(this.currentShip)
     {
         this.currentShip.assemble(this.grid);
@@ -130,7 +131,7 @@ ShipDesigner.prototype.saveShip = function ()
             ships = [this.currentShip];
             }
         util.storageSave("ships",ships);
-        this.currentPart.disassemble(this.grid);
+        this.currentShip.disassemble(this.grid);
         var ships = util.storageLoad("ships");
         $("#in9").empty();
         if(ships)
@@ -145,9 +146,9 @@ ShipDesigner.prototype.loadShip = function ()
 {
     var ships = util.storageLoad("ships");
     var ship = new Ship(ships[$('#in9').val()]);
-    this.currentShip = ship.disassemble(this.grid);
-    this.parts = ship.disassemble(this.grid);
-    
+    var ship = ship.disassemble(this.grid);
+    var gri = this.grid;
+    this.addedParts = ship.parts;
 }
 
 ShipDesigner.prototype.onActivation = function ()
@@ -199,6 +200,9 @@ ShipDesigner.prototype.render = function(ctx) {
 	    part.render(ctx);
             part._renderAttachmentPoints(ctx);
 	    });
+        if(this.heldPart){
+            this.heldPart._renderHitbox(ctx);
+        }
     }
     if (this.currentShip)
     {
@@ -207,7 +211,7 @@ ShipDesigner.prototype.render = function(ctx) {
 };
 
 ShipDesigner.prototype.update = function (du) {
-	//this.currentShip.name   = $('#in5').val();
+	this.currentShip.name   = $('#in5').val();
 };
 
 ShipDesigner.prototype.handleMenus = function(evt,type){

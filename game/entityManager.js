@@ -1,57 +1,57 @@
-/*
+    /*
 
-entityManager.js
+    entityManager.js
 
-A module which handles arbitrary entity-management for "Asteroids"
-
-
-We create this module as a single global object, and initialise it
-with suitable 'data' and 'methods'.
-
-"Private" properties are denoted by an underscore prefix convention.
-
-*/
+    A module which handles arbitrary entity-management for "Asteroids"
 
 
-"use strict";
+    We create this module as a single global object, and initialise it
+    with suitable 'data' and 'methods'.
+
+    "Private" properties are denoted by an underscore prefix convention.
+
+    */
 
 
-// Tell jslint not to complain about my use of underscore prefixes (nomen),
-// my flattening of some indentation (white), or my use of incr/decr ops 
-// (plusplus).
-//
-/*jslint nomen: true, white: true, plusplus: true*/
+    "use strict";
 
 
-var entityManager = {
-
-// "PRIVATE" DATA
-
-_rocks   : [],
-_bullets : [],
-_ships   : [],
-
-_terrain : [],
-
-_bShowRocks : true,
+    // Tell jslint not to complain about my use of underscore prefixes (nomen),
+    // my flattening of some indentation (white), or my use of incr/decr ops 
+    // (plusplus).
+    //
+    /*jslint nomen: true, white: true, plusplus: true*/
 
 
-cameraOffset: [0,0],
-trueOffset: [100,100],
-mouseOffset: [0,0],
-cameraRotation: 0,
-cameraZoom: 1,
-lockCamera: false,
+    var entityManager = {
 
-// "PRIVATE" METHODS
-_generateRocks : function() {
-    var i,
-        NUM_ROCKS = 4;
+    // "PRIVATE" DATA
 
-    for (i = 0; i < NUM_ROCKS; ++i) {
-        this.generateRock();
-    }
-},
+    _rocks   : [],
+    _bullets : [],
+    _ships   : [],
+
+    _terrain : [],
+
+    _bShowRocks : true,
+
+
+    cameraOffset: [0,0],
+    trueOffset: [100,100],
+    mouseOffset: [0,0],
+    cameraRotation: 0,
+    cameraZoom: 1,
+    lockCamera: false,
+
+    // "PRIVATE" METHODS
+    _generateRocks : function() {
+        var i,
+            NUM_ROCKS = 4;
+
+        for (i = 0; i < NUM_ROCKS; ++i) {
+            this.generateRock();
+        }
+    },
 
 _generateTerrain : function() {
     

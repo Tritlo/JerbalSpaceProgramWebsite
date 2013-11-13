@@ -223,6 +223,12 @@ translatePoint: function(x,y,tX,tY){
     return [x+tX,y+tY];
 },
 
+rotatePointAroundPoint: function (p,rot,x,y){
+        p = util.translatePoint(p[0],p[1],-x,-y);
+        p = util.rotatePoint(p[0],p[1],rot);
+        p = util.translatePoint(p[0],p[1],x,y);
+        return p;
+},
 rotatePoint: function (x,y,rot) {
     return [x*Math.cos(rot)-y*Math.sin(rot), x*Math.sin(rot)+y*Math.cos(rot)];
 },
