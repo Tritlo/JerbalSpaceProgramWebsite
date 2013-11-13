@@ -61,7 +61,7 @@ var g_settings = {
           "useAveVel": true,
           "renderSpatialDebug":false,
           "hitBox": true,
-          "spriteExplosion": true,
+          "spriteExplosion": false,
           "cameraMoveRate": 10,
           "cameraZoomRate": 1.1,
           "cameraRotateRate" : Math.PI/50,

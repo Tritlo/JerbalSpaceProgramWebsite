@@ -26,6 +26,9 @@ State.prototype.render = function (ctx) {
     console.log(this); 
     };
 
+State.prototype.cameraUpdate = function () {
+    };
+
 State.prototype.update = function (du) {
     console.log("ERROR: UPDATE NOT OVERWRITTEN FOR:");
     console.log(this); 

@@ -249,8 +249,6 @@ update: function(du) {
     }
     
     if (g_settings.enableRocks && this._rocks.length === 0) this._generateRocks();
-    this.updateCamera();
-    Stars.update(du);
 
 },
 
