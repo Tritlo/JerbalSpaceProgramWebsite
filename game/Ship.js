@@ -186,9 +186,7 @@ Ship.prototype.update = function (du) {
 
     // Handle firing
     
-    this.maybeFireBullet();
-
-    if (this.isColliding())    this.warp();
+    //if (this.isColliding())    this.warp();
     if ( !(this.isColliding()) && !(this._isExploding)) spatialManager.register(this);
 
 };
