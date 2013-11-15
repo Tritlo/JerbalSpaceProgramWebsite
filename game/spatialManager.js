@@ -82,12 +82,7 @@ findEntityInRange: function(posX, posY, radius) {
 render: function(ctx) {
     ctx.save();
     ctx.strokeStyle = "red";
-    if(entityManager.getMainShip()){
-        var s = entityManager.getMainShip();
-        ctx.translate(entityManager.trueOffset[0],entityManager.trueOffset[1]); 
-	//console.log((s.cx) + " "  + (s.cy));
-    }
-
+    entityManager.setUpCamera(ctx);
     
     for (var ID in this._entities) {
         var e = this._entities[ID];
@@ -96,13 +91,13 @@ render: function(ctx) {
 	    var pos = e.getPos()
         if (g_settings.hitBox){
             ctx.save();
-            ctx.translate(pos.posX-entityManager.cameraOffset[0],pos.posY-entityManager.cameraOffset[1]);
-            ctx.rotate(e.rotation);
-            ctx.rotate(entityManager.cameraRotation);
-            ctx.translate(-pos.posX+entityManager.cameraOffset[0],-pos.posY+entityManager.cameraOffset[1]);
+            //ctx.translate(pos.posX-entityManager.cameraOffset[0],pos.posY-entityManager.cameraOffset[1]);
+            //ctx.rotate(e.rotation);
+            //ctx.rotate(entityManager.cameraRotation);
+            //ctx.translate(-pos.posX+entityManager.cameraOffset[0],-pos.posY+entityManager.cameraOffset[1]);
             //ctx.translate(-pos.posX,-pos.posY);
-            var w = e.width*entityManager.cameraZoom;
-            var h = e.height*entityManager.cameraZoom;
+            var w = e.width;//*entityManager.cameraZoom;
+            var h = e.height;//*entityManager.cameraZoom;
             util.strokeBox(ctx, pos.posX-w/2, pos.posY-h/2, w, h);
             ctx.restore();
             ctx.stroke();
