@@ -453,6 +453,14 @@ Ship.prototype.renderParts = function(ct){
 	//this._renderSprite(ctx);
 }
 
+Ship.prototype.renderHitBox = function(ctx){
+    var p = this.getPos();
+    //console.log("here");
+    util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
+    this.parts.map(function(x){x.renderHitBox(ctx)});
+    //ctx.stroke();
+};
+
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){
     if(this._timeFromExplosion < this._explosionDuration/2){

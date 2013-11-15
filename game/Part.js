@@ -250,14 +250,21 @@ Part.prototype._renderFlame = function (ctx) {
 	}
     
     }
+    
+Part.prototype.renderHitBox = function(ctx){
+    this._renderHitbox(ctx);
+}
 
 
-Part.prototype._renderHitbox = function (ctx){
+Part.prototype._renderHitbox = function (ctx,inGame){
             ctx.save();
-            var w = this.width;
-            var h = this.height;
+            var w = Math.abs(this.hitBox[1][0]-this.hitBox[0][0]);
+            var h = Math.abs(this.hitBox[0][1] - this.hitBox[1][1]);
+	    var x = inGame?this.center[0]:this.hitBox[0][0];
+	    var y = inGame?this.center[1]:this.hitBox[0][1];
             ctx.strokeStyle = "red";
-            util.strokeBox(ctx, this.hitBox[0][0], this.hitBox[0][1], Math.abs(this.hitBox[1][0]-this.hitBox[0][0]), Math.abs(this.hitBox[0][1] - this.hitBox[1][1]));
+            //util.strokeBox(ctx, this.hitBox[0][0], this.hitBox[0][1], Math.abs(this.hitBox[1][0]-this.hitBox[0][0]), Math.abs(this.hitBox[0][1] - this.hitBox[1][1]));
+            util.strokeBox(ctx, x, y, w, h);
             ctx.stroke();
             ctx.restore();
 }

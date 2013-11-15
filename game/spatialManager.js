@@ -96,9 +96,10 @@ render: function(ctx) {
             //ctx.rotate(entityManager.cameraRotation);
             //ctx.translate(-pos.posX+entityManager.cameraOffset[0],-pos.posY+entityManager.cameraOffset[1]);
             //ctx.translate(-pos.posX,-pos.posY);
-            var w = e.width;//*entityManager.cameraZoom;
-            var h = e.height;//*entityManager.cameraZoom;
-            util.strokeBox(ctx, pos.posX-w/2, pos.posY-h/2, w, h);
+            //var w = e.width;//*entityManager.cameraZoom;
+            //var h = e.height;//*entityManager.cameraZoom;
+            //util.strokeBox(ctx, pos.posX-w/2, pos.posY-h/2, w, h);
+	    e.renderHitBox(ctx);
             ctx.restore();
             ctx.stroke();
         } else {
