@@ -26,6 +26,7 @@ Part.prototype.radius = 0;
 Part.prototype.fill = undefined;
 Part.prototype.stroke = undefined;
 Part.prototype.centerOfRot = [0,0];
+Part.prototype.attached = false;
 
 //Rotates the outline,
 //so that ind becomes the
@@ -64,6 +65,22 @@ Part.prototype.addAttachmentPoint = function (point){
     else{
         this.attachmentPoints = [point];
     }
+}
+
+Part.prototype.isAttachedTo = function(otherPart){
+	// could be better, but overhead would probably not be
+	// worth it as 1-4 attachment points is the norm.
+	if(!this.attachmentPoints || !otherPart.attachmentPoints){
+		return false;	
+	}
+	for(var i=0; i<this.attachmentPoints.length;i++) {
+		for(var j=0; j<otherPart.attachmentPoints.length;j++) {
+			if(util.compEq(this.attachmentPoints[i],otherPart.attachmentPoints[j],[0,1],[0,1])) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 Part.prototype.setType = function(tp){
