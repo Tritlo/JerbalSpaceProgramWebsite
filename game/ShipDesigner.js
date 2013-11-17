@@ -15,6 +15,16 @@ ShipDesigner.prototype.init = function() {
 		stateManager.switchState("menu");
 		}
 	    },
+		{
+		"text" : "Launch",
+		"action" : function(state) {
+		state.currentShip.assemble(state.grid);
+		console.log(state.currentShip);
+		entityManager.clearShips();
+		entityManager.generateShip(state.currentShip);
+		stateManager.switchState("simulation");
+		}
+		},
         ],
 	"width" : 100,
 	"height" : 100,
@@ -83,13 +93,13 @@ ShipDesigner.prototype.init = function() {
 
     
     this.grid = new Grid({
-	    "dims" : [32,32],
+	    "dims" : [64,64],
         "width" : 525,
         "height" : 525,
         "location": [375,375]
 	});
 
-    this.newShip();
+    this.loadShip();
     }
 
 ShipDesigner.prototype.newShip = function ()
@@ -97,6 +107,7 @@ ShipDesigner.prototype.newShip = function ()
     this.currentShip = new Ship(
             {
             });
+    this.addedParts = this.currentShip.parts;
 }
 
 
@@ -105,10 +116,13 @@ ShipDesigner.prototype.addPart = function (partInd){
     var part = new Part(parts[partInd]);
     this.heldPart = part.toDesigner(this.grid);
     if(this.addedParts){
+		this.indexOfHeldPart = this.addedParts.length;
         this.addedParts.push(this.heldPart);
     } else {
         this.addedParts = [this.heldPart];
+		this.indexOfHeldPart = 0;
     }
+	this.currentShip.parts = this.addedParts
     console.log(part);
 }
 
@@ -147,8 +161,10 @@ ShipDesigner.prototype.loadShip = function ()
     var ships = util.storageLoad("ships");
     var ship = new Ship(ships[$('#in9').val()]);
     var ship = ship.disassemble(this.grid);
+	this.currentShip = ship;
     var gri = this.grid;
     this.addedParts = ship.parts;
+	console.log(this.currentShip);
 }
 
 ShipDesigner.prototype.onActivation = function ()
@@ -200,7 +216,7 @@ ShipDesigner.prototype.render = function(ctx) {
 	    part.render(ctx);
             part._renderAttachmentPoints(ctx);
 	    });
-        if(this.heldPart){
+        if(this.heldPart && !this.heldPart.attached){
             this.heldPart._renderHitbox(ctx);
         }
     }
@@ -240,18 +256,23 @@ ShipDesigner.prototype.handleDown = function(evt,type) {
             {
                 var pos = util.findPos(g_canvas);
                 g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
-		for(var i = 0; i < this.addedParts.length; i++){
-		   var p = this.addedParts[i];
-		   if(util.circInBox(g_mouse[0],g_mouse[1],
-		      0, p.hitBox[0], p.hitBox[1])){
-		      this.heldPart = p;
-		      break;
-		      }
+				for(var i = 0; i < this.addedParts.length; i++){
+				   var p = this.addedParts[i];
+				   if(util.circInBox(g_mouse[0],g_mouse[1],
+					  0, p.hitBox[0], p.hitBox[1])){
+					  this.heldPart = p;
+				      this.indexOfHeldPart = i;
+					  break;
+					  }
 		}
                 this.editing = true;
             }
         } else if (evt.button === 2) {
-	    this.heldPart = undefined;
+	    	if(this.heldPart && !(this.heldPart.attached || this.indexOfHeldPart === 0)){
+				this.addedParts.splice(this.indexOfHeldPart,1)
+				this.indexOfHeldPart = -1;
+			}
+			this.heldPart = undefined;
             if(this.editing){
                 this.editing = false;
             }
@@ -270,11 +291,17 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
         this.handleDown(evt,type);
     } else if (type === "move") {
         if(this.heldPart){
-            //TODO: move part
-	    
-	    var newC = util.vecMinus(this.closestPoint, this.heldPart.gridCenterOffset);
-	    this.heldPart.updateCenter(newC);
-	    //this.heldPart.center = 
+	    	var newC = util.vecMinus(this.closestPoint, this.heldPart.gridCenterOffset);
+	    	this.heldPart.updateCenter(newC);
+			this.heldPart.attached = false;
+			for(var i = 0; i < this.addedParts.length; i++){
+				if (i === this.indexOfHeldPart)
+					continue;
+				if (this.heldPart.isAttachedTo(this.addedParts[i])){
+					this.heldPart.attached = true;
+				}
+			}
+			
         }
     } 
 };
