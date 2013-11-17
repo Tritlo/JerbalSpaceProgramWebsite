@@ -169,7 +169,11 @@ resetShips: function() {
 
 haltShips: function() {
     this._forEachOf(this._ships, Ship.prototype.halt);
-},	
+},
+
+clearShips: function() {
+    this._ships.map(function(x){ if(x){ x.kill()}});
+},
 
 toggleRocks: function() {
     this._bShowRocks = !this._bShowRocks;
