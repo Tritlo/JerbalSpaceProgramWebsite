@@ -59,11 +59,17 @@ Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,ro
     }
 }
 
+Terrain.prototype.isInside = function (point) {
+    var ps = util.findSurfaceBelow(point,this.points,this.center);
+    var lEq = util.getEqOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
+    return (util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],point[0],point[1])===util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],this.center[0],this.center[1]));
+}
+
 Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation){
     var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation);
     var hits  = [];
     for(var i = 0; i < hitBox.length; i++){
-        if (this.heightAtX(hitBox[i][0]) < hitBox[i][1]){
+        if (this.isInside(hitBox[i])){//this.heightAtX(hitBox[i][0]) < hitBox[i][1]){
             hits.push(hitBox[i]);
         }
     }
@@ -197,8 +203,8 @@ Terrain.prototype.render = function (ctx) {
     ctx.strokeStyle = "white";
     ctx.fillStyle = "black";
     ctx.beginPath()
-    ctx.moveTo(terr[0][0],this.maxY +g_canvas.height)
-    ctx.lineTo(terr[0][0],terr[0][1]);
+//    ctx.moveTo(terr[0][0],this.maxY +g_canvas.height)
+    ctx.moveTo(terr[0][0],terr[0][1]);
     for(var i = 1; i < terr.length;i++){
 		ctx.lineTo(terr[i][0],terr[i][1]);
 	}

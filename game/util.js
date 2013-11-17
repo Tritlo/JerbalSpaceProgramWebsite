@@ -96,9 +96,52 @@ findIndexesOfClosestPoints: function(x0,pointList){
 
 findClosestPoints: function (x0,y0, pointList) {
     var is = util.findIndexesOfClosestPoints(x0,pointList);
+<<<<<<< Updated upstream
     return [pointList[is[0]],pointList[is[1]]];
 },
 
+=======
+    return [pointList[(pointList.length+is[0])%pointList.length],pointList[is[1]%pointList.length]];
+},
+//=================================================
+//N: [a,b]=util.findSurfaceBelow(b,p,c)
+//F: p er fylki af punktum röðuðum í hring í kringum c 
+//E: [a,b] eru þeir punktar úr p sem 
+findSurfaceBelow: function(body,points,center)
+{	
+	var angle=util.angleOfVector(util.vecMinus(body,center));
+	var angles=[];
+	points.map(function (x) 
+	{
+		angles.push(util.angleOfVector(util.vecMinus(x,center)));
+	});
+	//angles.reverse();
+	var i = util.binarySearch(angle,angles);
+	if(angles[i]<=angle)
+		return [points[i],points[(i+1)%points.length]];
+	else
+	{	
+		if (i===0)
+		return [points[0],points[points.length-1]]
+		else
+		return [points[(points.length+i-1)%points.length],points[i]];
+	}
+},
+//N: wrapListAround
+//F: points er listi af punktum með x-hnit sem dreifast á bil með miðju í 0
+//E: points listin er notaður 
+wrapListAround: function(points,center)
+{
+	var distance=points[0][0]-points[points.length-1][0];
+	var returnList=[];
+	points.map(function(x){ returnList.push(util.vecMinus(util.polarToCartesian([x[1],2*x[0]/distance*Math.PI]),center))});
+	returnList.pop();
+	returnList.reverse();
+	return returnList;
+},	
+
+//=================================================
+>>>>>>> Stashed changes
 binarySearch: function(val,list) {
     var low = 0;
     var high = list.length -1;

@@ -23,7 +23,11 @@ function createInitialShips() {
 
     entityManager.generateShip({
         cx : 200,
+<<<<<<< Updated upstream
         cy : 200
+=======
+        cy : -3200
+>>>>>>> Stashed changes
     });
     
 }
