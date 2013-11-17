@@ -67,7 +67,7 @@ _generateTerrain : function() {
 	"maxLength": 256,
 	"minAngle": Math.PI/30,
 	"maxAngle": Math.PI/2.2,
-	"center" : [0,3500]
+	"center" : [0,0]
 	});
     this._terrain = terr;
 },
@@ -147,6 +147,8 @@ generateRock : function(descr) {
 },
 
 generateShip : function(descr) {
+	descr.cx=0;
+	descr.cy=-3600;
     this._ships.push(new Ship(descr));
 },
 

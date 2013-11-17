@@ -60,8 +60,8 @@ Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,ro
 }
 
 Terrain.prototype.isInside = function (point) {
+	return false;
     var ps = util.findSurfaceBelow(point,this.points,this.center);
-    var lEq = util.getEqOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
     return (util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],point[0],point[1])===util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],this.center[0],this.center[1]));
 }
 
@@ -69,7 +69,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
     var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation);
     var hits  = [];
     for(var i = 0; i < hitBox.length; i++){
-        if (this.isInside(hitBox[i])){//this.heightAtX(hitBox[i][0]) < hitBox[i][1]){
+        if (this.isInside(hitBox[i])){
             hits.push(hitBox[i]);
         }
     }
@@ -90,7 +90,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
     if (circ[0]){
 	    return [true,circ[1],circ[2],pointOfHit];
     } else {
-    var points = util.lineBelow(this.points,pointOfHit[0],pointOfHit[1]);
+    var points = util.findSurfaceBelow(pointOfHit,this.points,this.center);
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
     var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
@@ -106,7 +106,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
 
 
 Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
-    var points = util.lineBelow(this.points,nextX,nextY);
+    var points = util.findSurfaceBelow([nextX,nextY],this.points,this.center);
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
     //If I'm not between the lines height points, don't consider it.
@@ -192,6 +192,7 @@ Terrain.prototype.genTerrain = function () {
 		currX = nextX;
 		currY = nextY;
 	}
+	points.reverse();
 	return util.wrapListAround(points,this.center);
 }
 
@@ -203,14 +204,14 @@ Terrain.prototype.render = function (ctx) {
     ctx.strokeStyle = "white";
     ctx.fillStyle = "black";
     ctx.beginPath()
-//    ctx.moveTo(terr[0][0],this.maxY +g_canvas.height)
     ctx.moveTo(terr[0][0],terr[0][1]);
+	ctx.font="10px Arial";
     for(var i = 1; i < terr.length;i++){
 		ctx.lineTo(terr[i][0],terr[i][1]);
+		ctx.strokeText(i,terr[i][0],terr[i][1]);
 	}
-    ctx.lineTo(terr[terr.length-1][0],this.maxY + g_canvas.height)
 	ctx.closePath();
 	ctx.stroke();
-    ctx.fill();
+   // ctx.fill();
     ctx.restore();
 };
