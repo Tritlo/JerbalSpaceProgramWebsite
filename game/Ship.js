@@ -366,7 +366,7 @@ Ship.prototype.explode = function(x,y,speed){
 	    var c = part.center;
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
-	    var vel = util.mulVecByScalar(0.01*explRadius/disFExpl,vecFromExpl)
+	    var vel = util.mulVecByScalar(0.01*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
 	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1]});
 	    ship.attributesFromParts();
 	    entityManager.generateShip(ship);
