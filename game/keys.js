@@ -5,11 +5,15 @@
 var keys = [];
 
 function handleKeydown(evt) {
-    keys[evt.keyCode] = true;
+    if (!($(evt.target).is('input'))) {
+	keys[evt.keyCode] = true;
+    }
 }
 
 function handleKeyup(evt) {
-    keys[evt.keyCode] = false;
+    if (!($(evt.target).is('input'))){
+	keys[evt.keyCode] = false;
+    }
 }
 
 // Inspects, and then clears, a key's state

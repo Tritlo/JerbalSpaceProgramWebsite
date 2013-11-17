@@ -5,11 +5,11 @@ function Terrain(descr) {
     this.setup(descr);
     this.points = this.genTerrain();
     //Add landing platform
-    this.spliceByXCoords(100,300,[[100,250],[150,232],[250,232],[300,250]]);
+//    this.spliceByXCoords(100,300,[[100,250],[150,232],[250,232],[300,250]]);
 };
 
 Terrain.prototype = new Entity();
-
+Terrain.prototype.center = [0,0];
 Terrain.prototype.spliceByIndex = function (indFrom, indTo, yValues) {
     for(var i = 0; i < yValues.length; i++){
 	this.points[indFrom+i][1] = yValues[i];
@@ -192,7 +192,7 @@ Terrain.prototype.genTerrain = function () {
 		currX = nextX;
 		currY = nextY;
 	}
-	return points;
+	return util.wrapListAround(points,this.center);
 }
 
 

@@ -20,9 +20,6 @@ var g_isUpdateOdd = false;
 
 function update(dt) {
     
-    // Get out if skipping (e.g. due to pause-mode)
-    //
-    if (shouldSkipUpdate()) return;
 
     // Remember this for later
     //
@@ -39,13 +36,14 @@ function update(dt) {
     // giving us a conveniently scaled "du" to work with.
     //
     var du = (dt / NOMINAL_UPDATE_INTERVAL);
-   
-    stateManager.update(du);
+    if(!(shouldSkipUpdate())){
+        stateManager.update(du);
+        g_prevUpdateDt = original_dt;
+        g_prevUpdateDu = du;
+        g_isUpdateOdd = !g_isUpdateOdd;
+    }
+    stateManager.cameraUpdate(du);
     
-    g_prevUpdateDt = original_dt;
-    g_prevUpdateDu = du;
-    
-    g_isUpdateOdd = !g_isUpdateOdd;
 }
 
 // Togglable Pause Mode
