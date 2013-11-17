@@ -78,7 +78,7 @@ Ship.prototype.attributesFromParts = function () {
 	this.width  = p.width;
 	this.cx = p.center[0]
 	this.cy = p.center[1]
-    } else {
+        } else {
 	var numParts = this.parts.length;
 	var totalMass = 0;
 	    for(var i = 0; i<numParts; i++) {
@@ -98,7 +98,9 @@ Ship.prototype.attributesFromParts = function () {
 	this.cx = weightedXCenters.reduce(function (x,y) {return x+y});
 	this.cy = weightedYCenters.reduce(function (x,y){return x+y});
     }
-    
+    if(isNaN(this.cx) || isNaN(this.cy)){
+        debugger; 
+    }
     this.center = [this.cx,this.cy];
     var cen = this.center;
     this.radius = Math.max(this.height,this.width);
@@ -308,7 +310,7 @@ Ship.prototype.applyAccel = function (accel,du) {
     // s = s + v_ave * t
     var nextX = this.cx + intervalVelX * du;
     var nextY = this.cy + intervalVelY * du;
-    
+
     // bounce
     if (g_settings.useGravity) {
         if (g_settings.hitBox){
@@ -323,8 +325,8 @@ Ship.prototype.applyAccel = function (accel,du) {
 	    var collisionAngle = terrainHit[2];
 	    this.velX = oldVelX*-0.9*Math.sin(collisionAngle);
 	    this.velY = oldVelY * -0.9*Math.cos(collisionAngle);
-            intervalVelY = this.velY;
-            intervalVelX = this.velX;
+        intervalVelY = this.velY;
+        intervalVelX = this.velX;
 	    if (collisionSpeed <= g_settings.minLandingSpeed && Math.abs(this.rotation - collisionAngle)<=g_settings.maxSafeAngle){
 		this.land(this.cx,this.cy);
 		intervalVelY = this.velY;
@@ -339,8 +341,11 @@ Ship.prototype.applyAccel = function (accel,du) {
     }
     
     // s = s + v_ave * t
-    this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
     if(! this._isExploding){
+        if(isNaN(du) || isNaN(intervalVelX)){
+            debugger; 
+        }
+        this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
         this.cx += du * intervalVelX;
         this.cy += du * intervalVelY;
         this.center = [this.cx,this.cy];
