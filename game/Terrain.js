@@ -34,7 +34,7 @@ Terrain.prototype.heightAtX = function (x) {
 Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     var values = [];
     var steps = Math.max(Math.ceil(explRadius/20),5);
-    console.log(steps,speed);
+    //console.log(steps,speed);
     for(var i = 0; i <= steps; i++){
 	var deg = Math.PI * i/steps;
 	values.push([x-Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);

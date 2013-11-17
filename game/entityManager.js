@@ -212,8 +212,8 @@ updateCamera: function () {
     this.lockCamera = false;
 	}
 
-    if(this._ships[0]){
-        var s = this._ships[0];
+    if(this._ships.length > 0){
+        var s = this.getMainShip();
     if(!this.lockCamera){    
         this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2];
     }
@@ -253,6 +253,11 @@ update: function(du) {
 },
 
 getMainShip: function() {
+    for(var i = 0; i < this._ships.length; i++){
+	if (this._ships[i].isMain){
+	    return this._ships[i];
+	    }
+	}
     return this._ships[0];
     },
 

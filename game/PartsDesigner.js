@@ -92,7 +92,7 @@ PartsDesigner.prototype.init = function() {
 
     
     this.grid = new Grid({
-	    "dims" : [32,32],
+	    "dims" : [64,64],
         "width" : 525,
         "height" : 525,
         "location": [375,375]
