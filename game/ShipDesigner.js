@@ -15,6 +15,16 @@ ShipDesigner.prototype.init = function() {
 		stateManager.switchState("menu");
 		}
 	    },
+		{
+		"text" : "Launch",
+		"action" : function(state) {
+		state.currentShip.assemble(state.grid);
+		console.log(state.currentShip);
+		entityManager.clearShips();
+		entityManager.generateShip(state.currentShip);
+		stateManager.switchState("simulation");
+		}
+		},
         ],
 	"width" : 100,
 	"height" : 100,
@@ -89,7 +99,7 @@ ShipDesigner.prototype.init = function() {
         "location": [375,375]
 	});
 
-    this.newShip();
+    this.loadShip();
     }
 
 ShipDesigner.prototype.newShip = function ()
@@ -112,6 +122,7 @@ ShipDesigner.prototype.addPart = function (partInd){
         this.addedParts = [this.heldPart];
 		this.indexOfHeldPart = 0;
     }
+	this.currentShip.parts = this.addedParts
     console.log(part);
 }
 
@@ -150,8 +161,10 @@ ShipDesigner.prototype.loadShip = function ()
     var ships = util.storageLoad("ships");
     var ship = new Ship(ships[$('#in9').val()]);
     var ship = ship.disassemble(this.grid);
+	this.currentShip = ship;
     var gri = this.grid;
     this.addedParts = ship.parts;
+	console.log(this.currentShip);
 }
 
 ShipDesigner.prototype.onActivation = function ()
