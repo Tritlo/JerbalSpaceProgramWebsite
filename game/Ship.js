@@ -387,6 +387,8 @@ Ship.prototype.applyAccel = function (accel,du) {
 Ship.prototype.explode = function(x,y,speed){
     spatialManager.unregister(this);
     this._isExploding = true;
+    this.velX = 0;
+    this.velY = 0;
     var radius = this.getRadius();
     this._explosionSpeed = speed;
     var explRadius = radius*2 + radius*speed/15 + (this.fuel/750)*radius;
