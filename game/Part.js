@@ -218,6 +218,10 @@ Part.prototype.finalize = function(grid,translate){
     this.origOutline = this.outline;
 }
 
+Part.prototype.getRadius = function() {
+    return this.radius;
+}
+
 Part.prototype.updateRot = function(newRot){
     this.center = util.rotatePointAroundPoint(this.center,newRot-this.rotation,this.centerOfRot[0],this.centerOfRot[1]);
     var oldRot = this.rotation
@@ -296,12 +300,13 @@ Part.prototype.getHitBoxDimensions = function(){
 
 Part.prototype._renderHitbox = function (ctx,inGame){
             ctx.save();
-	    var d = this.getHitBoxDimensions();
-	    var x = this.hitBox[0][0];
-	    var y = this.hitBox[0][1];
+            var d = this.getHitBoxDimensions();
+            var x = this.hitBox[0][0];
+            var y = this.hitBox[0][1];
             ctx.strokeStyle = "red";
             //util.strokeBox(ctx, this.hitBox[0][0], this.hitBox[0][1], Math.abs(this.hitBox[1][0]-this.hitBox[0][0]), Math.abs(this.hitBox[0][1] - this.hitBox[1][1]));
             util.strokeBox(ctx, x, y, d[0], d[1]);
+            util.strokeCircle(ctx, x, y, this.radius);
             ctx.stroke();
             ctx.restore();
 }

@@ -106,6 +106,8 @@ ShipDesigner.prototype.newShip = function ()
 {
     this.currentShip = new Ship(
             {
+                "cx" : 200,
+                "cy" : 200
             });
     this.addedParts = this.currentShip.parts;
 }
