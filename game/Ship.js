@@ -329,11 +329,17 @@ Ship.prototype.applyAccel = function (accel,du) {
         if (g_settings.hitBox){
             /*var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius(),this.width,this.height,this.rotation);
-	    */
+		    */
 	    var terrainHit;
-	    for(var i = 0, i < this.parts.length; i++){
+	    for(var i = 0; i < this.parts.length; i++){
 	        var p = this.parts[i];
-	        terrainHit = entityManager.getTerrain().hit();
+		var d = p.getHitBoxDimensions();
+		var x = p.center[0];
+		var y = p.center[1];
+		var nx = x + (nextX - this.cx);
+		var ny = y + (nextY - this.cy);
+	        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,this.getRadius(),d[0],d[1],this.rotation);
+		if(terrainHit[0]) break;
 	    }
         } else {
             var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
@@ -530,7 +536,7 @@ Ship.prototype.renderHitBox = function(ctx){
     ctx.translate(-this.cx,-this.cy);
     var p = this.getPos();
     //console.log("here");
-    util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
+    //util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
     this.parts.map(function(x){x.renderHitBox(ctx)});
     ctx.restore();
     //ctx.stroke();
