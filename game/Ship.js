@@ -504,10 +504,15 @@ Ship.prototype.renderParts = function(ctx){
 }
 
 Ship.prototype.renderHitBox = function(ctx){
+    ctx.save();
+    ctx.translate(this.cx,this.cy);
+    ctx.rotate(this.rotation);
+    ctx.translate(-this.cx,-this.cy);
     var p = this.getPos();
     //console.log("here");
     util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
     this.parts.map(function(x){x.renderHitBox(ctx)});
+    ctx.restore();
     //ctx.stroke();
 };
 
