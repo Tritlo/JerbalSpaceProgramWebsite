@@ -416,7 +416,9 @@ fillBox: function (ctx, x, y, w, h, style) {
 },
 
 strokeBox: function (ctx, x, y, w, h) {
+    ctx.beginPath();
     ctx.strokeRect(x, y, w, h);
+    ctx.closePath();
 },
 
 drawDot: function (ctx,x,y,color){

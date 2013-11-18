@@ -99,9 +99,9 @@ render: function(ctx) {
             //var w = e.width;//*entityManager.cameraZoom;
             //var h = e.height;//*entityManager.cameraZoom;
             //util.strokeBox(ctx, pos.posX-w/2, pos.posY-h/2, w, h);
-	    e.renderHitBox(ctx);
-            ctx.restore();
+	        e.renderHitBox(ctx);
             ctx.stroke();
+            ctx.restore();
         } else {
             util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius()*entityManager.cameraZoom);
         }

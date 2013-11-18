@@ -48,6 +48,14 @@ Part.prototype.rotate = function(ind){
     this.outline = util.rotateList(this.outline,util.lastIndexOfObj(this.outline,ind));
 }
 
+Part.prototype.reset = function(){
+    this.hitBox = [
+                   [this.center[0] - this.width/2, this.center[1]-this.height/2],
+                   [this.center[0] + this.width/2, this.center[1]+this.height/2]
+                    ];
+    this.centerOfRot = this.center;
+
+}
 
 Part.prototype.addPoint = function(pt){
     if (this.outline) {
@@ -205,10 +213,7 @@ Part.prototype.finalize = function(grid,translate){
     this.currentFuel = 0;
     this.radius = Math.max(this.height,this.width);
     this.finalizeNumbers();
-    this.hitBox = [
-                   [this.center[0] - this.width/2, this.center[1]-this.height/2],
-                   [this.center[0] + this.width/2, this.center[1]+this.height/2]
-                    ];
+    this.reset();
     this.lineWidth = 1;
     this.origOutline = this.outline;
 }
@@ -218,6 +223,7 @@ Part.prototype.updateRot = function(newRot){
     var oldRot = this.rotation
     var cRot = this.centerOfRot
     this.outline = this.outline.map(function(p) { return util.rotatePointAroundPoint(p,newRot-oldRot,cRot[0],cRot[1])});
+    //this.hitBox = this.hitBox.map(function(p) { return util.rotatePointAroundPoint(p,newRot-oldRot,cRot[0],cRot[1])});
     this.rotation = newRot;
     }
 
@@ -253,24 +259,26 @@ Part.prototype.finalizeNumbers = function(){
 Part.prototype._renderFlame = function (ctx) {
     if (this.flame && this.thrust != 0) {
 	var t = this.currentThrust/this.thrust;
-	var rot = this.rotation;
-	ctx.save();
-	ctx.lineWidth = 1;
-	var ps = this.flame.points;
-	var c = this.flame.center;
-	var l = this.flame.length;
-	var dir = this.flame.direction;
-	ctx.strokeStyle = "blue";
-	var tip = util.vecPlus(c,util.mulVecByScalar(0.2*l*t,dir));
-	var cRot = this.centerOfRot;
-	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
-	ctx.strokeStyle = "yellow";
-	var tip = util.vecPlus(c,util.mulVecByScalar(0.6*l*t,dir));
-	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
-	ctx.strokeStyle = "red";
-	var tip = util.vecPlus(c,util.mulVecByScalar(1.0*l*t,dir));
-	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
-	ctx.restore();
+    if(t > 0){
+        var rot = this.rotation;
+        ctx.save();
+        ctx.lineWidth = 1;
+        var ps = this.flame.points;
+        var c = this.flame.center;
+        var l = this.flame.length;
+        var dir = this.flame.direction;
+        var cRot = this.centerOfRot;
+        ctx.strokeStyle = "blue";
+        var tip = util.vecPlus(c,util.mulVecByScalar(0.2*l*t,dir));
+        util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
+        ctx.strokeStyle = "yellow";
+        var tip = util.vecPlus(c,util.mulVecByScalar(0.6*l*t,dir));
+        util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
+        ctx.strokeStyle = "red";
+        var tip = util.vecPlus(c,util.mulVecByScalar(1.0*l*t,dir));
+        util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
+	    ctx.restore();
+    }
 	}
     
     }

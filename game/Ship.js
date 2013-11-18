@@ -32,6 +32,7 @@ function Ship(descr) {
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
+    this.attributesFromParts();
 };
 
     Ship.prototype = new Entity();
@@ -70,6 +71,7 @@ Ship.prototype.parts = [];
 Ship.prototype.sizeGrid;
 Ship.prototype.isMain = true;
 Ship.prototype.timeAlive = 0;
+Ship.prototype.immuneTime = 100;
 
 
 Ship.prototype.attributesFromParts = function () {
@@ -219,7 +221,7 @@ Ship.prototype.update = function (du) {
         }
         
     }    
-    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= 200) spatialManager.register(this);
+    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
 
 };
 
@@ -398,7 +400,8 @@ Ship.prototype.explode = function(x,y,speed){
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
 	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
-	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1]});
+        this.parts.map(function (p) {p.reset()});
+	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
 	    ship.attributesFromParts();
 	    entityManager.generateShip(ship);
 	    }
