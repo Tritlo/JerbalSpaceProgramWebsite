@@ -221,6 +221,7 @@ Terrain.prototype.render = function (ctx) {
 	}
 	ctx.closePath();
 	ctx.stroke();
-   // ctx.fill();
+    ctx.fill();
+	ctx.strokeText("C",this.center[0],this.center[1]);
     ctx.restore();
 };

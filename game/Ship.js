@@ -246,8 +246,9 @@ Ship.prototype.computeForces = function (du) {
     //TODO: use intervalRot;
     var accelX = +Math.sin(this.rotation) * this.thrust;
     var accelY = -Math.cos(this.rotation) * this.thrust;
-    
-    accelY += this.computeGravity();
+    var GForce= this.computeGravity();
+	accelX += GForce[0];
+	accelY += GForce[1];
     var accelRot = this.torque/this.mass;
     
     return [accelX,accelY,accelRot];
@@ -269,7 +270,11 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
 var NOMINAL_GRAVITY = 0.02;
 
 Ship.prototype.computeGravity = function () {
-    return g_useGravity ? NOMINAL_GRAVITY : 0;
+//    return g_useGravity ? NOMINAL_GRAVITY : 0;
+	if(!g_useGravity)
+		return 0;
+	var gravAccel=entityManager.gravityAt(this.cx,this.cy);
+	return util.mulVecByScalar(this.mass,gravAccel);
 };
 
 
