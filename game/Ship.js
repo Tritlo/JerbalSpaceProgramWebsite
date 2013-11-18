@@ -82,6 +82,7 @@ Ship.prototype.attributesFromParts = function () {
         this.height  = p.height;
         this.width  = p.width;
         this.center = p.center;
+        this.radius = Math.min(this.height,this.width)/2
     } else {
         var numParts = this.parts.length;
         var totalMass = 0;
@@ -268,11 +269,11 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
         var p = this.parts[i];
         var d = p.getHitBoxDimensions();
         var r = p.getRadius();
-        var x = p.center[0];
-        var y = p.center[1];
+        var x = p.hitBox[0][0];
+        var y = p.hitBox[0][1];
         var nx = x
         var ny = y
-        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],newRot);
+        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
     if(terrainHit[0]) break;
     }
     if (!(terrainHit[0])){
@@ -354,11 +355,11 @@ Ship.prototype.applyAccel = function (accel,du) {
 	        var p = this.parts[i];
             var d = p.getHitBoxDimensions();
             var r = p.getRadius()
-            var x = p.center[0];
-            var y = p.center[1];
+            var x = p.hitBox[0][0];
+            var y = p.hitBox[0][1];
             var nx = x + (nextX - this.cx);
             var ny = y + (nextY - this.cy);
-            terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],p.rotation);
+            terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
 		if(terrainHit[0]) break;
 	    }
         } else {
@@ -557,10 +558,10 @@ Ship.prototype.renderParts = function(ctx){
 
 Ship.prototype.renderHitBox = function(ctx){
     ctx.save();
-    ctx.translate(this.cx,this.cy);
-    ctx.rotate(this.rotation);
-    ctx.translate(-this.cx,-this.cy);
-    var p = this.getPos();
+    //ctx.translate(this.cx,this.cy);
+    //ctx.rotate(this.rotation);
+    //ctx.translate(-this.cx,-this.cy);
+    //var p = this.getPos();
     //console.log("here");
     //util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
     this.parts.map(function(x){x.renderHitBox(ctx)});

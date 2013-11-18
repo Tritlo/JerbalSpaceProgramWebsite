@@ -7,7 +7,10 @@ Part.prototype.setup = function (descr) {
         this[property] = descr[property];
     }
 
+    this.updateAttributes();
 }
+
+Part.prototype.renderHb = false;
 Part.prototype.name = "NO NAME";
 Part.prototype.mass = 0.1;
 Part.prototype.currentMass = 0.1
@@ -139,6 +142,7 @@ Part.prototype.toDesigner = function(grid){
     this.gridCenterOffset[1] *= grid.cellDim[0]
     this.hitBox = grid.fromGridCoords(this.hitBox);    
     this.lineWidth = 4;
+    this.updateAttributes();
     return this;
 }
 
@@ -180,14 +184,14 @@ Part.prototype.finalize = function(grid,translate){
     var maxy = Number.MIN_VALUE;
     for(var i = 0; i < l; i++){
         var nx = this.outline[i][0];
-	var ny = this.outline[i][1];
-	if(nx > maxx) maxx = nx;
-	if(nx < minx) minx = nx;
-	if(ny > maxy) maxy = ny;
-	if(ny < miny) miny = ny;
+        var ny = this.outline[i][1];
+        if(nx > maxx) maxx = nx;
+        if(nx < minx) minx = nx;
+        if(ny > maxy) maxy = ny;
+        if(ny < miny) miny = ny;
     }
-    this.height = maxy - miny;
-    this.width = maxx - minx;
+    this.height = Math.abs(maxy - miny);
+    this.width =  Math.abs(maxx - minx);
     //Translate
     if(translate){
         var trans = function (x) { return util.vecMinus(x,[minx,miny]); }
@@ -197,7 +201,7 @@ Part.prototype.finalize = function(grid,translate){
     var y = 0;
     for(var i = 0; i < l; i++){
         var nx = this.outline[i][0];
-	var ny = this.outline[i][1];
+	    var ny = this.outline[i][1];
         x += nx;
         y += ny;
     }
@@ -211,11 +215,11 @@ Part.prototype.finalize = function(grid,translate){
 			    
     this.currentThrust = 0;
     this.currentFuel = 0;
-    this.radius = Math.max(this.height,this.width);
     this.finalizeNumbers();
     this.reset();
     this.lineWidth = 1;
     this.origOutline = this.outline;
+    this.updateAttributes();
 }
 
 Part.prototype.getRadius = function() {
@@ -241,8 +245,9 @@ Part.prototype.updateCenter = function(newCenter)
 	}
     this.center = trans(this.center);
     this.centerOfRot = trans(this.centerOfRot);
-    this.mapFuncOverAll(trans);
-    this.hitBox = this.hitBox.map(trans);
+    this.mapFuncOverAll(trans,true);
+    //this.hitBox = this.hitBox.map(trans);
+    //this.updateAttributes();
 }
 
 Part.prototype.finalizeNumbers = function(){
@@ -292,21 +297,40 @@ Part.prototype.renderHitBox = function(ctx){
 }
 
 Part.prototype.getHitBoxDimensions = function(){
-    var w = Math.abs(this.hitBox[1][0]-this.hitBox[0][0]);
-    var h = Math.abs(this.hitBox[0][1] - this.hitBox[1][1]);
-    return [w,h];
+    return [this.width,this.height];
+}
+
+Part.prototype.updateAttributes = function (){
+    if(this.hitBox){
+        var w = Math.abs(this.hitBox[1][0]-this.hitBox[0][0]);
+        var h = Math.abs(this.hitBox[1][1] - this.hitBox[0][1]);
+        var r = Math.min(w,h)/2;
+        this.width = w;
+        this.height = h;
+        this.radius = r;
+    }
 }
 
 
 Part.prototype._renderHitbox = function (ctx,inGame){
             ctx.save();
-            var d = this.getHitBoxDimensions();
-            var x = this.hitBox[0][0];
-            var y = this.hitBox[0][1];
+            ctx.strokeStyle = "yellow";
+            util.strokeCircle(ctx, this.center[0], this.center[1], this.getRadius());
+            
+            ctx.stroke();
+            ctx.strokeStyle = "lime";
+            util.strokeCircle(ctx, this.center[0], this.center[1], 2);
+            ctx.stroke();
             ctx.strokeStyle = "red";
-            //util.strokeBox(ctx, this.hitBox[0][0], this.hitBox[0][1], Math.abs(this.hitBox[1][0]-this.hitBox[0][0]), Math.abs(this.hitBox[0][1] - this.hitBox[1][1]));
-            util.strokeBox(ctx, x, y, d[0], d[1]);
-            util.strokeCircle(ctx, x, y, this.radius);
+            var hB = util.paramsToRectangle(this.hitBox[0][0],this.hitBox[0][1],this.width,this.height,this.rotation, this.centerOfRot)
+            ctx.beginPath();
+            ctx.moveTo(hB[0][0],hB[0][1]);
+            for(var i = 0; i < hB.length; i++){
+                var loc = hB[i];
+                ctx.lineTo(loc[0],loc[1]);
+                //util.strokeCircle(ctx, loc[0], loc[1], 2);
+            }
+            ctx.closePath();
             ctx.stroke();
             ctx.restore();
 }
@@ -346,10 +370,10 @@ Part.prototype.render = function (ctx) {
         if(this.lineWidth){
             ctx.lineWidth = this.lineWidth;
         }
-	var cRot = this.centerOfRot;
-	var rot = this.rotation;
+	    var cRot = this.centerOfRot;
+	    var rot = this.rotation;
 	//var outline = this.outline.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
-	var outline = this.outline;//.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
+	    var outline = this.outline;//.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
         ctx.beginPath();
         ctx.moveTo(outline[0][0],outline[0][1]);
         for(var i = 0; i < outline.length; i++){
