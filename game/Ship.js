@@ -69,6 +69,7 @@ Ship.prototype.torque = 0;
 Ship.prototype.parts = [];
 Ship.prototype.sizeGrid;
 Ship.prototype.isMain = true;
+Ship.prototype.timeAlive = 0;
 
 
 Ship.prototype.attributesFromParts = function () {
@@ -188,6 +189,7 @@ Ship.prototype._updateExplosion = function (du) {
     
 Ship.prototype.update = function (du) {
 
+    this.timeAlive += du;
     // Handle warping
     if (this._isWarping) {
         this._updateWarp(du);
@@ -213,7 +215,7 @@ Ship.prototype.update = function (du) {
         var speed = Math.sqrt(this.velX*this.velX + this.velY*this.velY) 
         this.explode(this.cx,this.cy,speed);
     }    
-    if ( !(this.isColliding()) && !(this._isExploding)) spatialManager.register(this);
+    if ( !(this.isColliding()) && !(this._isExploding) && this.timeAlive >= 200) spatialManager.register(this);
 
 };
 
@@ -373,7 +375,7 @@ Ship.prototype.explode = function(x,y,speed){
 	    var c = part.center;
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
-	    var vel = util.mulVecByScalar(0.01*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
+	    var vel = util.mulVecByScalar(0.02*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
 	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1]});
 	    ship.attributesFromParts();
 	    entityManager.generateShip(ship);
