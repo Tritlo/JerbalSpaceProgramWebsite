@@ -33,7 +33,9 @@ function Ship(descr) {
     this._scale = 1;
     this._isWarping = false;
     if(this.parts.length > 0){
-        this.attributesFromParts();
+        if(this.origCenter){
+            this.attributesFromParts();
+        }
     }
 };
 
@@ -49,7 +51,7 @@ Ship.prototype.rememberResets = function () {
 // Initial, inheritable, default values
 Ship.prototype.rotation = 0;
 Ship.prototype.cx = 200;
-Ship.prototype.cy = 200;
+Ship.prototype.cy = 145;
 Ship.prototype.velX = 0;
 Ship.prototype.velY = 0;
 Ship.prototype.launchVel = 2;
@@ -82,6 +84,7 @@ Ship.prototype.attributesFromParts = function () {
         this.height  = p.height;
         this.width  = p.width;
         this.center = p.center;
+        this.origCenter = this.origCenter || p.center;
         this.radius = Math.min(this.height,this.width)/2
     } else {
         var numParts = this.parts.length;
@@ -103,6 +106,7 @@ Ship.prototype.attributesFromParts = function () {
         this.xMassCenter = weightedXCenters.reduce(function (x,y) {return x+y});
         this.yMassCenter = weightedYCenters.reduce(function (x,y){return x+y});
         this.center = [this.xMassCenter,this.yMassCenter];
+        this.origCenter = this.origCenter || this.center; 
     }
 
     this.radius = Math.max(this.height,this.width);
@@ -110,6 +114,12 @@ Ship.prototype.attributesFromParts = function () {
 }
 
 Ship.prototype.setCenter = function(newCenter) {
+    if(this.center === undefined){
+        this.center = [this.reset_cx,this.reset_cy]
+    }
+    if(newCenter === undefined){
+        newCenter = [0,0];
+    }
     var diff = util.vecMinus(newCenter,this.center);
     this.parts.map(function (p) { p.updateCenter(util.vecPlus(diff,p.center))});
     this.center = newCenter;
@@ -131,6 +141,10 @@ Ship.prototype.disassemble = function(grid) {
     var cen = this.center;
     //this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
     //this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
+    //
+    if(this.origCenter){
+        this.setCenter(this.origCenter);
+    }
     this.parts.map(function(x) { x.lineWidth = 4;});
     //this.parts.map(function(x) { x.scale(0.5)});
     this.parts.map(function(x) { x.toDesigner(grid);});
@@ -418,7 +432,6 @@ Ship.prototype.explode = function(x,y,speed){
 	for(var i = 0; i < this.parts.length; i++){
 	    var part = this.parts[i];
 	    var c = part.center;
-        console.log(c);
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
 	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)

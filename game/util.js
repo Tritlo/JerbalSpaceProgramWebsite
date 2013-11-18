@@ -268,6 +268,9 @@ rotateVector: function(a,rot){
     },
     
 vecMinus: function(a,b) {
+    if(b===undefined){
+        debugger;
+    }
     var vec = [a[0]-b[0],a[1]-b[1]]
     return vec
 },
