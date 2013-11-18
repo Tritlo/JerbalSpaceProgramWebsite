@@ -145,7 +145,7 @@ var mainMenu = new State({
 	"state" : this,
 	"title" : "JERBAL SPACE PROGRAM",
 	"items": [ {
-		"text": "Start",
+		"text": "Quick Start",
 		"state" : "simulation"
 		},
 		{ "text": "Part Design",
