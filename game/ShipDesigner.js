@@ -40,8 +40,13 @@ ShipDesigner.prototype.init = function() {
 	    "text" : "Echo Ship JSON",
 	    "action" : function (state)
              {
-                var ship = state.currentShip.assemble(state.grid);
+                state.currentShip.assemble(state.grid);
+                var oldCs = [state.currentShip.cx, state.currentShip.cy];
+                state.currentShip.cx = 200;
+                state.currentShip.cy = 145;
                 util.echoJSON(state.currentShip);
+                state.currentShip.cx = oldCs[0];
+                state.currentShip.cy = oldCs[1];
                 state.currentShip.disassemble(state.grid);
 		    }
 	    },

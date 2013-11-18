@@ -87,8 +87,11 @@ Ship.prototype.attributesFromParts = function () {
         this.origCenter = this.origCenter || p.center;
         this.radius = Math.min(this.height,this.width)/2
     } else {
-        var numParts = this.parts.length;
-        var totalMass = 0;
+            var numParts = this.parts.length;
+            var totalMass = 0;
+            this.fuel = 0;
+            this.maxThrust = 0;
+            this.mass = 0;
             for(var i = 0; i<numParts; i++) {
                 this.mass+=this.parts[i].mass;
                 totalMass+=this.parts[i].mass;
