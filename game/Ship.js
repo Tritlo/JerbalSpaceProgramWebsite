@@ -134,7 +134,9 @@ Ship.prototype.disassemble = function(grid) {
 
 
 Ship.prototype.getAltitude = function () {
-    return -(this.cy - g_settings.seaLevel/2 + this.height/2);
+	var terr=entityManager.getTerrain();
+	var centerDist=Math.sqrt(util.distSq(this.cx,this.cy,terr.center[0],terr.center[1]));
+    return (centerDist - terr.minY + this.height/2);
     }
 
 Ship.prototype._updateSpriteExplosion = function (du) {

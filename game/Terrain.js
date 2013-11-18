@@ -214,14 +214,14 @@ Terrain.prototype.render = function (ctx) {
     ctx.fillStyle = "black";
     ctx.beginPath()
     ctx.moveTo(terr[0][0],terr[0][1]);
-	ctx.font="10px Arial";
+	//ctx.font="10px Arial";
     for(var i = 1; i < terr.length;i++){
 		ctx.lineTo(terr[i][0],terr[i][1]);
-		ctx.strokeText(i,terr[i][0],terr[i][1]);
+		//ctx.strokeText(i,terr[i][0],terr[i][1]);
 	}
 	ctx.closePath();
 	ctx.stroke();
     ctx.fill();
-	ctx.strokeText("C",this.center[0],this.center[1]);
+	//ctx.strokeText("C",this.center[0],this.center[1]);
     ctx.restore();
 };
