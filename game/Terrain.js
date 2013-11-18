@@ -27,6 +27,9 @@ Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
 
 Terrain.prototype.heightAtX = function (x) {
     var ps = util.findClosestPoints(x,0,this.points);
+    if(!ps || !ps[0] || !ps[1]){
+        debugger;
+    }
     var lEq = util.getEqOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
     return (lEq[0]*x + lEq[2])/(-1*lEq[1]);
 }
@@ -34,7 +37,7 @@ Terrain.prototype.heightAtX = function (x) {
 Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     var values = [];
     var steps = Math.max(Math.ceil(explRadius/20),5);
-    console.log(steps,speed);
+    //console.log(steps,speed);
     for(var i = 0; i <= steps; i++){
 	var deg = Math.PI * i/steps;
 	values.push([x-Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
@@ -100,6 +103,9 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
 	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
 	var lN = util.lineNormal(x0,y0,x1,y1);
 	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+    if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
+        debugger; 
+    }
 	return [true,collisionSpeed,collisionAngle,pointOfHit];
     }
 }
@@ -121,6 +127,9 @@ Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
 	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
 	var lN = util.lineNormal(x0,y0,x1,y1);
 	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+    if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
+        debugger; 
+    }
 	return [true,collisionSpeed,collisionAngle];
 	}
     else {

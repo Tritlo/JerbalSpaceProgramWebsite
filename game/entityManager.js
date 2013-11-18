@@ -172,7 +172,11 @@ resetShips: function() {
 
 haltShips: function() {
     this._forEachOf(this._ships, Ship.prototype.halt);
-},	
+},
+
+clearShips: function() {
+    this._ships.map(function(x){ if(x){ x.kill()}});
+},
 
 toggleRocks: function() {
     this._bShowRocks = !this._bShowRocks;
@@ -215,8 +219,8 @@ updateCamera: function () {
     this.lockCamera = false;
 	}
 
-    if(this._ships[0]){
-        var s = this._ships[0];
+    if(this._ships.length > 0){
+        var s = this.getMainShip();
     if(!this.lockCamera){    
         this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2];
     }
@@ -256,13 +260,16 @@ update: function(du) {
 },
 
 getMainShip: function() {
+    for(var i = 0; i < this._ships.length; i++){
+	if (this._ships[i].isMain){
+	    return this._ships[i];
+	    }
+	}
     return this._ships[0];
     },
-
-
-render: function(ctx) {
-    var debugX = 10, debugY = 100;
-    ctx.save();
+    
+setUpCamera: function (ctx){
+    // NOTE: ALWAYS save and restore when using this function
     if(this._ships[0]){
         var s = this._ships[0];
         //ctx.translate(-this.trueOffset[0],-this.trueOffset[1]);
@@ -273,6 +280,13 @@ render: function(ctx) {
     ctx.translate(this.trueOffset[0],this.trueOffset[1]);
 	//console.log((s.cx) + " "  + (s.cy));
     }
+},
+
+
+render: function(ctx) {
+    var debugX = 10, debugY = 100;
+    ctx.save();
+    this.setUpCamera(ctx);
     Stars.render(ctx);
     this._terrain.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {

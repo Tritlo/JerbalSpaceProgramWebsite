@@ -1,78 +1,79 @@
-// util.js
-//
-// A module of utility functions, with no private elements to hide.
-// An easy case; just return an object containing the public stuff.
+    // util.js
+    //
+    // A module of utility functions, with no private elements to hide.
+    // An easy case; just return an object containing the public stuff.
 
-"use strict";
-
-
-var util = {
+    "use strict";
 
 
-// RANGES
-// ======
-
-clampRange: function(value, lowBound, highBound) {
-    if (value < lowBound) {
-	value = lowBound;
-    } else if (value > highBound) {
-	value = highBound;
-    }
-    return value;
-},
-
-wrapRange: function(value, lowBound, highBound) {
-    while (value < lowBound) {
-	value += (highBound - lowBound);
-    }
-    while (value > highBound) {
-	value -= (highBound - lowBound);
-    }
-    return value;
-},
-
-isBetween: function(value, lowBound, highBound) {
-    if (value < lowBound) { return false; }
-    if (value > highBound) { return false; }
-    return true;
-},
-
-circInBox: function (x,y,radius,topLeftCorner,bottomRightCorner){
-    var TLC = topLeftCorner;
-    var BRC = bottomRightCorner;
-    var eTLC = [x-radius, y-radius];
-    var eBRC = [x+radius, y+radius];
-    return ( !(eBRC[1] < TLC[1]) && !(eTLC[1] > BRC[1]) &&
-	     !(eBRC[0] < TLC[0]) && !(eTLC[0] > BRC[0]));
-},
-
-findPos : function(obj) {
-    var curleft = 0, curtop = 0;
-    if (obj.offsetParent) {
-        do {
-            curleft += obj.offsetLeft;
-            curtop += obj.offsetTop;
-            } while (obj = obj.offsetParent);
-        return { x: curleft, y: curtop };
-    }
-    return undefined;
-},
+    var util = {
 
 
-// RANDOMNESS
-// ==========
+    // RANGES
+    // ======
 
-randRange: function(min, max) {
-    return (min + Math.random() * (max - min));
-},
+    clampRange: function(value, lowBound, highBound) {
+        if (value < lowBound) {
+        value = lowBound;
+        } else if (value > highBound) {
+        value = highBound;
+        }
+        return value;
+    },
+
+    wrapRange: function(value, lowBound, highBound) {
+        while (value < lowBound) {
+        value += (highBound - lowBound);
+        }
+        while (value > highBound) {
+        value -= (highBound - lowBound);
+        }
+        return value;
+    },
+
+    isBetween: function(value, lowBound, highBound) {
+        if (value < lowBound) { return false; }
+        if (value > highBound) { return false; }
+        return true;
+    },
+
+    circInBox: function (x,y,radius,topLeftCorner,bottomRightCorner){
+        var TLC = topLeftCorner;
+        var BRC = bottomRightCorner;
+        var eTLC = [x-radius, y-radius];
+        var eBRC = [x+radius, y+radius];
+        return ( !(eBRC[1] < TLC[1]) && !(eTLC[1] > BRC[1]) &&
+             !(eBRC[0] < TLC[0]) && !(eTLC[0] > BRC[0]));
+    },
+
+    findPos : function(obj) {
+        var curleft = 0, curtop = 0;
+        if (obj.offsetParent) {
+            do {
+                curleft += obj.offsetLeft;
+                curtop += obj.offsetTop;
+                } while (obj = obj.offsetParent);
+            return { x: curleft, y: curtop };
+        }
+        return undefined;
+    },
 
 
-// MISC
-// ====
+    // RANDOMNESS
+    // ==========
 
-square: function(x) {
-    return x*x;
-},
+    randRange: function(min, max) {
+        return (min + Math.random() * (max - min));
+    },
+
+
+    // MISC
+    // ====
+
+    square: function(x) {
+        return x*x;
+    },
+
 
 findIndexOfClosest: function (x0,pointList) {
     var xs = [];
@@ -130,29 +131,29 @@ wrapListAround: function(points,center)
 },	
 
 //=================================================
-binarySearch: function(val,list) {
-    var low = 0;
-    var high = list.length -1;
-    while(high > low){
-        var mid = Math.floor(low + (high-low)/2);
-        if ( val > list[mid]){
-            low = mid+1; 
+    binarySearch: function(val,list) {
+        var low = 0;
+        var high = list.length -1;
+        while(high > low){
+            var mid = Math.floor(low + (high-low)/2);
+            if ( val > list[mid]){
+                low = mid+1; 
+            }
+            else {
+                high = mid;
+            }
         }
-        else {
-            high = mid;
-        }
-    }
-    return low;
-},
+        return low;
+    },
 
-// DISTANCES
-// =========
+    // DISTANCES
+    // =========
 
-distSq: function(x1, y1, x2, y2) {
-    return util.square(x2-x1) + util.square(y2-y1);
-},
+    distSq: function(x1, y1, x2, y2) {
+        return util.square(x2-x1) + util.square(y2-y1);
+    },
 
-wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {
+    wrappedDistSq: function(x1, y1, x2, y2, xWrap, yWrap) {
     var dx = Math.abs(x2-x1),
 	dy = Math.abs(y2-y1);
     if (dx > xWrap/2) {
@@ -171,8 +172,12 @@ getEqOfLine: function (x0,y0,x1,y1) {
 },
 
 lineNormal: function(x0,y0,x1,y1){
-    var coeffs = util.getEqOfLine(x0,y0,x1,y1);
-    return [coeffs[0],coeffs[1]];
+    if(x0 !== x1){
+        var coeffs = util.getEqOfLine(x0,y0,x1,y1);
+        return [coeffs[0],coeffs[1]];
+    } else {
+        return [1,0]
+    }
 },
 
 sideOfLine: function(a0,a1,b0,b1,p0,p1) {
@@ -218,7 +223,12 @@ distFromLine: function(x0,y0,x1,y1,p0,p1) {
     var a = coeffs[0];
     var b = coeffs[1];
     var c = coeffs[2];
-    return Math.abs(a*p0 +b*p1 + c)/Math.sqrt(a*a + b*b);
+    if(b === 0){
+        console.log("warning, vertical line!") 
+        return Math.abs(p0-x0);
+    } else {
+        return Math.abs(a*p0 +b*p1 + c)/Math.sqrt(a*a + b*b);
+    }
 },
 
 signOfCrossProduct : function(a,b) {
@@ -438,7 +448,9 @@ fillBox: function (ctx, x, y, w, h, style) {
 },
 
 strokeBox: function (ctx, x, y, w, h) {
+    ctx.beginPath();
     ctx.strokeRect(x, y, w, h);
+    ctx.closePath();
 },
 
 drawDot: function (ctx,x,y,color){
@@ -498,4 +510,3 @@ hideAllInputs: function () {
     $('input').hide();
     },
 };
-

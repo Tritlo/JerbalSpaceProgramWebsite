@@ -32,6 +32,9 @@ function Ship(descr) {
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
+    if(this.parts.length > 0){
+        this.attributesFromParts();
+    }
 };
 
     Ship.prototype = new Entity();
@@ -68,42 +71,63 @@ Ship.prototype.angularVel = 0;
 Ship.prototype.torque = 0;
 Ship.prototype.parts = [];
 Ship.prototype.sizeGrid;
+Ship.prototype.isMain = true;
+Ship.prototype.timeAlive = 0;
+Ship.prototype.immuneTime = 100;
 
-Ship.prototype.assemble = function(grid) {
-    this.parts.map(function(x) { x.finalize(grid,false);});
-    this.parts.map(function(x) { x.scale(2)});
-    this.parts.map(function(x) { x.lineWidth = 1;});
+
+Ship.prototype.attributesFromParts = function () {
+    if(this.parts.length === 1){
+	var p = this.parts[0];
+	this.height  = p.height;
+	this.width  = p.width;
+	this.cx = p.center[0]
+	this.cy = p.center[1]
+        } else {
 	var numParts = this.parts.length;
-    var totalMass = 0;
-	for(var i = 0; i<numParts; i++) {
-		this.mass+=this.parts[i].mass;
-		totalMass+=this.parts[i].mass;
-		this.fuel+=this.parts[i].fuel;
-		this.maxThrust+=this.parts[i].thrust;
-	}
+	var totalMass = 0;
+	    for(var i = 0; i<numParts; i++) {
+		    this.mass+=this.parts[i].mass;
+		    totalMass+=this.parts[i].mass;
+		    this.fuel+=this.parts[i].fuel;
+		    this.maxThrust+=this.parts[i].thrust;
+	    }
 	var maxx = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0]}));
 	var minx = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
 	var maxy = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
 	var miny = Math.min.apply(null, this.parts.map(function (p){return p.hitBox[0][1]}));
-	this.height = Math.abs(maxy-miny);
-	this.width = Math.abs(maxx-minx);
 	var weightedXCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[0]});
 	var weightedYCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[1]});
+	this.height = Math.abs(maxy-miny);
+	this.width = Math.abs(maxx-minx);
 	this.cx = weightedXCenters.reduce(function (x,y) {return x+y});
 	this.cy = weightedYCenters.reduce(function (x,y){return x+y});
-	this.center = [this.cx,this.cy];
+    }
+    if(isNaN(this.cx) || isNaN(this.cy)){
+        debugger; 
+    }
+    this.center = [this.cx,this.cy];
     var cen = this.center;
-	this.radius = Math.max(this.height,this.width);
+    this.radius = Math.max(this.height,this.width);
+    console.log("attir", this)
+    }
+
+Ship.prototype.assemble = function(grid) {
+    //this.parts.map(function(x) { x.scale(2)});
+    this.parts.map(function(x) { x.finalize(grid,false);});
+    this.parts.map(function(x) { x.lineWidth = 1;});
+    
+    this.attributesFromParts();
+    
+    var cen = this.center;
     this.parts.map(function(x) { x.centerOfRot = cen;});
-    this.parts.map(function(x) { x.updateCenter(util.vecMinus(x.center,cen))});
-    this.parts.map(function(x) { x.updateCenter(util.vecMinus(x.center,cen))});
 }
 Ship.prototype.disassemble = function(grid) {
     var cen = this.center;
-    this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
-    this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
-    this.parts.map(function(x) { x.scale(0.5)});
+    //this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
+    //this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
     this.parts.map(function(x) { x.lineWidth = 4;});
+    //this.parts.map(function(x) { x.scale(0.5)});
     this.parts.map(function(x) { x.toDesigner(grid);});
     return this;
 }
@@ -140,14 +164,19 @@ Ship.prototype._updateVectorExplosion = function (du){
 	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
     }
     if (this._timeFromExplosion > this._explosionDuration){
+	this._explCraterAdded = false;
+	this._explosionRadius = 0;
+    }
+
+    if(this._timeFromExplosion > this._explosionDuration + 200){
 	this._isExploding = false;
 	this._explosionDuration = 0;
 	this._timeFromExplosion = 0;
-	this._explosionRadius = 0;
-	this._explCraterAdded = false;
-	createInitialShips();
+	if(this.isMain){
+	    createInitialShips();
+	    }
 	return entityManager.KILL_ME_NOW;
-    }
+	}
     
 }
 
@@ -164,6 +193,7 @@ Ship.prototype._updateExplosion = function (du) {
     
 Ship.prototype.update = function (du) {
 
+    this.timeAlive += du;
     // Handle warping
     if (this._isWarping) {
         this._updateWarp(du);
@@ -183,13 +213,24 @@ Ship.prototype.update = function (du) {
     for (var i = 0; i < steps; ++i) {
         this.computeSubStep(dStep);
     }
-
-    // Handle firing
     
-    //if (this.isColliding())    this.warp();
-    if ( !(this.isColliding()) && !(this._isExploding)) spatialManager.register(this);
+
+    var hitEnt = this.isColliding()
+    if (hitEnt){
+        this.explode(this.cx,this.cy,this.getSpeed());
+        if (hitEnt.getSpeed){
+            hitEnt.explode(hitEnt.cx,hitEnt.cy,hitEnt.getSpeed());
+        }
+        
+    }    
+    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
 
 };
+
+Ship.prototype.getSpeed = function () {
+    var speed = Math.sqrt(this.velX*this.velX + this.velY*this.velY) 
+    return speed
+}
 
 Ship.prototype.computeSubStep = function (du) {
 
@@ -221,7 +262,7 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
     var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
     if (!(terrainHit[0])){
         this.rotation = newRot;
-		this.parts.map(function (x){ x.rotation = newRot});
+	this.parts.map(function (x){ x.updateRot(newRot)});
     }
 };
 
@@ -233,15 +274,19 @@ Ship.prototype.computeGravity = function () {
 
 
 Ship.prototype.computeThrustMag = function (du) {
-    
-    if (keys[g_settings.keys.KEY_THRUST]) {
-	this.throttle += this.throttle < 100 ? 1 : 0;
-    }
-    if (keys[g_settings.keys.KEY_RETRO]) {
-	this.throttle -= this.throttle > 0 ? 1 : 0;
-    }
-    if (eatKey(g_settings.keys.KEY_KILLTHROTTLE)) {
-	this.throttle = 0;
+
+
+    if (entityManager.getMainShip() === this){
+
+	if (keys[g_settings.keys.KEY_THRUST]) {
+	    this.throttle += this.throttle < 100 ? 1 : 0;
+	}
+	if (keys[g_settings.keys.KEY_RETRO]) {
+	    this.throttle -= this.throttle > 0 ? 1 : 0;
+	}
+	if (eatKey(g_settings.keys.KEY_KILLTHROTTLE)) {
+	    this.throttle = 0;
+	    }
 	}
     
     this.thrust = this.maxThrust*this.throttle/100;
@@ -282,12 +327,24 @@ Ship.prototype.applyAccel = function (accel,du) {
     // s = s + v_ave * t
     var nextX = this.cx + intervalVelX * du;
     var nextY = this.cy + intervalVelY * du;
-    
+
     // bounce
     if (g_settings.useGravity) {
         if (g_settings.hitBox){
-            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+            /*var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius(),this.width,this.height,this.rotation);
+		    */
+	    var terrainHit;
+	    for(var i = 0; i < this.parts.length; i++){
+	        var p = this.parts[i];
+		var d = p.getHitBoxDimensions();
+		var x = p.center[0];
+		var y = p.center[1];
+		var nx = x + (nextX - this.cx);
+		var ny = y + (nextY - this.cy);
+	        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,this.getRadius(),d[0],d[1],this.rotation);
+		if(terrainHit[0]) break;
+	    }
         } else {
             var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius());
@@ -297,8 +354,8 @@ Ship.prototype.applyAccel = function (accel,du) {
 	    var collisionAngle = terrainHit[2];
 	    this.velX = oldVelX*-0.9*Math.sin(collisionAngle);
 	    this.velY = oldVelY * -0.9*Math.cos(collisionAngle);
-            intervalVelY = this.velY;
-            intervalVelX = this.velX;
+        intervalVelY = this.velY;
+        intervalVelX = this.velX;
 	    if (collisionSpeed <= g_settings.minLandingSpeed && Math.abs(this.rotation - collisionAngle)<=g_settings.maxSafeAngle){
 		this.land(this.cx,this.cy);
 		intervalVelY = this.velY;
@@ -313,8 +370,11 @@ Ship.prototype.applyAccel = function (accel,du) {
     }
     
     // s = s + v_ave * t
-	//this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
     if(! this._isExploding){
+        if(isNaN(du) || isNaN(intervalVelX)){
+            debugger; 
+        }
+        this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
         this.cx += du * intervalVelX;
         this.cy += du * intervalVelY;
         this.center = [this.cx,this.cy];
@@ -322,16 +382,36 @@ Ship.prototype.applyAccel = function (accel,du) {
 };
 
 
+
+
 Ship.prototype.explode = function(x,y,speed){
-	this._isExploding = true;
+    spatialManager.unregister(this);
+    this._isExploding = true;
+    this.velX = 0;
+    this.velY = 0;
     var radius = this.getRadius();
     this._explosionSpeed = speed;
-	var explRadius = radius + radius*speed/15 + (this.fuel/750)*radius;
+    var explRadius = radius*2 + radius*speed/15 + (this.fuel/750)*radius;
     this._explosionRadius = explRadius;
     this._explosionX = x;
     this._explosionY = y;
     //this._explosionDuration = explRadius;
     this._explosionDuration = 36;
+    if(this.parts.length >= 2){
+	for(var i = 0; i < this.parts.length; i++){
+	    var part = this.parts[i];
+	    var c = part.center;
+	    var vecFromExpl = util.vecMinus(c,[x,y]);
+	    var disFExpl = util.lengthOfVector(vecFromExpl);
+	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
+        this.parts.map(function (p) {p.reset()});
+	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
+	    //ship.attributesFromParts();
+	    entityManager.generateShip(ship);
+	    }
+    this.parts = [];
+    }
+    
 }
     
 
@@ -378,12 +458,14 @@ var NOMINAL_TORQUE_RATE = 0.001;
 
 Ship.prototype.computeTorqueMag = function (du) {
     this.torque = 0;
-    if (keys[g_settings.keys.KEY_LEFT]) {
-	this.torque -= NOMINAL_TORQUE_RATE;
-    }
-    if (keys[g_settings.keys.KEY_RIGHT]) {
-	this.torque += NOMINAL_TORQUE_RATE;
-    }
+    if(entityManager.getMainShip() === this){
+	if (keys[g_settings.keys.KEY_LEFT]) {
+	    this.torque -= NOMINAL_TORQUE_RATE;
+	}
+	if (keys[g_settings.keys.KEY_RIGHT]) {
+	    this.torque += NOMINAL_TORQUE_RATE;
+	}
+	}
 
 };
 
@@ -441,17 +523,31 @@ Ship.prototype._renderSprite = function (ctx) {
     this.sprite.scale = origScale;
 };
 
-Ship.prototype.renderParts = function(ct){
+Ship.prototype.renderCenter = function(ctx){
+ctx.strokeStyle = "white";
+util.strokeCircle(ctx,this.cx,this.cy,5);
+}
+
+Ship.prototype.renderParts = function(ctx){
     ctx.save()
-    //ctx.strokeStyle = "white";
-    //util.strokeCircle(ctx,this.cx,this.cy,5);
-    ctx.translate(this.cx, this.cy);
-    ctx.rotate(this.rotation);
+    //this.renderCenter(ctx);
     this.parts.map(function (x) {x.render(ctx)});
     //this.parts.map(function (x) {x._renderHitbox(ctx)});
     ctx.restore()
-	//this._renderSprite(ctx);
 }
+
+Ship.prototype.renderHitBox = function(ctx){
+    ctx.save();
+    ctx.translate(this.cx,this.cy);
+    ctx.rotate(this.rotation);
+    ctx.translate(-this.cx,-this.cy);
+    var p = this.getPos();
+    //console.log("here");
+    //util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
+    this.parts.map(function(x){x.renderHitBox(ctx)});
+    ctx.restore();
+    //ctx.stroke();
+};
 
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){
