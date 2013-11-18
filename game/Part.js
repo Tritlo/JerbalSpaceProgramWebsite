@@ -52,10 +52,26 @@ Part.prototype.rotate = function(ind){
 }
 
 Part.prototype.reset = function(){
-    this.hitBox = [
+    var l = this.outline.length;
+    if(l === 0) return; //maybe some error-handling? I dunno.
+    var minx = Number.MAX_VALUE;
+    var maxx = Number.MIN_VALUE;
+    var miny = Number.MAX_VALUE;
+    var maxy = Number.MIN_VALUE;
+    for(var i = 0; i < l; i++){
+        var nx = this.outline[i][0];
+        var ny = this.outline[i][1];
+        if(nx > maxx) maxx = nx;
+        if(nx < minx) minx = nx;
+        if(ny > maxy) maxy = ny;
+        if(ny < miny) miny = ny;
+    }
+    this.hitBox = [[minx,miny],[maxx,maxy]];
+    /*this.hitBox = [
                    [this.center[0] - this.width/2, this.center[1]-this.height/2],
                    [this.center[0] + this.width/2, this.center[1]+this.height/2]
                     ];
+                    */
     this.centerOfRot = this.center;
 
 }
@@ -315,8 +331,9 @@ Part.prototype.updateAttributes = function (){
 Part.prototype._renderHitbox = function (ctx,inGame){
             ctx.save();
             ctx.strokeStyle = "yellow";
-            util.strokeCircle(ctx, this.center[0], this.center[1], this.getRadius());
-            
+            var hB = util.paramsToRectangle(this.hitBox[0][0],this.hitBox[0][1],this.width,this.height,this.rotation, this.centerOfRot)
+            var avg = util.avgOfPoints(hB)
+            util.strokeCircle(ctx, avg[0], avg[1], this.getRadius());
             ctx.stroke();
             ctx.strokeStyle = "lime";
             util.strokeCircle(ctx, this.center[0], this.center[1], 2);

@@ -64,13 +64,17 @@ Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,ro
 
 Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation,cRot){
     var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation,cRot);
+    var prevHitBox = util.paramsToRectangle(prevX,prevY,width,height,rotation,cRot);
+    var prevAvg = util.avgOfPoints(prevHitBox);
+    var hbAvg = util.avgOfPoints(hitBox);
     var hits  = [];
     for(var i = 0; i < hitBox.length; i++){
         if (this.heightAtX(hitBox[i][0]) < hitBox[i][1]){
             hits.push(hitBox[i]);
         }
     }
-    var circ = this.hitWCircle(prevX,prevY,nextX,nextY,radius); 
+
+    var circ = this.hitWCircle(prevAvg[0],prevAvg[1],hbAvg[0],hbAvg[1],radius); 
     circ[3] = [nextX,this.heightAtX(nextX)];
     if (hits.length === 0){
             return circ;
