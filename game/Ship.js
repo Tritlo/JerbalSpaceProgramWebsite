@@ -314,8 +314,13 @@ Ship.prototype.applyAccel = function (accel,du) {
     // bounce
     if (g_settings.useGravity) {
         if (g_settings.hitBox){
-            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
-                    this.getRadius(),this.width,this.height,this.rotation);
+            //var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+            //        this.getRadius(),this.width,this.height,this.rotation);
+	    var terrainHit;
+	    for(var i = 0, i < this.parts.length; i++){
+	        var p = this.parts[i];
+	        terrainHit = entityManager.getTerrain().hit();
+	    }
         } else {
             var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius());

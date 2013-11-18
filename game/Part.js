@@ -279,16 +279,21 @@ Part.prototype.renderHitBox = function(ctx){
     this._renderHitbox(ctx);
 }
 
+Part.prototype.getHitBoxDimensions = function(){
+    var w = Math.abs(this.hitBox[1][0]-this.hitBox[0][0]);
+    var h = Math.abs(this.hitBox[0][1] - this.hitBox[1][1]);
+    return [w,h];
+}
+
 
 Part.prototype._renderHitbox = function (ctx,inGame){
             ctx.save();
-            var w = Math.abs(this.hitBox[1][0]-this.hitBox[0][0]);
-            var h = Math.abs(this.hitBox[0][1] - this.hitBox[1][1]);
-	    var x = inGame?this.center[0]:this.hitBox[0][0];
-	    var y = inGame?this.center[1]:this.hitBox[0][1];
+	    var d = this.getHitBoxDimensions();
+	    var x = this.hitBox[0][0];
+	    var y = this.hitBox[0][1];
             ctx.strokeStyle = "red";
             //util.strokeBox(ctx, this.hitBox[0][0], this.hitBox[0][1], Math.abs(this.hitBox[1][0]-this.hitBox[0][0]), Math.abs(this.hitBox[0][1] - this.hitBox[1][1]));
-            util.strokeBox(ctx, x, y, w, h);
+            util.strokeBox(ctx, x, y, d[0], d[1]);
             ctx.stroke();
             ctx.restore();
 }
