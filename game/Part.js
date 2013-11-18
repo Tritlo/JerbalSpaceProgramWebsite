@@ -322,7 +322,7 @@ Part.prototype._renderHitbox = function (ctx,inGame){
             util.strokeCircle(ctx, this.center[0], this.center[1], 2);
             ctx.stroke();
             ctx.strokeStyle = "red";
-            var hB = util.paramsToRectangle(this.center[0],this.center[1],this.width,this.height,this.rotation)
+            var hB = util.paramsToRectangle(this.hitBox[0][0],this.hitBox[0][1],this.width,this.height,this.rotation, this.centerOfRot)
             ctx.beginPath();
             ctx.moveTo(hB[0][0],hB[0][1]);
             for(var i = 0; i < hB.length; i++){

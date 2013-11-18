@@ -54,16 +54,16 @@ Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     this.spliceByXCoords(x-explRadius, x+explRadius,values);
     }
 
-Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation){
+Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot){
     if (g_settings.hitBox){
-        return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation);
+        return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot);
     } else {
         return this.hitWCircle(prevX,prevY,nextX,nextY,radius);
     }
 }
 
-Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation){
-    var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation);
+Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation,cRot){
+    var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation,cRot);
     var hits  = [];
     for(var i = 0; i < hitBox.length; i++){
         if (this.heightAtX(hitBox[i][0]) < hitBox[i][1]){

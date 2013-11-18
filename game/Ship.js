@@ -269,11 +269,11 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
         var p = this.parts[i];
         var d = p.getHitBoxDimensions();
         var r = p.getRadius();
-        var x = p.center[0];
-        var y = p.center[1];
+        var x = p.hitBox[0][0];
+        var y = p.hitBox[0][1];
         var nx = x
         var ny = y
-        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],newRot);
+        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
     if(terrainHit[0]) break;
     }
     if (!(terrainHit[0])){
@@ -355,11 +355,11 @@ Ship.prototype.applyAccel = function (accel,du) {
 	        var p = this.parts[i];
             var d = p.getHitBoxDimensions();
             var r = p.getRadius()
-            var x = p.center[0];
-            var y = p.center[1];
+            var x = p.hitBox[0][0];
+            var y = p.hitBox[0][1];
             var nx = x + (nextX - this.cx);
             var ny = y + (nextY - this.cy);
-            terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],p.rotation);
+            terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
 		if(terrainHit[0]) break;
 	    }
         } else {
