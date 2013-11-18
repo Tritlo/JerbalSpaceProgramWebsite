@@ -124,7 +124,7 @@ wrapListAround: function(points,center)
 {
 	var distance=points[0][0]-points[points.length-1][0];
 	var returnList=[];
-	points.map(function(x){ returnList.push(util.vecMinus(util.polarToCartesian([x[1],2*x[0]/distance*Math.PI]),center))});
+	points.map(function(x){ returnList.push(util.vecPlus(util.polarToCartesian([x[1],2*x[0]/distance*Math.PI]),center))});
 	returnList.pop();
 	returnList.reverse();
 	return returnList;

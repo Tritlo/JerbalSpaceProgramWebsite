@@ -67,8 +67,8 @@ _generateTerrain : function() {
 	"maxLength": 256,
 	"minAngle": Math.PI/30,
 	"maxAngle": Math.PI/2.2,
-	"center" : [0,0],
-	"mass" : 1000
+	"center" : [0,3600],
+	"mass" : 100000
 	});
     this._terrain = terr;
 },
