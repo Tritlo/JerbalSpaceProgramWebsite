@@ -83,3 +83,7 @@ Entity.prototype.wrapPosition = function () {
     this.cx = util.wrapRange(this.cx, 0, g_canvas.width);
     //this.cy = util.wrapRange(this.cy, 0, g_canvas.height);
 };
+
+Entity.prototype.renderHitBox = function(ctx){
+    console.log("hitBox rendering for this Entity has not been implemented");
+};

@@ -32,6 +32,9 @@ function Ship(descr) {
     // Set normal drawing scale, and warp state off
     this._scale = 1;
     this._isWarping = false;
+    if(this.parts.length > 0){
+        this.attributesFromParts();
+    }
 };
 
     Ship.prototype = new Entity();
@@ -70,6 +73,7 @@ Ship.prototype.parts = [];
 Ship.prototype.sizeGrid;
 Ship.prototype.isMain = true;
 Ship.prototype.timeAlive = 0;
+Ship.prototype.immuneTime = 100;
 
 
 Ship.prototype.attributesFromParts = function () {
@@ -219,7 +223,7 @@ Ship.prototype.update = function (du) {
         }
         
     }    
-    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= 200) spatialManager.register(this);
+    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
 
 };
 
@@ -327,8 +331,20 @@ Ship.prototype.applyAccel = function (accel,du) {
     // bounce
     if (g_settings.useGravity) {
         if (g_settings.hitBox){
-            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+            /*var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius(),this.width,this.height,this.rotation);
+		    */
+	    var terrainHit;
+	    for(var i = 0; i < this.parts.length; i++){
+	        var p = this.parts[i];
+		var d = p.getHitBoxDimensions();
+		var x = p.center[0];
+		var y = p.center[1];
+		var nx = x + (nextX - this.cx);
+		var ny = y + (nextY - this.cy);
+	        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,this.getRadius(),d[0],d[1],this.rotation);
+		if(terrainHit[0]) break;
+	    }
         } else {
             var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius());
@@ -371,6 +387,8 @@ Ship.prototype.applyAccel = function (accel,du) {
 Ship.prototype.explode = function(x,y,speed){
     spatialManager.unregister(this);
     this._isExploding = true;
+    this.velX = 0;
+    this.velY = 0;
     var radius = this.getRadius();
     this._explosionSpeed = speed;
     var explRadius = radius*2 + radius*speed/15 + (this.fuel/750)*radius;
@@ -386,8 +404,9 @@ Ship.prototype.explode = function(x,y,speed){
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
 	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
-	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1]});
-	    ship.attributesFromParts();
+        this.parts.map(function (p) {p.reset()});
+	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
+	    //ship.attributesFromParts();
 	    entityManager.generateShip(ship);
 	    }
     this.parts = [];
@@ -516,6 +535,19 @@ Ship.prototype.renderParts = function(ctx){
     //this.parts.map(function (x) {x._renderHitbox(ctx)});
     ctx.restore()
 }
+
+Ship.prototype.renderHitBox = function(ctx){
+    ctx.save();
+    ctx.translate(this.cx,this.cy);
+    ctx.rotate(this.rotation);
+    ctx.translate(-this.cx,-this.cy);
+    var p = this.getPos();
+    //console.log("here");
+    //util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
+    this.parts.map(function(x){x.renderHitBox(ctx)});
+    ctx.restore();
+    //ctx.stroke();
+};
 
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){

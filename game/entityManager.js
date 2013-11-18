@@ -264,11 +264,9 @@ getMainShip: function() {
 	}
     return this._ships[0];
     },
-
-
-render: function(ctx) {
-    var debugX = 10, debugY = 100;
-    ctx.save();
+    
+setUpCamera: function (ctx){
+    // NOTE: ALWAYS save and restore when using this function
     if(this._ships[0]){
         var s = this._ships[0];
         //ctx.translate(-this.trueOffset[0],-this.trueOffset[1]);
@@ -279,6 +277,13 @@ render: function(ctx) {
     ctx.translate(this.trueOffset[0],this.trueOffset[1]);
 	//console.log((s.cx) + " "  + (s.cy));
     }
+},
+
+
+render: function(ctx) {
+    var debugX = 10, debugY = 100;
+    ctx.save();
+    this.setUpCamera(ctx);
     Stars.render(ctx);
     this._terrain.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
