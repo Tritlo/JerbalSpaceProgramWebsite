@@ -209,15 +209,24 @@ Ship.prototype.update = function (du) {
     for (var i = 0; i < steps; ++i) {
         this.computeSubStep(dStep);
     }
+    
 
-    // Handle firing
-    if (this.isColliding()){
-        var speed = Math.sqrt(this.velX*this.velX + this.velY*this.velY) 
-        this.explode(this.cx,this.cy,speed);
+    var hitEnt = this.isColliding()
+    if (hitEnt){
+        this.explode(this.cx,this.cy,this.getSpeed());
+        if (hitEnt.getSpeed){
+            hitEnt.explode(hitEnt.cx,hitEnt.cy,hitEnt.getSpeed());
+        }
+        
     }    
-    if ( !(this.isColliding()) && !(this._isExploding) && this.timeAlive >= 200) spatialManager.register(this);
+    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= 200) spatialManager.register(this);
 
 };
+
+Ship.prototype.getSpeed = function () {
+    var speed = Math.sqrt(this.velX*this.velX + this.velY*this.velY) 
+    return speed
+}
 
 Ship.prototype.computeSubStep = function (du) {
 
@@ -380,7 +389,7 @@ Ship.prototype.explode = function(x,y,speed){
 	    var c = part.center;
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
-	    var vel = util.mulVecByScalar(0.02*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
+	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
 	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1]});
 	    ship.attributesFromParts();
 	    entityManager.generateShip(ship);
