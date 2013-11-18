@@ -209,8 +209,10 @@ Ship.prototype.update = function (du) {
     }
 
     // Handle firing
-    
-    //if (this.isColliding())    this.warp();
+    if (this.isColliding()){
+        var speed = Math.sqrt(this.velX*this.velX + this.velY*this.velY) 
+        this.explode(this.cx,this.cy,speed);
+    }    
     if ( !(this.isColliding()) && !(this._isExploding)) spatialManager.register(this);
 
 };
