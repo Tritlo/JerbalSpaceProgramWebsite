@@ -81,6 +81,7 @@ var g_settings = {
           "undoBox" : false,
           "doFlipFlop" : false,
           "doRender" : true,
+          "timeMultiplier": 1,
           "keys": {
               "KEY_THRUST": keyCode('W'),
               "KEY_RETRO": keyCode('S'),
@@ -100,7 +101,7 @@ var g_settings = {
             "KEY_CAMERA_ROTATE_COUNTERCLOCKWISE" : keyCode('I'),
             "KEY_CAMERA_ZOOMIN" : keyCode('9'),
             "KEY_CAMERA_ZOOMOUT" : keyCode('8'),
-            "KEY_CAMERA_LOCK" : keyCode('Y')
+            "KEY_CAMERA_LOCK" : keyCode('Y'),
               },
           "debugKeys" : {
               "KEY_GRAVITY" : keyCode('G'),
@@ -117,7 +118,9 @@ var g_settings = {
               //"KEY_TOGGLE_BOX"      : keyCode('B'),
               "KEY_TOGGLE_UNDO_BOX" : keyCode('U'),
               "KEY_TOGGLE_FLIPFLOP" : keyCode('F'),
-              "KEY_TOGGLE_RENDER"   : keyCode('R')
+              "KEY_TOGGLE_RENDER"   : keyCode('R'),
+              "KEY_SPEEDUP" : keyCode('4'),
+              "KEY_SLOWDOWN" : keyCode('3')
 
             },
           "seaLevel": g_canvas.height*2
@@ -144,6 +147,16 @@ function processDiagnostics() {
         if (eatKey(g_settings.debugKeys.KEY_RESET)) entityManager.resetShips();
 
         if (eatKey(g_settings.debugKeys.KEY_0)) entityManager.toggleRocks();
+
+        if (eatKey(g_settings.debugKeys.KEY_SPEEDUP)){
+            g_settings.timeMultiplier/=2;
+        }
+        if (eatKey(g_settings.debugKeys.KEY_SLOWDOWN)) {
+            if (g_settings.timeMultiplier < 1){
+                g_settings.timeMultiplier*=2;
+            }
+                console.log(g_settings.timeMultiplier);
+        }
 
         if (eatKey(g_settings.debugKeys.KEY_1)) entityManager.generateShip({
             cx : g_mouseX,
