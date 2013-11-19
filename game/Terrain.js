@@ -43,7 +43,8 @@ Terrain.prototype.heightAtX = function (x) {
         debugger;
     }
     var lEq = util.getEqOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
-    return (lEq[0]*x + lEq[2])/(-1*lEq[1]);
+    var y = (lEq[0]*x + lEq[2])/(-1*lEq[1]);
+    return util.cartesianToPolar(x,y,this.center[0],this.center[1])[0]
 }
 
 Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
