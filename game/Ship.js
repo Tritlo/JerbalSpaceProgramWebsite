@@ -33,7 +33,9 @@ function Ship(descr) {
     this._scale = 1;
     this._isWarping = false;
     if(this.parts.length > 0){
-        this.attributesFromParts();
+        if(this.origCenter){
+            this.attributesFromParts();
+        }
     }
 };
 
@@ -49,7 +51,7 @@ Ship.prototype.rememberResets = function () {
 // Initial, inheritable, default values
 Ship.prototype.rotation = 0;
 Ship.prototype.cx = 0;
-Ship.prototype.cy = -3500;
+Ship.prototype.cy = -1000;
 Ship.prototype.velX = 0;
 Ship.prototype.velY = 0;
 Ship.prototype.launchVel = 2;
@@ -78,39 +80,56 @@ Ship.prototype.immuneTime = 100;
 
 Ship.prototype.attributesFromParts = function () {
     if(this.parts.length === 1){
-	var p = this.parts[0];
-	this.height  = p.height;
-	this.width  = p.width;
-	this.cx = p.center[0]
-	this.cy = p.center[1]
-        } else {
-	var numParts = this.parts.length;
-	var totalMass = 0;
-	    for(var i = 0; i<numParts; i++) {
-		    this.mass+=this.parts[i].mass;
-		    totalMass+=this.parts[i].mass;
-		    this.fuel+=this.parts[i].fuel;
-		    this.maxThrust+=this.parts[i].thrust;
-	    }
-	var maxx = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0]}));
-	var minx = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
-	var maxy = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
-	var miny = Math.min.apply(null, this.parts.map(function (p){return p.hitBox[0][1]}));
-	var weightedXCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[0]});
-	var weightedYCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[1]});
-	this.height = Math.abs(maxy-miny);
-	this.width = Math.abs(maxx-minx);
-	this.cx = weightedXCenters.reduce(function (x,y) {return x+y});
-	this.cy = weightedYCenters.reduce(function (x,y){return x+y});
+        var p = this.parts[0];
+        this.height  = p.height;
+        this.width  = p.width;
+        this.center = p.center;
+        this.origCenter = this.origCenter || p.center;
+        this.radius = Math.min(this.height,this.width)/2
+        this.setCenter(this.center);
+    } else {
+            var numParts = this.parts.length;
+            var totalMass = 0;
+            this.fuel = 0;
+            this.maxThrust = 0;
+            this.mass = 0;
+            for(var i = 0; i<numParts; i++) {
+                this.mass+=this.parts[i].mass;
+                totalMass+=this.parts[i].mass;
+                this.fuel+=this.parts[i].fuel;
+                this.maxThrust+=this.parts[i].thrust;
+            }
+        var maxx = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0]}));
+        var minx = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
+        var maxy = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
+        var miny = Math.min.apply(null, this.parts.map(function (p){return p.hitBox[0][1]}));
+        var weightedXCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[0]});
+        var weightedYCenters = this.parts.map(function (x){return (x.mass/totalMass)*x.center[1]});
+        this.height = Math.abs(maxy-miny);
+        this.width = Math.abs(maxx-minx);
+        this.xMassCenter = weightedXCenters.reduce(function (x,y) {return x+y});
+        this.yMassCenter = weightedYCenters.reduce(function (x,y){return x+y});
+        this.center = [this.xMassCenter,this.yMassCenter];
+        this.origCenter = this.origCenter || this.center; 
     }
-    if(isNaN(this.cx) || isNaN(this.cy)){
-        debugger; 
-    }
-    this.center = [this.cx,this.cy];
-    var cen = this.center;
+
     this.radius = Math.max(this.height,this.width);
-    console.log("attir", this)
+    this.setCenter([this.cx,this.cy]);
+}
+
+Ship.prototype.setCenter = function(newCenter) {
+    if(this.center === undefined){
+        this.center = [this.reset_cx,this.reset_cy]
     }
+    if(newCenter === undefined){
+        newCenter = [0,0];
+    }
+    var diff = util.vecMinus(newCenter,this.center);
+    this.parts.map(function (p) { p.updateCenter(util.vecPlus(diff,p.center))});
+    this.center = newCenter;
+    this.cx = newCenter[0];
+    this.cy = newCenter[1];
+}
 
 Ship.prototype.assemble = function(grid) {
     //this.parts.map(function(x) { x.scale(2)});
@@ -126,6 +145,10 @@ Ship.prototype.disassemble = function(grid) {
     var cen = this.center;
     //this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
     //this.parts.map(function(x) { x.updateCenter(util.vecPlus(x.center,cen))});
+    //
+    if(this.origCenter){
+        this.setCenter(this.origCenter);
+    }
     this.parts.map(function(x) { x.lineWidth = 4;});
     //this.parts.map(function(x) { x.scale(0.5)});
     this.parts.map(function(x) { x.toDesigner(grid);});
@@ -262,10 +285,21 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
     var newAngVel = this.angularVel;
     var intervalAngularVel = (oldAngVel + newAngVel)/2;
     var newRot = (this.rotation + intervalAngularVel*du)%(2*Math.PI);
-    var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,this.cx,this.cy,this.getRadius(),this.width,this.height,newRot);
+    var terrainHit;
+    for(var i = 0; i < this.parts.length; i++){
+        var p = this.parts[i];
+        var d = p.getHitBoxDimensions();
+        var r = p.getRadius();
+        var x = p.hitBox[0][0];
+        var y = p.hitBox[0][1];
+        var nx = x
+        var ny = y
+        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
+    if(terrainHit[0]) break;
+    }
     if (!(terrainHit[0])){
         this.rotation = newRot;
-	this.parts.map(function (x){ x.updateRot(newRot)});
+	    this.parts.map(function (x){ x.updateRot(newRot)});
     }
 };
 
@@ -344,12 +378,13 @@ Ship.prototype.applyAccel = function (accel,du) {
 	    var terrainHit;
 	    for(var i = 0; i < this.parts.length; i++){
 	        var p = this.parts[i];
-		var d = p.getHitBoxDimensions();
-		var x = p.center[0];
-		var y = p.center[1];
-		var nx = x + (nextX - this.cx);
-		var ny = y + (nextY - this.cy);
-	        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,this.getRadius(),d[0],d[1],this.rotation);
+            var d = p.getHitBoxDimensions();
+            var r = p.getRadius()
+            var x = p.hitBox[0][0];
+            var y = p.hitBox[0][1];
+            var nx = x + (nextX - this.cx);
+            var ny = y + (nextY - this.cy);
+            terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
 		if(terrainHit[0]) break;
 	    }
         } else {
@@ -381,10 +416,10 @@ Ship.prototype.applyAccel = function (accel,du) {
         if(isNaN(du) || isNaN(intervalVelX)){
             debugger; 
         }
-        this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
+        //this.parts.map(function (p){ p.updateCenter(util.vecPlus(p.center, util.mulVecByScalar(du,[intervalVelX,intervalVelY])));});
         this.cx += du * intervalVelX;
         this.cy += du * intervalVelY;
-        this.center = [this.cx,this.cy];
+        this.setCenter([this.cx,this.cy])
     }
 };
 
@@ -413,7 +448,9 @@ Ship.prototype.explode = function(x,y,speed){
 	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
         this.parts.map(function (p) {p.reset()});
 	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
-	    //ship.attributesFromParts();
+        console.log(ship);
+	    ship.attributesFromParts();
+        console.log(ship);
 	    entityManager.generateShip(ship);
 	    }
     this.parts = [];
@@ -545,10 +582,10 @@ Ship.prototype.renderParts = function(ctx){
 
 Ship.prototype.renderHitBox = function(ctx){
     ctx.save();
-    ctx.translate(this.cx,this.cy);
-    ctx.rotate(this.rotation);
-    ctx.translate(-this.cx,-this.cy);
-    var p = this.getPos();
+    //ctx.translate(this.cx,this.cy);
+    //ctx.rotate(this.rotation);
+    //ctx.translate(-this.cx,-this.cy);
+    //var p = this.getPos();
     //console.log("here");
     //util.strokeBox(ctx,p.posX-50,p.posY-50,100,100);
     this.parts.map(function(x){x.renderHitBox(ctx)});

@@ -155,8 +155,6 @@ generateRock : function(descr) {
 },
 
 generateShip : function(descr) {
-	descr.cx=0;
-	descr.cy=-3600;
     this._ships.push(new Ship(descr));
 },
 

@@ -54,29 +54,32 @@ Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     this.spliceByXCoords(x-explRadius, x+explRadius,values);
     }
 
-Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation){
+Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot){
     if (g_settings.hitBox){
-        return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation);
+        return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot);
     } else {
         return this.hitWCircle(prevX,prevY,nextX,nextY,radius);
     }
 }
 
 Terrain.prototype.isInside = function (point) {
-	return false;
     var ps = util.findSurfaceBelow(point,this.points,this.center);
     return (util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],point[0],point[1])===util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],this.center[0],this.center[1]));
 }
 
-Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation){
-    var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation);
+Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation,cRot){
+    var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation,cRot);
+    var prevHitBox = util.paramsToRectangle(prevX,prevY,width,height,rotation,cRot);
+    var prevAvg = util.avgOfPoints(prevHitBox);
+    var hbAvg = util.avgOfPoints(hitBox);
     var hits  = [];
     for(var i = 0; i < hitBox.length; i++){
         if (this.isInside(hitBox[i])){
             hits.push(hitBox[i]);
         }
     }
-    var circ = this.hitWCircle(prevX,prevY,nextX,nextY,radius); 
+
+    var circ = this.hitWCircle(prevAvg[0],prevAvg[1],hbAvg[0],hbAvg[1],radius); 
     circ[3] = [nextX,this.heightAtX(nextX)];
     if (hits.length === 0){
             return circ;
@@ -123,14 +126,14 @@ Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
     var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
     var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
     if ((nextDist <= radius) ||  (prevSign != nextSign)){
-	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
-	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
-	var lN = util.lineNormal(x0,y0,x1,y1);
-	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
-    if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
-        debugger; 
-    }
-	return [true,collisionSpeed,collisionAngle];
+        var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
+        var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
+        var lN = util.lineNormal(x0,y0,x1,y1);
+        var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+        if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
+            debugger; 
+        }
+        return [true,collisionSpeed,collisionAngle];
 	}
     else {
 	return [false];
@@ -212,6 +215,9 @@ Terrain.prototype.render = function (ctx) {
     ctx.save()
     ctx.strokeStyle = "white";
     ctx.fillStyle = "black";
+    if(entityManager.cameraZoom < 0.5){
+        ctx.lineWidth = 1/entityManager.cameraZoom;
+    }
     ctx.beginPath()
     ctx.moveTo(terr[0][0],terr[0][1]);
 	//ctx.font="10px Arial";
