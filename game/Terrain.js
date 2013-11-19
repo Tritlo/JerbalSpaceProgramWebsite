@@ -222,7 +222,14 @@ Terrain.prototype.genTerrain = function () {
 	return util.wrapListAround(points,this.center);
 }
 
-
+Terrain.prototype.renderOcean = function (ctx) {
+	var seaLevel = (this.minY+this.maxY)/2;
+	ctx.save();
+	ctx.arc(this.center[0],this.center[1],seaLevel,0,2*Math.PI,false);
+	ctx.fillStyle= "rgba(0,100,255,0.3)";
+	ctx.fill();
+	ctx.restore();
+}
 
 Terrain.prototype.render = function (ctx) {
     var terr = this.points
