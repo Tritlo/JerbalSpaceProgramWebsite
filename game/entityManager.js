@@ -70,15 +70,31 @@ _generateTerrain : function() {
 	"center" : [0,3600],
 	"mass" : 100000
 	});
-    this._terrain = terr;
+    this._terrain.push(terr);
 },
 
-getTerrain : function () {
-    return this._terrain;
+getTerrain : function (x,y) {
+    var max = Number.MIN_VALUE;
+    var maxTerr;
+    for(var i = 0; i < this._terrain.length; i++){
+        var terr = this._terrain[i];
+	var g = this.gravityFrom(terr,x,y);
+	if(g>max){
+	    max = g;
+	    maxTerr = terr;
+	}
+    }
+    return this._terrain[0];
+},
+
+gravityFrom : function (terr,x,y){
+    var distance=Math.sqrt(util.distSq(x,y,terr.center[0],terr.center[1]));
+    var force=terr.mass/(distance*distance);
+    return force/distance*util.lengthOfVector(util.vecMinus(terr.center,[x,y]));
 },
 
 gravityAt : function (x,y) {
-	var terr=this._terrain
+	var terr=this.getTerrain();
 	var distance=Math.sqrt(util.distSq(x,y,terr.center[0],terr.center[1]));
 var force=terr.mass/(distance*distance);
 	return util.mulVecByScalar(force/distance ,util.vecMinus(terr.center,[x,y]));
@@ -242,6 +258,7 @@ update: function(du) {
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
+	if(aCategory === this._terrain) continue;
         var i = 0;
 
         while (i < aCategory.length) {
@@ -294,7 +311,7 @@ render: function(ctx) {
     ctx.save();
     this.setUpCamera(ctx);
     Stars.render(ctx);
-    this._terrain.render(ctx);
+    //this._terrain.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
