@@ -16,6 +16,18 @@ Terrain.prototype.spliceByIndex = function (indFrom, indTo, yValues) {
 	}
     }
 
+Terrain.prototype.spliceByAngle = function (values) {
+    var	C=this.center;
+    var	angles=this.points.map(function(x){return util.angleOfVector(util.vecMinus(x,C))});
+    var first = util.angleOfVector(util.vecMinus(values[0],this.center));
+    var last = util.angleOfVector(util.vecMinus(values[values.length-1],this.center));
+    var sliceStart = util.binarySearch(first,angles);
+    var sliceEnd = util.binarySearch(last,angles)-1;
+    //this.points.splice(spliceStart,spliceEnd-spliceStart,values);
+    var head = this.points.slice(0,sliceStart);
+    var tail = this.points.slice(sliceEnd+1,this.points.length);
+    this.points = head.concat(values,tail);
+    }
 Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
     var sliceStart = util.findIndexesOfClosestPoints(xFrom,this.points)[1];
     var sliceEnd = util.findIndexesOfClosestPoints(xTo,this.points)[0];
@@ -37,21 +49,23 @@ Terrain.prototype.heightAtX = function (x) {
 Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     var values = [];
     var steps = Math.max(Math.ceil(explRadius/20),5);
-    //console.log(steps,speed);
+    var	C = this.center;
+    var angle=util.angleOfVector(util.vecMinus([x,y],C));
     for(var i = 0; i <= steps; i++){
-	var deg = Math.PI * i/steps;
-	values.push([x-Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
+	var deg = -Math.PI * (i/steps +1/2) + angle;
+	values.push([x+Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
     }
     //Don't raise terrain:
-    var terr = this;
-    values = values.map(function(p) {
-        var hAtP = terr.heightAtX(p[0]);
-        if (hAtP > p[1]){
-            p[1] = hAtP;
-        }
-        return [p[0],p[1]];
-    });
-    this.spliceByXCoords(x-explRadius, x+explRadius,values);
+    	var i=0;
+	while (i<values.length)
+	{
+		if(!this.isInside(values[i]))
+			values.splice(i,1);
+		else
+			i++;
+	}
+	if(values.length>0)
+	this.spliceByAngle(values);
     }
 
 Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot){
@@ -223,11 +237,11 @@ Terrain.prototype.render = function (ctx) {
 	//ctx.font="10px Arial";
     for(var i = 1; i < terr.length;i++){
 		ctx.lineTo(terr[i][0],terr[i][1]);
-		//ctx.strokeText(i,terr[i][0],terr[i][1]);
+//		ctx.strokeText(i,terr[i][0],terr[i][1]);
 	}
 	ctx.closePath();
 	ctx.stroke();
-    ctx.fill();
+//    ctx.fill();
 	//ctx.strokeText("C",this.center[0],this.center[1]);
     ctx.restore();
 };
