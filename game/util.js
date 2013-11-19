@@ -241,6 +241,11 @@ signOfCrossProduct : function(a,b) {
    return a[0]*b[1] - a[1]*b[0]; 
 },
 
+crossProdMagn: function(r,v){
+    return util.lengthOfVector(r)*util.lengthOfVector(v)*util.angleBetweenVectors(r,v);
+},
+
+
 sign: function(x) {
     if (x > 0) return 1;
     if(x < 0) return -1;
@@ -427,10 +432,16 @@ strokeCircle: function (ctx, x, y, r) {
 },
 
 strokeEllipseByCenter: function(ctx, cx, cy, w, h,angl,cRot) {
-  util.strokeEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h,angl,cRot);
+  ctx.save();
+  ctx.translate(cRot[0],cRot[1]);
+  ctx.rotate(angl);
+  ctx.translate(-cRot[0],-cRot[1]);
+  util.strokeEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h);
+  ctx.restore()
 },
 
-strokeEllipse: function(ctx, x, y, w, h,angl,cRot) {
+
+strokeEllipse: function(ctx, x, y, w, h) {
   if(angl === undefined) var angl = 0;
   if(cRot === undefined) var cRot = [x,y];
 
@@ -445,10 +456,6 @@ strokeEllipse: function(ctx, x, y, w, h,angl,cRot) {
       xm = x + w / 2,       // x-middle
       ym = y + h / 2;       // y-middle
   
-  ctx.save();
-  ctx.translate(cRot[0],cRot[1]);
-  ctx.rotate(angl);
-  ctx.translate(-cRot[0],-cRot[1]);
   ctx.beginPath();
   ctx.moveTo(x, ym);
   ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
@@ -457,7 +464,6 @@ strokeEllipse: function(ctx, x, y, w, h,angl,cRot) {
   ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
   ctx.closePath();
   ctx.stroke();
-  ctx.restore();
 },
 
 
