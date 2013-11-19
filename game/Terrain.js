@@ -5,7 +5,7 @@ function Terrain(descr) {
     this.setup(descr);
     this.points = this.genTerrain();
     //Add landing platform
-//    this.spliceByXCoords(100,300,[[100,250],[150,232],[250,232],[300,250]]);
+    this.spliceByAngle([[-100,50],[-50,32],[50,32],[100,50]]);
 };
 
 Terrain.prototype = new Entity();
