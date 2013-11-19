@@ -65,12 +65,25 @@ _generateTerrain : function() {
 	"maxY": 3500,
 	"minLength": 32,
 	"maxLength": 256,
-	"minAngle": Math.PI/30,
-	"maxAngle": Math.PI/2.2,
+	"minAngle": minangl,
+	"maxAngle": maxangl,
 	"center" : [0,3600],
 	"mass" : 100000
 	});
+    var joon = new Terrain({
+	"minX":-5000,
+	"maxX": 5000,
+	"minY": 1600,
+	"maxY": 1750,
+	"minLength": 16,
+	"maxLength": 128,
+	"minAngle": minangl,
+	"maxAngle": maxangl,
+	"center" : [0,-10000],
+	"mass" : 25000
+	});
     this._terrain.push(terr);
+    this._terrain.push(joon);
 },
 
 getTerrain : function (x,y) {
@@ -84,17 +97,18 @@ getTerrain : function (x,y) {
 	    maxTerr = terr;
 	}
     }
-    return this._terrain[0];
+    return maxTerr;
 },
 
 gravityFrom : function (terr,x,y){
     var distance=Math.sqrt(util.distSq(x,y,terr.center[0],terr.center[1]));
+    console.log();
     var force=terr.mass/(distance*distance);
     return force/distance*util.lengthOfVector(util.vecMinus(terr.center,[x,y]));
 },
 
 gravityAt : function (x,y) {
-	var terr=this.getTerrain();
+	var terr=this.getTerrain(x,y);
 	var distance=Math.sqrt(util.distSq(x,y,terr.center[0],terr.center[1]));
 var force=terr.mass/(distance*distance);
 	return util.mulVecByScalar(force/distance ,util.vecMinus(terr.center,[x,y]));
