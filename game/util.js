@@ -215,18 +215,26 @@ lineBelow : function(terrain,x,y) {
     return points;
     },
 
-paramsToRectangle: function(x,y,w,h,rot) {
+paramsToRectangle: function(x,y,w,h,rot,cRot) {
     if (rot === undefined) rot = 0;
     var w2 = w/2;
     var h2 = h/2;
-    var ps = [[x+w2,y+h2],[x-w2,y+h2],[x-w2,y-w2],[x+w2,y-w2]];
+    //var ps = [[x+w2,y+h2],[x-w2,y+h2],[x-w2,y-w2],[x+w2,y-w2]];
+    var ps = [[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+    if(cRot === undefined) var cRot = util.avgOfPoints(ps);
     ps = ps.map(function(p) {
-        p = util.translatePoint(p[0],p[1],-x,-y);
-        p = util.rotatePoint(p[0],p[1],rot);
-        p = util.translatePoint(p[0],p[1],x,y);
-        return p;
+        return util.rotatePointAroundPoint(p,rot,cRot[0],cRot[1]);
     });
     return ps;
+},
+
+avgOfPoints: function(points) {
+    var ps = [0,0];
+    for(var i = 0; i < points.length; i++){
+        ps = util.vecPlus(points[i],ps) 
+    }
+
+    return util.mulVecByScalar(1/points.length,ps)
 },
 translatePoint: function(x,y,tX,tY){
     return [x+tX,y+tY];
@@ -260,6 +268,9 @@ rotateVector: function(a,rot){
     },
     
 vecMinus: function(a,b) {
+    if(b===undefined){
+        debugger;
+    }
     var vec = [a[0]-b[0],a[1]-b[1]]
     return vec
 },

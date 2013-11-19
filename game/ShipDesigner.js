@@ -18,11 +18,13 @@ ShipDesigner.prototype.init = function() {
 		{
 		"text" : "Launch",
 		"action" : function(state) {
-		state.currentShip.assemble(state.grid);
-		console.log(state.currentShip);
-		entityManager.clearShips();
-		entityManager.generateShip(state.currentShip);
-		stateManager.switchState("simulation");
+            state.currentShip.assemble(state.grid);
+            state.currentShip.cx = 200;
+            state.currentShip.cy = 145;
+            console.log(state.currentShip);
+            entityManager.clearShips();
+            entityManager.generateShip(state.currentShip);
+            stateManager.switchState("simulation");
 		}
 		},
         ],
@@ -38,8 +40,13 @@ ShipDesigner.prototype.init = function() {
 	    "text" : "Echo Ship JSON",
 	    "action" : function (state)
              {
-                var ship = state.currentShip.assemble(state.grid);
+                state.currentShip.assemble(state.grid);
+                var oldCs = [state.currentShip.cx, state.currentShip.cy];
+                state.currentShip.cx = 200;
+                state.currentShip.cy = 145;
                 util.echoJSON(state.currentShip);
+                state.currentShip.cx = oldCs[0];
+                state.currentShip.cy = oldCs[1];
                 state.currentShip.disassemble(state.grid);
 		    }
 	    },
@@ -106,6 +113,8 @@ ShipDesigner.prototype.newShip = function ()
 {
     this.currentShip = new Ship(
             {
+                "cx" : 200,
+                "cy" : 200
             });
     this.addedParts = this.currentShip.parts;
 }
@@ -159,7 +168,8 @@ ShipDesigner.prototype.saveShip = function ()
 ShipDesigner.prototype.loadShip = function ()
 {
     var ships = util.storageLoad("ships");
-    var ship = new Ship(ships[$('#in9').val()]);
+    var selVal = $('#in9').val() || 0;
+    var ship = new Ship(ships[selVal]);
     var ship = ship.disassemble(this.grid);
 	this.currentShip = ship;
     var gri = this.grid;
