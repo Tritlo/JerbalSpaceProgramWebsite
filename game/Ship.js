@@ -250,7 +250,7 @@ Ship.prototype.update = function (du) {
     }    
     if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
     if(this.thrust > 0){
-        this.updatePath();
+        this.updateOrbit();
     }
 
 };
@@ -596,7 +596,7 @@ Ship.prototype.renderHitBox = function(ctx){
     //ctx.stroke();
 };
 
-Ship.prototype.updatePath = function()
+Ship.prototype.updateOrbit = function()
 {
     var terr = entityManager.getTerrain();
     
@@ -644,14 +644,14 @@ Ship.prototype.updatePath = function()
     var angl = -Math.PI/2
     cen = util.rotatePointAroundPoint(cen,angl,f[0],f[1]);
 
-    this.path = [cen[0], cen[1],a,b,angl,f[0],f[1]];
-    console.log(this.path);
+    this.orbit = [cen[0], cen[1],a,b,angl,f[0],f[1]];
+    console.log(this.orbit);
 }
 
 
-Ship.prototype.renderPath = function(ctx) {
-    if(this.path){
-        var p = this.path;
+Ship.prototype.renderOrbit = function(ctx) {
+    if(this.orbit){
+        var p = this.orbit;
         var cx     = p[0];
         var cy     = p[1];
         var majAx  = p[2];
@@ -679,7 +679,7 @@ Ship.prototype.render = function (ctx) {
 	this._renderExplosion(ctx);
     } else {
         if(entityManager.cameraZoom < 0.3){
-            this.renderPath(ctx); 
+            this.renderOrbit(ctx); 
         }
         this.renderParts(ctx);
     }
