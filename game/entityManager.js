@@ -67,13 +67,21 @@ _generateTerrain : function() {
 	"maxLength": 256,
 	"minAngle": Math.PI/30,
 	"maxAngle": Math.PI/2.2,
-	"center" : [0,0]
+	"center" : [0,3600],
+	"mass" : 100000
 	});
     this._terrain = terr;
 },
 
 getTerrain : function () {
     return this._terrain;
+},
+
+gravityAt : function (x,y) {
+	var terr=this._terrain
+	var distance=Math.sqrt(util.distSq(x,y,terr.center[0],terr.center[1]));
+var force=terr.mass/(distance*distance);
+	return util.mulVecByScalar(force/distance ,util.vecMinus(terr.center,[x,y]));
 },
 
 _findNearestShip : function(posX, posY) {
@@ -147,8 +155,6 @@ generateRock : function(descr) {
 },
 
 generateShip : function(descr) {
-	descr.cx=0;
-	descr.cy=-3600;
     this._ships.push(new Ship(descr));
 },
 
