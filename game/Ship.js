@@ -638,10 +638,10 @@ Ship.prototype.updateOrbit = function()
     var ae = a*ecc;
     var cen = [f[0]+ae,f[1]];
     
-    //var angl = Math.PI - truanom;
-    //var angl = truanom;
-    //
-    var angl = -Math.PI/2
+    var angl = Math.PI - truanom;
+    var angl = truanom;
+    
+    var angl = r[1]-truanom;
     cen = util.rotatePointAroundPoint(cen,angl,f[0],f[1]);
 
     this.orbit = [cen[0], cen[1],a,b,angl,f[0],f[1]];
@@ -666,7 +666,8 @@ Ship.prototype.renderOrbit = function(ctx) {
         ctx.strokeStyle = "red"; 
         util.strokeCircle(ctx,cx,cy,200);
         ctx.strokeStyle = "dodgerblue"; 
-        util.strokeEllipseByCenter(ctx,cx,cy,majAx*2,minAx*2,-angl,[cx,cy])
+        var angl = util.cartesianToPolar([cx,cy],[fx,fy])[1];
+        util.strokeEllipseByCenter(ctx,cx,cy,majAx*2,minAx*2,angl,[cx,cy])
         ctx.restore()
     }
 };
