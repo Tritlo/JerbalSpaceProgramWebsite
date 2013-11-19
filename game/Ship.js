@@ -313,7 +313,7 @@ Ship.prototype.computeGravity = function () {
 	if(!g_useGravity)
 		return 0;
 	var gravAccel=entityManager.gravityAt(this.cx,this.cy);
-	return util.mulVecByScalar(this.mass,gravAccel);
+	return gravAccel; //util.mulVecByScalar(1/this.mass,gravForce);
 };
 
 
@@ -598,24 +598,62 @@ Ship.prototype.renderHitBox = function(ctx){
 
 Ship.prototype.updatePath = function()
 {
-    //TODO: Use keplers law to compute;
     var terr = entityManager.getTerrain();
-    this.path = [terr.center[0],terr.center[1],terr.maxY*2,terr.maxY*2,0];
+    
+    
+    
+    var f = terr.center;
+    //TODO: Use keplers law to compute;
+    //Periapsis is min dist from planet,
+    //Apopasis is max dist from planet
+    //angl is rotation of ellipse
+    //
+    var r = util.cartesianToPolar(this.center,terr.center);
+    //Speed vector is wrong
+    var v = util.cartesianToPolar([this.velX,this.velY],this.center);
+    console.log(r,v);
+    var mu = consts.G*(terr.mass+this.mass)
+    var eng = util.dotProd(v,v)/2 - (mu/util.lengthOfVector(r));
+    var a = -mu/(2*eng);
+
+
+    var vL = util.lengthOfVector(v);
+    var rdotvtimesv = util.mulVecByScalar(util.dotProd(r,v),v);
+    var vLsqtimesr = util.mulVecByScalar(vL*vL,r);
+    var eccVec = util.vecMinus(util.mulVecByScalar(1/mu,util.vecMinus(vLsqtimesr,rdotvtimesv)), util.normalizeVector(r));
+    var ecc = util.lengthOfVector(eccVec);
+    console.log(ecc); 
+
+    var eccAnom = Math.acos(this.cx,a);
+    var truanom = 2*Math.atan2(Math.sqrt(1-ecc)*Math.cos(eccAnom/2),Math.sqrt(1+ecc)*Math.sin(eccAnom/2))
+
+
+
+    var b = a*Math.sqrt(1-ecc*ecc);
+    var ae = a*ecc;
+    var cen = [f[0]-ae,f[1]];
+    var angl = 2*Math.PI - truanom;
+    this.path = [cen[0], cen[1],a*2,b*2,angl,f[0],f[1]];
+    console.log(this.path);
 }
 
 
 Ship.prototype.renderPath = function(ctx) {
     if(this.path){
         var p = this.path;
-        var x     = p[0];
-        var y     = p[1];
-        var majAx = p[2];
-        var minAx = p[3];
-        var angl  = p[4];
+        var cx     = p[0];
+        var cy     = p[1];
+        var majAx  = p[2];
+        var minAx  = p[3];
+        var angl   = p[4];
+        var fx     = p[5];
+        var fy     = p[6];
         ctx.save()
         ctx.lineWidth = 1/entityManager.cameraZoom;
+        ctx.strokeStyle = "yellow"; 
+        util.strokeCircle(ctx,fx,fy,200);
         ctx.strokeStyle = "dodgerblue"; 
-        util.strokeEllipseByCenter(ctx,x,y,majAx,minAx,angl)
+        util.strokeEllipseByCenter(ctx,cx,cy,majAx,minAx,angl,[fx,fy])
         ctx.restore()
     }
 };

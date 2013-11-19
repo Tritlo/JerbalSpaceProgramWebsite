@@ -316,10 +316,26 @@ vecMinus: function(a,b) {
 },
     
 
-cartesianToPolar: function(vector) {
+cartesianToPolar: function(vector,refCenter) {
+    if(refCenter === undefined) var refCenter = [0,0];
+    var vector = util.vecMinus(vector,refCenter);
     var ampl = util.lengthOfVector(vector);
     var angle = util.angleOfVector(vector);
     return [ampl,angle];
+},
+
+solveQuadratic: function(coeffs){
+    var a = coeffs[0];
+    var b = coeffs[1];
+    var c = coeffs[2];
+    var d = b*b - 4*a*c
+    if(d > 0){
+        var sqD = Math.sqrt(d);
+        return [(-b-sqD)/(2*a), (-b+sqD)/(2*a)]
+    } else {
+        //No complex numbers
+        return undefined;
+    }
 },
 
 //rotates a list so that element at ind
@@ -410,11 +426,17 @@ strokeCircle: function (ctx, x, y, r) {
     //ctx.closePath();
 },
 
-strokeEllipseByCenter: function(ctx, cx, cy, w, h) {
-  util.strokeEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h);
+strokeEllipseByCenter: function(ctx, cx, cy, w, h,angl,cRot) {
+  util.strokeEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h,angl,cRot);
 },
 
-strokeEllipse: function(ctx, x, y, w, h) {
+strokeEllipse: function(ctx, x, y, w, h,angl,cRot) {
+  if(angl === undefined) var angl = 0;
+  if(cRot === undefined) var cRot = [x,y];
+
+  //var p = util.rotatePointAroundPoint([x,y],angl,cRot[0],cRot[1]);
+  //var x = p[0];
+  //var y = p[1];
   var kappa = .5522848,
       ox = (w / 2) * kappa, // control point offset horizontal
       oy = (h / 2) * kappa, // control point offset vertical
@@ -422,7 +444,11 @@ strokeEllipse: function(ctx, x, y, w, h) {
       ye = y + h,           // y-end
       xm = x + w / 2,       // x-middle
       ym = y + h / 2;       // y-middle
-
+  
+  ctx.save();
+  ctx.translate(cRot[0],cRot[1]);
+  ctx.rotate(angl);
+  ctx.translate(-cRot[0],-cRot[1]);
   ctx.beginPath();
   ctx.moveTo(x, ym);
   ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
@@ -431,6 +457,7 @@ strokeEllipse: function(ctx, x, y, w, h) {
   ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
   ctx.closePath();
   ctx.stroke();
+  ctx.restore();
 },
 
 
