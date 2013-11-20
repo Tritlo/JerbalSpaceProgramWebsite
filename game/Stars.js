@@ -1,4 +1,4 @@
-var Stars = {
+    var Stars = {
 
 _maxPar: 5,
 
@@ -13,6 +13,13 @@ _blocks: [],
 _rad: 0,
 
 _tooHeavy: false,
+
+init: function(properties){
+    var keys = Object.keys(properties);
+    for(var i = 0; i<keys.length;i++){
+        this[keys[i]] = properties[keys[i]];
+    }
+},
 
 update: function(du){
     this._tooHeavy = entityManager.cameraZoom < 0.05;
