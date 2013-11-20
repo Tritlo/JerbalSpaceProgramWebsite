@@ -4,9 +4,6 @@
 function Terrain(descr) {
     this.setup(descr);
     this.points = this.genTerrain();
-    //Add landing platform
-    // Only do this for main planet, and later;
-    //this.spliceByAngle([[-100,50],[-50,32],[50,32],[100,50]]);
     if(this.color){
         var c = parseCSSColor(this.color);
         var c = [Math.floor(c[0]*0.5),Math.floor(c[1]*0.5),Math.floor(c[2]*0.5),c[3]];

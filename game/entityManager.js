@@ -79,6 +79,8 @@
     //"hasOceans" : true,
     //"numOceans" : 3
 	});
+	terr.spliceByAngle([[-100,50],[-50,0],[50,0],[100,50]]); 
+
     this._terrain.push(terr);
     this._terrain.push(joon);
 },
