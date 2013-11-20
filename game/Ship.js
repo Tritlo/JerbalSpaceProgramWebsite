@@ -596,56 +596,32 @@ Ship.prototype.renderHitBox = function(ctx){
     //ctx.stroke();
 };
 
-Ship.prototype.updateOrbit = function()
-{
-    var terr = entityManager.getTerrain();
-    
-    
-    
+Ship.prototype.updateOrbit = function() {
+    //DEM ORBITAL MECHANICS
+    var terr = entityManager.getTerrain(this.cx,this.cy);
     var f = terr.center;
-    //TODO: Use keplers law to compute;
-    //Periapsis is min dist from planet,
-    //Apopasis is max dist from planet
-    //angl is rotation of ellipse
-    //
-    var r = util.cartesianToPolar(this.center,terr.center);
-    //Speed vector is wrong
-    var velVec = [this.velX,this.velY];
-    var vrad = util.dotProd(velVec,util.normalizeVector(r));
-    var vtan = util.crossProdMagn(r,velVec)/util.lengthOfVector(r);
-    var v = [vtan,vrad]
-    
-    //var v = util.cartesianToPolar([this.velX,this.velY],this.center);
-    //var v
-    console.log(r,v);
-    var mu = consts.G*(terr.mass+this.mass)
-    var eng = util.dotProd(v,v)/2 - (mu/util.lengthOfVector(r));
+    var M = terr.mass;
+    var mu = consts.G*(M+this.mass)
+
+    var r = util.vecMinus(this.center,terr.center)
+    var v = [this.velX,this.velY];
+
+    var speed = this.getSpeed(); 
+    var eng = (speed*speed)/2 - (mu/util.lengthOfVector(r));
     var a = -mu/(2*eng);
 
-
-    var vL = util.lengthOfVector(v);
-    var rdotvtimesv = util.mulVecByScalar(util.dotProd(r,v),v);
-    var vLsqtimesr = util.mulVecByScalar(vL*vL,r);
-    var eccVec = util.vecMinus(util.mulVecByScalar(1/mu,util.vecMinus(vLsqtimesr,rdotvtimesv)), util.normalizeVector(r));
+    var tripleprod = util.tripleProduct(v,r,v);
+    var vtimeshovermu = util.mulVecByScalar(1/mu,tripleprod); 
+    var unitr = util.normalizeVector(r)
+    var eccVec = util.vecMinus(vtimeshovermu,unitr);
     var ecc = util.lengthOfVector(eccVec);
-    console.log(ecc); 
-
-    var eccAnom = Math.acos(this.cx/a);
-    var truanom = 2*Math.atan2(Math.sqrt(1-ecc)*Math.cos(eccAnom/2),Math.sqrt(1+ecc)*Math.sin(eccAnom/2))
-
-    console.log(eccAnom);
-    var b = a*Math.sqrt(1-ecc*ecc);
     var ae = a*ecc;
-    var cen = [f[0]+ae,f[1]];
-    
-    var angl = Math.PI - truanom;
-    var angl = truanom;
-    
-    var angl = r[1]-truanom;
-    cen = util.rotatePointAroundPoint(cen,angl,f[0],f[1]);
+    var b = a*Math.sqrt(1-ecc*ecc);
+    var cen = [f[0]-ae,f[1]];
 
+    var angl = util.angleOfVector(eccVec);
+    cen = util.rotatePointAroundPoint(cen,angl,f[0],f[1]);
     this.orbit = [cen[0], cen[1],a,b,angl,f[0],f[1]];
-    console.log(this.orbit);
 }
 
 

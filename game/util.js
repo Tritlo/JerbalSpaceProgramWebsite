@@ -245,6 +245,9 @@ crossProdMagn: function(r,v){
     return util.lengthOfVector(r)*util.lengthOfVector(v)*util.angleBetweenVectors(r,v);
 },
 
+tripleProduct : function (a,b,c){
+    return util.vecMinus(util.mulVecByScalar(util.dotProd(a,c),b),util.mulVecByScalar(util.dotProd(a,b),c));
+},
 
 sign: function(x) {
     if (x > 0) return 1;
