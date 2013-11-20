@@ -160,7 +160,9 @@ init: function() {
 },
 
 generateShip : function(descr) {
-    this._ships.push(new Ship(descr));
+    	descr.cx=0;
+	descr.cy=0;
+	this._ships.push(new Ship(descr));
 },
 
 killNearestShip : function(xPos, yPos) {

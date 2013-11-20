@@ -55,6 +55,8 @@ Simulation.prototype.onActivation = function(){
     if(g_settings.graphicsLevel == 2){
         Stars.init({"_STpBL": {min:30, max:80}});
     }
+    var s = entityManager.getMainShip();
+    entityManager.getTerrain(s.cx,s.cy).addLaunchpad(s);
 }
 
 Simulation.prototype.handleMouse = function (evt,type) {
