@@ -69,7 +69,6 @@ Part.prototype.reset = function(){
         if(ny < miny) miny = ny;
     }
     this.hitBox = [[minx,miny],[maxx,maxy]];
-    console.log("hib", this.hitBox);
     /*this.hitBox = [
                    [this.center[0] - this.width/2, this.center[1]-this.height/2],
                    [this.center[0] + this.width/2, this.center[1]+this.height/2]
@@ -406,9 +405,9 @@ Part.prototype.render = function (ctx) {
         }
         ctx.closePath();
         ctx.stroke();
-	if(this.fill) {
-	    ctx.fill()
-	    }
+        if(this.fill) {
+            ctx.fill()
+            }
         ctx.restore();
     }
 }

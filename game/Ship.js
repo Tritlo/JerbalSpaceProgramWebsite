@@ -248,9 +248,10 @@ Ship.prototype.update = function (du) {
         
     }    
     if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
-    if(this.thrust > 0 || this.orbit === undefined){
+    //if(this.thrust > 0 || this.orbit === undefined){
+            //Always update orbit.
         this.updateOrbit();
-    }
+    //}
 
 };
 

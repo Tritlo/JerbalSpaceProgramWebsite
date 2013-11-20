@@ -236,33 +236,25 @@ Terrain.prototype.genTerrain = function () {
 
 Terrain.prototype.renderOcean = function (ctx) {
 	ctx.save();
-    if(this.seaLevel){
-        ctx.arc(this.center[0],this.center[1],this.seaLevel,0,2*Math.PI,false);
-    }
     ctx.fillStyle= this.oceanColor || "rgba(0,100,255,0.3)";
+    if(this.seaLevel){
+        util.fillCircle(ctx,this.center[0],this.center[1], this.seaLevel)
+    }
 	ctx.fill();
 	ctx.restore();
 }
 
 Terrain.prototype.generateOceans = function(ctx) {
-    var props = {
-    "maxY":  this.maxY*0.1,
-    "minY":  this.minY*0.1,
-    "minX":  this.minX,
-    "maxX":  this.maxX,
-	"minLength":  this.minLength,
-	"maxLength": this.maxLength,
-	"minAngle": this.minAngle,
-	"maxAngle": this.maxAngle,
-    "color": this.waterColor
-
-    };
+    var maxRad = this.maxY*0.2
+    var minRad = this.minY*0.2
+    var offset = 100;
+    var edge = this.minY - maxRad - offset;
     this._Oceans = [];
     for(var i = 0; i < this.numOceans; i++){
-        var edge = this.minY - props.maxY-500;
         var c = [util.randRange(-edge,edge),util.randRange(-edge,edge)];
-        props.center = util.vecPlus(this.center,c);
-        this._Oceans.push(new Terrain(props));
+        var r = util.randRange(minRad,maxRad);
+        var center = util.vecPlus(this.center,c);
+        this._Oceans.push([center,r]);
     }
     console.log(this._Oceans);
 }
@@ -291,7 +283,10 @@ Terrain.prototype.render = function (ctx) {
         util.strokeCircle(ctx,this.center[0],this.center[1],100)
 	//ctx.strokeText("C",this.center[0],this.center[1]);
     if(this._Oceans){
-        this._Oceans.map(function(x) {x.render(ctx);});
+        ctx.fillStyle = this.waterColor;
+        this._Oceans.map(function(x) {
+            util.fillCircle(ctx,x[0][0],x[0][1],x[1]);
+            ;});
     }
     ctx.restore();
 };

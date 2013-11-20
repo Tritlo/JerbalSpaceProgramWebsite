@@ -72,7 +72,7 @@
 	"maxLength": 128,
 	"minAngle": minangl,
 	"maxAngle": maxangl,
-	"center" : [0,-10000],
+	"center" : [2000,-20000],
 	"mass" : 1.0e15,
     "color": "#282828",
     //"waterColor": "#101010",
