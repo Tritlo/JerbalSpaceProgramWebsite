@@ -5,7 +5,8 @@ function Terrain(descr) {
     this.setup(descr);
     this.points = this.genTerrain();
     //Add landing platform
-//    this.spliceByXCoords(100,300,[[100,250],[150,232],[250,232],[300,250]]);
+    // Only do this for main planet, and later;
+    //this.spliceByAngle([[-100,50],[-50,32],[50,32],[100,50]]);
 };
 
 Terrain.prototype = new Entity();
@@ -222,9 +223,16 @@ Terrain.prototype.genTerrain = function () {
 	return util.wrapListAround(points,this.center);
 }
 
-
+Terrain.prototype.renderOcean = function (ctx) {
+	ctx.save();
+	ctx.arc(this.center[0],this.center[1],this.seaLevel,0,2*Math.PI,false);
+	ctx.fillStyle= "rgba(0,100,255,0.3)";
+	ctx.fill();
+	ctx.restore();
+}
 
 Terrain.prototype.render = function (ctx) {
+    if(this.seaLevel) this.renderOcean(ctx);
     var terr = this.points
     ctx.save()
     ctx.strokeStyle = "white";

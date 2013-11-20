@@ -68,6 +68,7 @@ _generateTerrain : function() {
 	"minAngle": minangl,
 	"maxAngle": maxangl,
 	"center" : [0,3600],
+	"seaLevel": 3350,
 	"mass" : 100000
 	});
     var joon = new Terrain({
@@ -325,7 +326,6 @@ render: function(ctx) {
     ctx.save();
     this.setUpCamera(ctx);
     Stars.render(ctx);
-    //this._terrain.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
