@@ -294,7 +294,9 @@ render: function(ctx) {
     var debugX = 10, debugY = 100;
     ctx.save();
     this.setUpCamera(ctx);
-    Stars.render(ctx);
+    if(g_settings.graphicsLevel >= 1){
+        Stars.render(ctx);
+        }
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
