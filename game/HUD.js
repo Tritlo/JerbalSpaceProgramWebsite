@@ -89,7 +89,6 @@ function renderGyroscope(ctx,cRad,speed,dirV,rotation,rotVel,dirOfOrbVel){
         util.strokeCircle(ctx,orbDirPos[0],orbDirPos[1],3);
         ctx.stroke();
     }
-    g_settings.hudExtra = " " + angleORotInd;
     ctx.closePath();
     ctx.stroke();
     }
