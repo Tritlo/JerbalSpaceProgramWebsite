@@ -7,7 +7,10 @@ Part.prototype.setup = function (descr) {
         this[property] = descr[property];
     }
 
+    this.updateAttributes();
 }
+
+Part.prototype.renderHb = false;
 Part.prototype.name = "NO NAME";
 Part.prototype.mass = 0.1;
 Part.prototype.currentMass = 0.1
@@ -26,6 +29,7 @@ Part.prototype.radius = 0;
 Part.prototype.fill = undefined;
 Part.prototype.stroke = undefined;
 Part.prototype.centerOfRot = [0,0];
+Part.prototype.attached = false;
 
 //Rotates the outline,
 //so that ind becomes the
@@ -47,6 +51,30 @@ Part.prototype.rotate = function(ind){
     this.outline = util.rotateList(this.outline,util.lastIndexOfObj(this.outline,ind));
 }
 
+Part.prototype.reset = function(){
+    var l = this.outline.length;
+    if(l === 0) return; //maybe some error-handling? I dunno.
+    var minx = Number.MAX_VALUE;
+    var maxx = Number.MIN_VALUE;
+    var miny = Number.MAX_VALUE;
+    var maxy = Number.MIN_VALUE;
+    for(var i = 0; i < l; i++){
+        var nx = this.outline[i][0];
+        var ny = this.outline[i][1];
+        if(nx > maxx) maxx = nx;
+        if(nx < minx) minx = nx;
+        if(ny > maxy) maxy = ny;
+        if(ny < miny) miny = ny;
+    }
+    this.hitBox = [[minx,miny],[maxx,maxy]];
+    /*this.hitBox = [
+                   [this.center[0] - this.width/2, this.center[1]-this.height/2],
+                   [this.center[0] + this.width/2, this.center[1]+this.height/2]
+                    ];
+                    */
+    this.centerOfRot = this.center;
+
+}
 
 Part.prototype.addPoint = function(pt){
     if (this.outline) {
@@ -64,6 +92,22 @@ Part.prototype.addAttachmentPoint = function (point){
     else{
         this.attachmentPoints = [point];
     }
+}
+
+Part.prototype.isAttachedTo = function(otherPart){
+	// could be better, but overhead would probably not be
+	// worth it as 1-4 attachment points is the norm.
+	if(!this.attachmentPoints || !otherPart.attachmentPoints){
+		return false;	
+	}
+	for(var i=0; i<this.attachmentPoints.length;i++) {
+		for(var j=0; j<otherPart.attachmentPoints.length;j++) {
+			if(util.compEq(this.attachmentPoints[i],otherPart.attachmentPoints[j],[0,1],[0,1])) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 Part.prototype.setType = function(tp){
@@ -114,6 +158,7 @@ Part.prototype.toDesigner = function(grid){
     this.gridCenterOffset[1] *= grid.cellDim[0]
     this.hitBox = grid.fromGridCoords(this.hitBox);    
     this.lineWidth = 4;
+    this.updateAttributes();
     return this;
 }
 
@@ -155,15 +200,14 @@ Part.prototype.finalize = function(grid,translate){
     var maxy = Number.MIN_VALUE;
     for(var i = 0; i < l; i++){
         var nx = this.outline[i][0];
-	var ny = this.outline[i][1];
-	if(nx > maxx) maxx = nx;
-	if(nx < minx) minx = nx;
-	if(ny > maxy) maxy = ny;
-	if(ny < miny) miny = ny;
+        var ny = this.outline[i][1];
+        if(nx > maxx) maxx = nx;
+        if(nx < minx) minx = nx;
+        if(ny > maxy) maxy = ny;
+        if(ny < miny) miny = ny;
     }
-    this.height = maxy - miny;
-    this.width = maxx - minx;
-
+    this.height = Math.abs(maxy - miny);
+    this.width =  Math.abs(maxx - minx);
     //Translate
     if(translate){
         var trans = function (x) { return util.vecMinus(x,[minx,miny]); }
@@ -173,7 +217,7 @@ Part.prototype.finalize = function(grid,translate){
     var y = 0;
     for(var i = 0; i < l; i++){
         var nx = this.outline[i][0];
-	var ny = this.outline[i][1];
+	    var ny = this.outline[i][1];
         x += nx;
         y += ny;
     }
@@ -187,14 +231,25 @@ Part.prototype.finalize = function(grid,translate){
 			    
     this.currentThrust = 0;
     this.currentFuel = 0;
-    this.radius = Math.max(this.height,this.width);
     this.finalizeNumbers();
-    this.hitBox = [
-                   [this.center[0] - this.width/2, this.center[1]-this.height/2],
-                   [this.center[0] + this.width/2, this.center[1]+this.height/2]
-                    ];
+    this.reset();
     this.lineWidth = 1;
+    this.origOutline = this.outline;
+    this.updateAttributes();
 }
+
+Part.prototype.getRadius = function() {
+    return this.radius;
+}
+
+Part.prototype.updateRot = function(newRot){
+    this.center = util.rotatePointAroundPoint(this.center,newRot-this.rotation,this.centerOfRot[0],this.centerOfRot[1]);
+    var oldRot = this.rotation
+    var cRot = this.centerOfRot
+    this.outline = this.outline.map(function(p) { return util.rotatePointAroundPoint(p,newRot-oldRot,cRot[0],cRot[1])});
+    //this.hitBox = this.hitBox.map(function(p) { return util.rotatePointAroundPoint(p,newRot-oldRot,cRot[0],cRot[1])});
+    this.rotation = newRot;
+    }
 
 Part.prototype.updateCenter = function(newCenter)
 {
@@ -206,9 +261,9 @@ Part.prototype.updateCenter = function(newCenter)
 	}
     this.center = trans(this.center);
     this.centerOfRot = trans(this.centerOfRot);
-    console.log(this.centerOfRot);
-    this.mapFuncOverAll(trans);
-    this.hitBox = this.hitBox.map(trans);
+    this.mapFuncOverAll(trans,true);
+    //this.hitBox = this.hitBox.map(trans);
+    //this.updateAttributes();
 }
 
 Part.prototype.finalizeNumbers = function(){
@@ -229,35 +284,70 @@ Part.prototype.finalizeNumbers = function(){
 Part.prototype._renderFlame = function (ctx) {
     if (this.flame && this.thrust != 0) {
 	var t = this.currentThrust/this.thrust;
-	var rot = this.rotation;
-	var rot = 0;
-	ctx.save();
-	ctx.lineWidth = 1;
-	var ps = this.flame.points;
-	var c = this.flame.center;
-	var l = this.flame.length;
-	var dir = this.flame.direction;
-	ctx.strokeStyle = "blue";
-	var tip = util.vecPlus(c,util.mulVecByScalar(0.2*l*t,dir));
-	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
-	ctx.strokeStyle = "yellow";
-	var tip = util.vecPlus(c,util.mulVecByScalar(0.6*l*t,dir));
-	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
-	ctx.strokeStyle = "red";
-	var tip = util.vecPlus(c,util.mulVecByScalar(1.0*l*t,dir));
-	util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,c[0],c[1]);
-	ctx.restore();
+    if(t > 0){
+        var rot = this.rotation;
+        ctx.save();
+        ctx.lineWidth = 1;
+        var ps = this.flame.points;
+        var c = this.flame.center;
+        var l = this.flame.length;
+        var dir = this.flame.direction;
+        var cRot = this.centerOfRot;
+        ctx.strokeStyle = "blue";
+        var tip = util.vecPlus(c,util.mulVecByScalar(0.2*l*t,dir));
+        util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
+        ctx.strokeStyle = "yellow";
+        var tip = util.vecPlus(c,util.mulVecByScalar(0.6*l*t,dir));
+        util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
+        ctx.strokeStyle = "red";
+        var tip = util.vecPlus(c,util.mulVecByScalar(1.0*l*t,dir));
+        util.strokeTriangle(ctx,ps[0][0],ps[0][1],ps[1][0],ps[1][1],tip[0],tip[1],rot,cRot[0],cRot[1]);
+	    ctx.restore();
+    }
 	}
     
     }
+    
+Part.prototype.renderHitBox = function(ctx){
+    this._renderHitbox(ctx);
+}
+
+Part.prototype.getHitBoxDimensions = function(){
+    return [this.width,this.height];
+}
+
+Part.prototype.updateAttributes = function (){
+    if(this.hitBox){
+        var w = Math.abs(this.hitBox[1][0]-this.hitBox[0][0]);
+        var h = Math.abs(this.hitBox[1][1] - this.hitBox[0][1]);
+        var r = Math.min(w,h)/2;
+        this.width = w;
+        this.height = h;
+        this.radius = r;
+    }
+}
 
 
-Part.prototype._renderHitbox = function (ctx){
+Part.prototype._renderHitbox = function (ctx,inGame){
             ctx.save();
-            var w = this.width;
-            var h = this.height;
+            ctx.strokeStyle = "yellow";
+            var hB = util.paramsToRectangle(this.hitBox[0][0],this.hitBox[0][1],this.width,this.height,this.rotation, this.centerOfRot)
+            var avg = util.avgOfPoints(hB)
+            util.strokeCircle(ctx, avg[0], avg[1], this.getRadius());
+            ctx.stroke();
+            ctx.strokeStyle = "lime";
+            util.strokeCircle(ctx, this.center[0], this.center[1], 2);
+            ctx.stroke();
             ctx.strokeStyle = "red";
-            util.strokeBox(ctx, this.hitBox[0][0], this.hitBox[0][1], Math.abs(this.hitBox[1][0]-this.hitBox[0][0]), Math.abs(this.hitBox[0][1] - this.hitBox[1][1]));
+            var hB = util.paramsToRectangle(this.hitBox[0][0],this.hitBox[0][1],this.width,this.height,this.rotation, this.centerOfRot)
+            ctx.beginPath();
+            ctx.moveTo(hB[0][0],hB[0][1]);
+            for(var i = 0; i < hB.length; i++){
+                var loc = hB[i];
+                ctx.lineTo(loc[0],loc[1]);
+                //util.strokeCircle(ctx, loc[0], loc[1], 2);
+            }
+            ctx.closePath();
             ctx.stroke();
             ctx.restore();
 }
@@ -277,6 +367,13 @@ Part.prototype._renderAttachmentPoints = function (ctx){
     
 }
 
+Part.prototype._renderCenter = function(ctx){
+	ctx.save()
+	ctx.strokeStyle = "yellow";
+	util.strokeCircle(ctx,this.center[0],this.center[1],2);
+	ctx.restore();
+    }
+
 Part.prototype.render = function (ctx) {
     if(this.outline){
         ctx.save();
@@ -290,10 +387,18 @@ Part.prototype.render = function (ctx) {
         if(this.lineWidth){
             ctx.lineWidth = this.lineWidth;
         }
+
+        if(entityManager.cameraZoom < 0.5){
+            ctx.lineWidth = 1/entityManager.cameraZoom
+        }
+	    var cRot = this.centerOfRot;
+	    var rot = this.rotation;
+	//var outline = this.outline.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
+	    var outline = this.outline;//.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
         ctx.beginPath();
-        ctx.moveTo(this.outline[0][0],this.outline[0][1]);
-        for(var i = 0; i < this.outline.length; i++){
-            var loc = this.outline[i];
+        ctx.moveTo(outline[0][0],outline[0][1]);
+        for(var i = 0; i < outline.length; i++){
+            var loc = outline[i];
             ctx.lineTo(loc[0],loc[1]);
         }
         ctx.closePath();
