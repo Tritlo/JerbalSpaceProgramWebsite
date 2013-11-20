@@ -641,8 +641,8 @@ Ship.prototype.renderOrbit = function(ctx) {
             util.strokeCircle(ctx,fx,fy,200);
             ctx.strokeStyle = "red"; 
             util.strokeCircle(ctx,cx,cy,200);
-            ctx.strokeStyle = "dodgerblue"; 
         }
+        ctx.strokeStyle = "dodgerblue"; 
         var angl = util.cartesianToPolar([cx,cy],[fx,fy])[1];
         util.strokeEllipseByCenter(ctx,cx,cy,majAx*2,minAx*2,angl,[cx,cy])
         ctx.restore()

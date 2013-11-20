@@ -69,7 +69,12 @@ _generateTerrain : function() {
 	"maxAngle": maxangl,
 	"center" : [0,3600],
 	"seaLevel": 3350,
-	"mass" : 5.0e15
+	"mass" : 5.0e15,
+    "color": "green",
+    "oceanColor": "rgba(0,100,255,0.3)",
+    //"waterColor": "blue",
+    //"numOceans" : 3,
+    //"hasOceans" : true
 	});
     var joon = new Terrain({
 	"minX":-5000,
@@ -81,7 +86,11 @@ _generateTerrain : function() {
 	"minAngle": minangl,
 	"maxAngle": maxangl,
 	"center" : [0,-10000],
-	"mass" : 1.0e15
+	"mass" : 1.0e15,
+    "color": "#282828",
+    //"waterColor": "#101010",
+    //"hasOceans" : true,
+    //"numOceans" : 3
 	});
     this._terrain.push(terr);
     this._terrain.push(joon);
