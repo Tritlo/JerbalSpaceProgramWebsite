@@ -79,8 +79,6 @@
     //"hasOceans" : true,
     //"numOceans" : 3
 	});
-	terr.spliceByAngle([[-100,50],[-50,0],[50,0],[100,50]]); 
-
     this._terrain.push(terr);
     this._terrain.push(joon);
 },
@@ -162,7 +160,9 @@ init: function() {
 },
 
 generateShip : function(descr) {
-    this._ships.push(new Ship(descr));
+    	descr.cx=0;
+	descr.cy=0;
+	this._ships.push(new Ship(descr));
 },
 
 killNearestShip : function(xPos, yPos) {

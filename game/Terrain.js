@@ -23,6 +23,10 @@ Terrain.prototype.spliceByIndex = function (indFrom, indTo, yValues) {
 	this.points[indFrom+i][1] = yValues[i];
 	}
     }
+Terrain.prototype.addLaunchpad = function (){
+	var ship= entityManager.getMainShip();
+	this.spliceByAngle([[-100,50],[-50,ship.height/2+5],[50,ship.height/2+5],[100,50]]);
+}
 
 Terrain.prototype.spliceByAngle = function (values) {
     var	C=this.center;
