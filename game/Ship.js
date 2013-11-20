@@ -482,11 +482,11 @@ Ship.prototype.getRadius = function () {
     
     return (Math.max(this.width,this.height) / 2) * 0.9;
 };
-
+/*
 Ship.prototype.takeBulletHit = function () {
     this.warp();
 };
-
+*/
 Ship.prototype.reset = function () {
     this.setPos(this.reset_cx, this.reset_cy);
     this.rotation = this.reset_rotation;
