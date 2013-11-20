@@ -48,8 +48,6 @@ register: function(entity) {
     var spatialID = entity.getSpatialID();
 
     this._entities[spatialID] = entity;
-    
-    // TODO: YOUR STUFF HERE!
 
 },
 
@@ -58,25 +56,18 @@ unregister: function(entity) {
 
     this._entities[spatialID] = undefined;
 
-    
-
-    // TODO: YOUR STUFF HERE!
-
 },
 
 findEntityInRange: function(posX, posY, radius) {
-    //var topLeftCorner = [posX-radius, posY-radius];
-    //var bottomRightCorner = [posX+radius, posY+radius];
     for ( var ID in this._entities) {
-	var e = this._entities[ID];
-	if(e) {
-	    var pos = e.getPos();
-	    if (util.wrappedDistSq(pos.posX, pos.posY, posX, posY)
-		<= util.square(e.getRadius() + radius))
-		return e;
-	    }
+        var e = this._entities[ID];
+        if(e) {
+            var pos = e.getPos();
+            if (util.wrappedDistSq(pos.posX, pos.posY, posX, posY)
+            <= util.square(e.getRadius() + radius))
+            return e;
+            }
 	}
-
 },
 
 render: function(ctx) {
@@ -86,19 +77,10 @@ render: function(ctx) {
     
     for (var ID in this._entities) {
         var e = this._entities[ID];
-        //util.strokeCircle(ctx, e.posX, e.posY, e.radius);
 	if (e) {
 	    var pos = e.getPos()
         if (g_settings.hitBox){
             ctx.save();
-            //ctx.translate(pos.posX-entityManager.cameraOffset[0],pos.posY-entityManager.cameraOffset[1]);
-            //ctx.rotate(e.rotation);
-            //ctx.rotate(entityManager.cameraRotation);
-            //ctx.translate(-pos.posX+entityManager.cameraOffset[0],-pos.posY+entityManager.cameraOffset[1]);
-            //ctx.translate(-pos.posX,-pos.posY);
-            //var w = e.width;//*entityManager.cameraZoom;
-            //var h = e.height;//*entityManager.cameraZoom;
-            //util.strokeBox(ctx, pos.posX-w/2, pos.posY-h/2, w, h);
 	        e.renderHitBox(ctx);
             ctx.stroke();
             ctx.restore();

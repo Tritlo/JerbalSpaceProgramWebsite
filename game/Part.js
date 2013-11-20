@@ -46,14 +46,15 @@ Part.prototype.setFlame = function (ps) {
 		   "length" : len
 		   }
     
-    }
+}
+
 Part.prototype.rotate = function(ind){
     this.outline = util.rotateList(this.outline,util.lastIndexOfObj(this.outline,ind));
 }
 
 Part.prototype.reset = function(){
     var l = this.outline.length;
-    if(l === 0) return; //maybe some error-handling? I dunno.
+    if(l === 0) return; //Nothing to do with a part with not points;
     var nx = this.outline[0][0];
     var ny = this.outline[0][1];
     var minx = nx;
@@ -84,7 +85,6 @@ Part.prototype.addPoint = function(pt){
     } else {
         this.outline = [pt];
     }
-    //maybe add to baseMass
 }
 
 Part.prototype.addAttachmentPoint = function (point){
