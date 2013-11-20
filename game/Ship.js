@@ -157,7 +157,7 @@ Ship.prototype.disassemble = function(grid) {
 
 
 Ship.prototype.getAltitude = function () {
-	var terr=entityManager.getTerrain();
+	var terr=entityManager.getTerrain(this.cx,this.cy);
 	var centerDist=Math.sqrt(util.distSq(this.cx,this.cy,terr.center[0],terr.center[1]));
     return (centerDist - terr.minY + this.height/2);
     }
@@ -167,7 +167,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
     var numframes = explSpr.dim[0]*explSpr.dim[1];
     var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
     if(this._timeFromExplosion > explSpr.duration/4 && !(this._explCraterAdded)){
-	    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius,this._explosionSpeed);
+	    entityManager.getTerrain(this.cx,this.cy).addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius,this._explosionSpeed);
         this._explCraterAdded = true;
     }
     if (frame <= numframes){
@@ -186,7 +186,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
 Ship.prototype._updateVectorExplosion = function (du){
     if(this._timeFromExplosion < this._explosionDuration/2){
 	    //entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius, this._explosionSpeed);
-	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
+	    entityManager.getTerrain(this.cx,this.cy).addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
     }
     if (this._timeFromExplosion > this._explosionDuration){
 	this._explCraterAdded = false;
@@ -297,7 +297,7 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
         var y = p.hitBox[0][1];
         var nx = x
         var ny = y
-        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
+        terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
     if(terrainHit[0]) break;
     }
     if (!(terrainHit[0])){
@@ -387,11 +387,11 @@ Ship.prototype.applyAccel = function (accel,du) {
             var y = p.hitBox[0][1];
             var nx = x + (nextX - this.cx);
             var ny = y + (nextY - this.cy);
-            terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
+            terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
 		if(terrainHit[0]) break;
 	    }
         } else {
-            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+            var terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius());
         }
 	if (terrainHit[0]) {

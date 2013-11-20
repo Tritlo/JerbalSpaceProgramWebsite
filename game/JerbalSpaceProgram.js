@@ -82,6 +82,7 @@ var g_settings = {
           "doFlipFlop" : false,
           "doRender" : true,
           "timeMultiplier": 1,
+          "renderPlanetCenter" : false,
           "keys": {
               "KEY_THRUST": keyCode('W'),
               "KEY_RETRO": keyCode('S'),
