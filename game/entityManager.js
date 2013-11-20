@@ -1,29 +1,29 @@
-    /*
+/*
 
-    entityManager.js
+entityManager.js
 
-    A module which handles arbitrary entity-management for "Asteroids"
-
-
-    We create this module as a single global object, and initialise it
-    with suitable 'data' and 'methods'.
-
-    "Private" properties are denoted by an underscore prefix convention.
-
-    */
+A module which handles arbitrary entity-management for "Asteroids"
 
 
-    "use strict";
+We create this module as a single global object, and initialise it
+with suitable 'data' and 'methods'.
+
+"Private" properties are denoted by an underscore prefix convention.
+
+*/
 
 
-    // Tell jslint not to complain about my use of underscore prefixes (nomen),
-    // my flattening of some indentation (white), or my use of incr/decr ops 
-    // (plusplus).
-    //
-    /*jslint nomen: true, white: true, plusplus: true*/
+"use strict";
 
 
-    var entityManager = {
+// Tell jslint not to complain about my use of underscore prefixes (nomen),
+// my flattening of some indentation (white), or my use of incr/decr ops 
+// (plusplus).
+//
+/*jslint nomen: true, white: true, plusplus: true*/
+
+
+var entityManager = {
 
     // "PRIVATE" DATA
 
@@ -199,34 +199,34 @@ updateCamera: function () {
         this.lockCamera = !this.lockCamera;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMIN]) {
-	this.cameraZoom *= g_settings.cameraZoomRate;
+        this.cameraZoom *= g_settings.cameraZoomRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMOUT]) {
-	this.cameraZoom /= g_settings.cameraZoomRate;
+        this.cameraZoom /= g_settings.cameraZoomRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
-	this.cameraRotation += g_settings.cameraRotateRate;
+        this.cameraRotation += g_settings.cameraRotateRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
-	this.cameraRotation -= g_settings.cameraRotateRate;
+        this.cameraRotation -= g_settings.cameraRotateRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_UP]) {
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_DOWN]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_LEFT]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_RIGHT]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
     }
     if (keys[g_settings.keys.KEY_CAMERA_RESET]) {
-	this.cameraOffset = [0,0]
-	this.cameraRotation = 0;
-	this.cameraZoom = 1;
-    this.lockCamera = false;
+        this.cameraOffset = [0,0]
+        this.cameraRotation = 0;
+        this.cameraZoom = 1;
+        this.lockCamera = false;
 	}
 
     if(this._ships.length > 0){

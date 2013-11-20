@@ -20,6 +20,8 @@ var g_mouseX = 0,
 function handleMouseDown(evt){ handleMouse(evt,"down"); }
 function handleMouseMove(evt) { handleMouse(evt,"move"); }
 function handleMouseUp(evt) { handleMouse(evt,"up"); }
+
+//Just pass to state;
 function handleMouse(evt,type) {
     stateManager.handleMouse(evt,type);
 }
