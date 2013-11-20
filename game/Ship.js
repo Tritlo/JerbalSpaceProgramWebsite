@@ -248,11 +248,12 @@ Ship.prototype.update = function (du) {
         
     }    
     if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
-    //if(this.thrust > 0 || this.orbit === undefined){
-            //Always update orbit.
-        this.updateOrbit();
-    //}
 
+    var tN = entityManager.getTerrain(this.cx,this.cy).name;
+    if(this.thrust > 0 || (this.primaryBodyName && !(tN.localeCompare(this.primaryBodyName)))  ){
+          this.updateOrbit();
+    }
+    this.primaryBodyName = tN;
 };
 
 Ship.prototype.getSpeed = function () {

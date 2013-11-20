@@ -46,6 +46,7 @@
     var minangl = Math.PI/30;
     var maxangl = Math.PI/2.2;
     var terr = new Terrain({
+    "name" : "Jerbin",
 	"minX":-10000,
 	"maxX": 10000,
 	"minY": 3200,
@@ -64,6 +65,7 @@
     //"hasOceans" : true
 	});
     var joon = new Terrain({
+    "name" : "Joon",
 	"minX":-5000,
 	"maxX": 5000,
 	"minY": 1600,
