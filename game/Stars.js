@@ -3,7 +3,7 @@
 _maxPar: 5,
 // The size of each render/generation block. Think Minecraft.
 _blockSize: {x: g_canvas.width, y: g_canvas.height},
-// The Level dayd whether a star is genearated or not,
+// The Level says whether a star is generated or not,
 // the more you zoom out, the fewer levels are rendered.
 _maxLevel: 256,
 // Stars per Block
@@ -33,9 +33,17 @@ update: function(du){
     var bl = this._posToBlock(os[0],os[1]);
     this._rad=Math.floor(this._maxPar/(entityManager.cameraZoom*Math.sqrt(2)))+1;
     //this._rad=2;
-    for(var i = bl[0]-this._rad; i <= bl[0]+this._rad; i++){
-        for(var j = bl[1]-this._rad; j <= bl[1]+this._rad; j++){
-	    this._maybeGenerateBlock(i,j);
+    for(var i = bl[0]-this._rad-1; i <= bl[0]+this._rad+1; i++){
+        for(var j = bl[1]-this._rad-1; j <= bl[1]+this._rad+1; j++){
+	    if(Math.abs(i-bl[0])===this._rad+1||
+	       Math.abs(j-bl[1])===this._rad+1){
+	        if(!this._blocks[i]) continue;
+		//throw out previously generated blocks to save
+		//memory.
+		this._blocks[i][j] = null;
+	    } else {
+	        this._maybeGenerateBlock(i,j);
+	    }
 	}
     }
 },
