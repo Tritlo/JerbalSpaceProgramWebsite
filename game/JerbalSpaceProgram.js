@@ -83,26 +83,27 @@ var g_settings = {
           "doRender" : true,
           "timeMultiplier": 1,
           "renderPlanetCenter" : false,
+          "graphicsLevel": 2,
           "keys": {
               "KEY_THRUST": keyCode('W'),
               "KEY_RETRO": keyCode('S'),
               "KEY_KILLTHROTTLE": keyCode('E'),
               "KEY_LEFT": keyCode('A'),
               "KEY_RIGHT": keyCode('D'),
-            "KEY_TOGGLE_DEBUG": keyCode('B'),
-            "KEY_QUIT" : keyCode('Q'),
-            "KEY_PAUSE" :  keyCode('P'),
-            "KEY_STEP" :  keyCode('O'),
-            "KEY_CAMERA_RESET" : keyCode('N'),
-            "KEY_CAMERA_UP" : keyCode('K'),
-            "KEY_CAMERA_DOWN" : keyCode('J'),
-            "KEY_CAMERA_LEFT" : keyCode('H'),
-            "KEY_CAMERA_RIGHT" : keyCode('L'),
-            "KEY_CAMERA_ROTATE_CLOCKWISE" : keyCode('U'),
-            "KEY_CAMERA_ROTATE_COUNTERCLOCKWISE" : keyCode('I'),
-            "KEY_CAMERA_ZOOMIN" : keyCode('9'),
-            "KEY_CAMERA_ZOOMOUT" : keyCode('8'),
-            "KEY_CAMERA_LOCK" : keyCode('Y'),
+                "KEY_TOGGLE_DEBUG": keyCode('B'),
+                "KEY_QUIT" : keyCode('Q'),
+                "KEY_PAUSE" :  keyCode('P'),
+                "KEY_STEP" :  keyCode('O'),
+                "KEY_CAMERA_RESET" : keyCode('N'),
+                "KEY_CAMERA_UP" : keyCode('K'),
+                "KEY_CAMERA_DOWN" : keyCode('J'),
+                "KEY_CAMERA_LEFT" : keyCode('H'),
+                "KEY_CAMERA_RIGHT" : keyCode('L'),
+                "KEY_CAMERA_ROTATE_CLOCKWISE" : keyCode('U'),
+                "KEY_CAMERA_ROTATE_COUNTERCLOCKWISE" : keyCode('I'),
+                "KEY_CAMERA_ZOOMIN" : keyCode('9'),
+                "KEY_CAMERA_ZOOMOUT" : keyCode('8'),
+                "KEY_CAMERA_LOCK" : keyCode('Y'),
               },
           "debugKeys" : {
               "KEY_GRAVITY" : keyCode('G'),
@@ -124,7 +125,6 @@ var g_settings = {
               "KEY_SLOWDOWN" : keyCode('3')
 
             },
-          "seaLevel": g_canvas.height*2
          };
 
 
