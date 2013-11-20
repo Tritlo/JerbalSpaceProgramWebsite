@@ -1,19 +1,22 @@
     var Stars = {
-
+// Maximum parallax, affects render and genration radius
 _maxPar: 5,
-
+// The size of each render/generation block. Think Minecraft.
 _blockSize: {x: g_canvas.width, y: g_canvas.height},
-
+// The Level dayd whether a star is genearated or not,
+// the more you zoom out, the fewer levels are rendered.
 _maxLevel: 256,
-
+// Stars per Block
 _STpBL: {min: 30, max: 80},
-
+// An Array containing the blocks
 _blocks: [],
-
+// The radius in which to render blocks around the
+// camera center.
 _rad: 0,
-
+// Are we too zoomed out to afford rendering the stars?
 _tooHeavy: false,
 
+// Initialize the Starfield.
 init: function(properties){
     var keys = Object.keys(properties);
     for(var i = 0; i<keys.length;i++){
@@ -21,6 +24,7 @@ init: function(properties){
     }
 },
 
+// Generate any Stars I might render
 update: function(du){
     this._tooHeavy = entityManager.cameraZoom < 0.05;
     if(this._tooHeavy) return;
@@ -36,6 +40,8 @@ update: function(du){
     }
 },
 
+// How many levels of Stars should I render bassed on the current
+// zoom.
 _getBlockLevel: function(zoom){
     var sp = 1/this._maxLevel;
     for(var i = 0; i < this._maxLevel; i++){
@@ -44,10 +50,12 @@ _getBlockLevel: function(zoom){
     return this._maxLevel-1;
 },
 
+// Random block level for star generation
 _getRandomBlockLevel: function(){
     return Math.floor(Math.random()*this._maxLevel);
 },
 
+// If the block does not exist yet, generate it
 _maybeGenerateBlock: function(i,j){
     if(this._blocks[i] && this._blocks[i][j]) return;
     if(!this._blocks[i]) this._blocks[i] = [];
@@ -57,6 +65,7 @@ _maybeGenerateBlock: function(i,j){
         newBlock.push([]);
     }
     var numStars = util.randRange(this._STpBL.min/this._maxPar,this._STpBL.max/this._maxPar);
+    // generate the stars for the block
     for(var k = 0; k < numStars; k++){
         var x = util.randRange((i)*this._blockSize.x,(i+1)*this._blockSize.x);
         var y = util.randRange((j)*this._blockSize.y,(j+1)*this._blockSize.y);
@@ -70,6 +79,9 @@ _maybeGenerateBlock: function(i,j){
     //console.log(i,j,this._blocks[i][j]);
 },
 
+// I wonder what this does.
+// Only renders Stars in close proximity to the camera
+// center, based on zoom.
 render: function(ctx){
     if(this._tooHeavy) return;
     var os = entityManager.trueOffset;
@@ -84,6 +96,7 @@ render: function(ctx){
     }
 },
 
+// How to the stars elongate when going fast
 _starTween: function(x,y){
     if(entityManager.lockCamera) return {x:0,y:0};
     var speed = Math.sqrt(x*x + y*y);
@@ -92,6 +105,9 @@ _starTween: function(x,y){
     return {x: Math.cos(angle)*newSpeed, y: Math.sin(angle)*newSpeed};
 },
 
+// Change the position of the Star's rendering
+// based on it's Parallax level. Creates the 3D effect in
+// the starfield. Requires rendering more blocks.
 _applyParallax: function(os,x,y,p){
     var ox = -os[0] + g_canvas.width/2;
     var oy = -os[1] + g_canvas.width/2;
@@ -103,6 +119,9 @@ _applyParallax: function(os,x,y,p){
     return {x: ox+dx, y: oy+dy};
 },
 
+// Renders a random star. If not the star described,
+// destroys the universe.
+// (seriously though, just renders the star described))
 _renderStar: function(ctx,x,y,p,l){
     var s = entityManager.getMainShip();
     
@@ -125,7 +144,7 @@ _renderStar: function(ctx,x,y,p,l){
     ctx.restore();
 },
 
-
+// Renders block number i,j
 _renderBlock: function(ctx,i,j){
     //console.log(i,j,this._blocks[i][j]);
     if(!(this._blocks[i] && this._blocks[i][j])) return;
@@ -139,6 +158,8 @@ _renderBlock: function(ctx,i,j){
     }
 },
 
+// returns the block coordinates of (x,y), i.e., inside what block
+// is (x,y)
 _posToBlock: function(x,y){
     var bx = -Math.floor(x/this._blockSize.x-1/2)-1;
     var by = -Math.floor(y/this._blockSize.y-1/2)-1;
