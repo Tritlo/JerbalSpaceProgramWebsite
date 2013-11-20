@@ -4,6 +4,8 @@ _maxPar: 5,
 
 _blockSize: {x: g_canvas.width, y: g_canvas.height},
 
+_maxLevel: 256,
+
 _STpBL: {min: 30, max: 80},
 
 _blocks: [],
@@ -13,8 +15,8 @@ _rad: 0,
 _tooHeavy: false,
 
 update: function(du){
-    this._tooHeavy = entityManager.cameraZoom < 0.3;
-    if(this._tooHeavy);
+    this._tooHeavy = entityManager.cameraZoom < 0.05;
+    if(this._tooHeavy) return;
     var os = entityManager.trueOffset;
     //console.log("update: " + os);
     var bl = this._posToBlock(os[0],os[1]);
@@ -27,20 +29,38 @@ update: function(du){
     }
 },
 
+_getBlockLevel: function(zoom){
+    var sp = 1/this._maxLevel;
+    for(var i = 0; i < this._maxLevel; i++){
+        if(zoom < Math.sqrt(sp*(i+1))) return i;
+    }
+    return this._maxLevel-1;
+},
+
+_getRandomBlockLevel: function(){
+    return Math.floor(Math.random()*this._maxLevel);
+},
+
 _maybeGenerateBlock: function(i,j){
     if(this._blocks[i] && this._blocks[i][j]) return;
     if(!this._blocks[i]) this._blocks[i] = [];
+    //console.log(i,j);
     var newBlock = [];
+    for(var h = 0; h < this._maxLevel; h++){
+        newBlock.push([]);
+    }
     var numStars = util.randRange(this._STpBL.min/this._maxPar,this._STpBL.max/this._maxPar);
     for(var k = 0; k < numStars; k++){
         var x = util.randRange((i)*this._blockSize.x,(i+1)*this._blockSize.x);
         var y = util.randRange((j)*this._blockSize.y,(j+1)*this._blockSize.y);
 	var p = util.randRange(1,this._maxPar);
         var newStar = {x: x, y: y, p: p};
-        newBlock.push(newStar);
+	var l = this._getRandomBlockLevel();
+        newBlock[l].push(newStar);
     }
     //console.log(this._blocks[i] + " " + i);
     this._blocks[i][j] = newBlock;
+    //console.log(i,j,this._blocks[i][j]);
 },
 
 render: function(ctx){
@@ -51,6 +71,7 @@ render: function(ctx){
     //util.fillCircle(ctx,-os[0],-os[1],10);
     for(var i = bl[0]-this._rad; i <= bl[0]+this._rad; i++){
         for(var j = bl[1]-this._rad; j <= bl[1]+this._rad; j++){
+	    //console.log(i,j);
 	    this._renderBlock(ctx,i,j);
 	}
     }
@@ -75,11 +96,11 @@ _applyParallax: function(os,x,y,p){
     return {x: ox+dx, y: oy+dy};
 },
 
-_renderStar: function(ctx,x,y,p){
+_renderStar: function(ctx,x,y,p,l){
     var s = entityManager.getMainShip();
     
     var os = entityManager.trueOffset;
-    var pos = entityManager.cameraZoom < 0.6?{x:x,y:y}:this._applyParallax(os,x,y,p);
+    var pos = this._applyParallax(os,x,y,p);//entityManager.cameraZoom < 0.6?{x:x,y:y}:this._applyParallax(os,x,y,p);
     var x0 = pos.x;
     var y0 = pos.y;
     
@@ -89,19 +110,25 @@ _renderStar: function(ctx,x,y,p){
     ctx.save();
     ctx.fillStyle="white";
     ctx.strokeStyle="white";
-    util.fillCircle(ctx,x0,y0,1);
-    util.fillCircle(ctx,x1,y1,1);
-    ctx.lineWidth=2;
+    var r = Math.sqrt(this._maxLevel/(l+1))/2;
+    util.fillCircle(ctx,x0,y0,r);
+    util.fillCircle(ctx,x1,y1,r);
+    ctx.lineWidth=2*r;
     util.drawLine(ctx,x0,y0,x1,y1);
     ctx.restore();
 },
 
 
 _renderBlock: function(ctx,i,j){
+    //console.log(i,j,this._blocks[i][j]);
     if(!(this._blocks[i] && this._blocks[i][j])) return;
-    var block = this._blocks[i][j]
-    for(var i = 0; i < block.length;i++){
-        this._renderStar(ctx,block[i].x,block[i].y,block[i].p);
+    //console.log(i,j);
+    var level = this._getBlockLevel(entityManager.cameraZoom);
+    for(var l = 0; l <= level; l++){
+        var block = this._blocks[i][j][l];
+        for(var k = 0; k < block.length;k++){
+            this._renderStar(ctx,block[k].x,block[k].y,block[k].p,l);
+        }
     }
 },
 
