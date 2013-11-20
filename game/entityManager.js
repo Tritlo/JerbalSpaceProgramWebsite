@@ -61,18 +61,55 @@ _generateTerrain : function() {
     var terr = new Terrain({
 	"minX":-10000,
 	"maxX": 10000,
-	"minY": 300,
-	"maxY": sL/2,
+	"minY": 3200,
+	"maxY": 3500,
 	"minLength": 32,
 	"maxLength": 256,
-	"minAngle": Math.PI/30,
-	"maxAngle": Math.PI/2.2
+	"minAngle": minangl,
+	"maxAngle": maxangl,
+	"center" : [0,3600],
+	"seaLevel": 3350,
+	"mass" : 5.0e15
 	});
-    this._terrain = terr;
+    var joon = new Terrain({
+	"minX":-5000,
+	"maxX": 5000,
+	"minY": 1600,
+	"maxY": 1750,
+	"minLength": 16,
+	"maxLength": 128,
+	"minAngle": minangl,
+	"maxAngle": maxangl,
+	"center" : [0,-10000],
+	"mass" : 5.0e11
+	});
+    this._terrain.push(terr);
+    this._terrain.push(joon);
 },
 
-getTerrain : function () {
-    return this._terrain;
+getTerrain : function (x,y) {
+    var max = Number.MIN_VALUE;
+    var maxTerr;
+    for(var i = 0; i < this._terrain.length; i++){
+        var terr = this._terrain[i];
+	    var g = this.gravityFrom(terr,x,y);
+        if(g>max){
+            max = g;
+            maxTerr = terr;
+        }
+    }
+    return maxTerr;
+},
+
+gravityFrom : function (terr,x,y){
+    return util.lengthOfVector(this.gravityAt(x,y,terr));
+},
+
+gravityAt : function (x,y,terr) {
+    if (terr === undefined) var terr=this.getTerrain(x,y);
+    var distance=Math.sqrt(util.distSq(x,y,terr.center[0],terr.center[1]));
+    var force=consts.G*terr.mass/(distance*distance);
+	return util.mulVecByScalar(force/distance ,util.vecMinus(terr.center,[x,y]));
 },
 
 _findNearestShip : function(posX, posY) {
@@ -233,6 +270,7 @@ update: function(du) {
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
+	if(aCategory === this._terrain) continue;
         var i = 0;
 
         while (i < aCategory.length) {
@@ -285,7 +323,6 @@ render: function(ctx) {
     ctx.save();
     this.setUpCamera(ctx);
     Stars.render(ctx);
-    this._terrain.render(ctx);
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];

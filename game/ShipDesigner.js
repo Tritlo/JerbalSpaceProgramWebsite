@@ -19,8 +19,9 @@ ShipDesigner.prototype.init = function() {
 		"text" : "Launch",
 		"action" : function(state) {
             state.currentShip.assemble(state.grid);
-            state.currentShip.cx = 200;
-            state.currentShip.cy = 145;
+            var protoShip = new Ship();
+            state.currentShip.cx = protoShip.cx;
+            state.currentShip.cy = protoShip.cy;
             console.log(state.currentShip);
             entityManager.clearShips();
             entityManager.generateShip(state.currentShip);

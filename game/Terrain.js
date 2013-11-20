@@ -5,17 +5,30 @@ function Terrain(descr) {
     this.setup(descr);
     this.points = this.genTerrain();
     //Add landing platform
-    this.spliceByXCoords(100,300,[[100,250],[150,232],[250,232],[300,250]]);
+    // Only do this for main planet, and later;
+    //this.spliceByAngle([[-100,50],[-50,32],[50,32],[100,50]]);
 };
 
 Terrain.prototype = new Entity();
-
+Terrain.prototype.center = [0,0];
 Terrain.prototype.spliceByIndex = function (indFrom, indTo, yValues) {
     for(var i = 0; i < yValues.length; i++){
 	this.points[indFrom+i][1] = yValues[i];
 	}
     }
 
+Terrain.prototype.spliceByAngle = function (values) {
+    var	C=this.center;
+    var	angles=this.points.map(function(x){return util.angleOfVector(util.vecMinus(x,C))});
+    var first = util.angleOfVector(util.vecMinus(values[0],this.center));
+    var last = util.angleOfVector(util.vecMinus(values[values.length-1],this.center));
+    var sliceStart = util.binarySearch(first,angles);
+    var sliceEnd = util.binarySearch(last,angles)-1;
+    //this.points.splice(spliceStart,spliceEnd-spliceStart,values);
+    var head = this.points.slice(0,sliceStart);
+    var tail = this.points.slice(sliceEnd+1,this.points.length);
+    this.points = head.concat(values,tail);
+    }
 Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
     var sliceStart = util.findIndexesOfClosestPoints(xFrom,this.points)[1];
     var sliceEnd = util.findIndexesOfClosestPoints(xTo,this.points)[0];
@@ -31,27 +44,30 @@ Terrain.prototype.heightAtX = function (x) {
         debugger;
     }
     var lEq = util.getEqOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
-    return (lEq[0]*x + lEq[2])/(-1*lEq[1]);
+    var y = (lEq[0]*x + lEq[2])/(-1*lEq[1]);
+    return util.cartesianToPolar(x,y,this.center[0],this.center[1])[0]
 }
 
 Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     var values = [];
     var steps = Math.max(Math.ceil(explRadius/20),5);
-    //console.log(steps,speed);
+    var	C = this.center;
+    var angle=util.angleOfVector(util.vecMinus([x,y],C));
     for(var i = 0; i <= steps; i++){
-	var deg = Math.PI * i/steps;
-	values.push([x-Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
+	var deg = -Math.PI * (i/steps +1/2) + angle;
+	values.push([x+Math.cos(deg)*explRadius, y + Math.sin(deg)*explRadius + radius]);
     }
     //Don't raise terrain:
-    var terr = this;
-    values = values.map(function(p) {
-        var hAtP = terr.heightAtX(p[0]);
-        if (hAtP > p[1]){
-            p[1] = hAtP;
-        }
-        return [p[0],p[1]];
-    });
-    this.spliceByXCoords(x-explRadius, x+explRadius,values);
+    	var i=0;
+	while (i<values.length)
+	{
+		if(!this.isInside(values[i]))
+			values.splice(i,1);
+		else
+			i++;
+	}
+	if(values.length>0)
+	this.spliceByAngle(values);
     }
 
 Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot){
@@ -62,6 +78,11 @@ Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,ro
     }
 }
 
+Terrain.prototype.isInside = function (point) {
+    var ps = util.findSurfaceBelow(point,this.points,this.center);
+    return (util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],point[0],point[1])===util.sideOfLine(ps[0][0],ps[0][1],ps[1][0],ps[1][1],this.center[0],this.center[1]));
+}
+
 Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,height,rotation,cRot){
     var hitBox = util.paramsToRectangle(nextX,nextY,width,height,rotation,cRot);
     var prevHitBox = util.paramsToRectangle(prevX,prevY,width,height,rotation,cRot);
@@ -69,7 +90,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
     var hbAvg = util.avgOfPoints(hitBox);
     var hits  = [];
     for(var i = 0; i < hitBox.length; i++){
-        if (this.heightAtX(hitBox[i][0]) < hitBox[i][1]){
+        if (this.isInside(hitBox[i])){
             hits.push(hitBox[i]);
         }
     }
@@ -91,7 +112,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
     if (circ[0]){
 	    return [true,circ[1],circ[2],pointOfHit];
     } else {
-    var points = util.lineBelow(this.points,pointOfHit[0],pointOfHit[1]);
+    var points = util.findSurfaceBelow(pointOfHit,this.points,this.center);
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
     var nextDist = util.distFromLine(x0,y0,x1,y1,nextX,nextY);
@@ -110,7 +131,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
 
 
 Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
-    var points = util.lineBelow(this.points,nextX,nextY);
+    var points = util.findSurfaceBelow([nextX,nextY],this.points,this.center);
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
     //If I'm not between the lines height points, don't consider it.
@@ -121,14 +142,14 @@ Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
     var prevSign = util.sign(util.sideOfLine(x0,y0,x1,y1,prevX,prevY));
     var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
     if ((nextDist <= radius) ||  (prevSign != nextSign)){
-	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
-	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
-	var lN = util.lineNormal(x0,y0,x1,y1);
-	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
-    if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
-        debugger; 
-    }
-	return [true,collisionSpeed,collisionAngle];
+        var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
+        var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
+        var lN = util.lineNormal(x0,y0,x1,y1);
+        var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+        if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
+            debugger; 
+        }
+        return [true,collisionSpeed,collisionAngle];
 	}
     else {
 	return [false];
@@ -199,25 +220,39 @@ Terrain.prototype.genTerrain = function () {
 		currX = nextX;
 		currY = nextY;
 	}
-	return points;
+	points.reverse();
+	return util.wrapListAround(points,this.center);
 }
 
-
+Terrain.prototype.renderOcean = function (ctx) {
+	ctx.save();
+	ctx.arc(this.center[0],this.center[1],this.seaLevel,0,2*Math.PI,false);
+	ctx.fillStyle= "rgba(0,100,255,0.3)";
+	ctx.fill();
+	ctx.restore();
+}
 
 Terrain.prototype.render = function (ctx) {
+    if(this.seaLevel) this.renderOcean(ctx);
     var terr = this.points
     ctx.save()
     ctx.strokeStyle = "white";
     ctx.fillStyle = "black";
+    if(entityManager.cameraZoom < 0.5){
+        ctx.lineWidth = 1/entityManager.cameraZoom;
+    }
     ctx.beginPath()
-    ctx.moveTo(terr[0][0],this.maxY +g_canvas.height)
-    ctx.lineTo(terr[0][0],terr[0][1]);
+    ctx.moveTo(terr[0][0],terr[0][1]);
+	//ctx.font="10px Arial";
     for(var i = 1; i < terr.length;i++){
 		ctx.lineTo(terr[i][0],terr[i][1]);
+//		ctx.strokeText(i,terr[i][0],terr[i][1]);
 	}
-    ctx.lineTo(terr[terr.length-1][0],this.maxY + g_canvas.height)
 	ctx.closePath();
 	ctx.stroke();
     ctx.fill();
+    if(g_settings.renderPlanetCenter)
+        util.strokeCircle(ctx,this.center[0],this.center[1],100)
+	//ctx.strokeText("C",this.center[0],this.center[1]);
     ctx.restore();
 };

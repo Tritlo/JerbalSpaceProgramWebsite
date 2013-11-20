@@ -74,45 +74,83 @@
         return x*x;
     },
 
-    findIndexOfClosest: function (x0,pointList) {
-        var xs = [];
-        var ys = [];
-        pointList.map(function (x) {
-            xs.push(x[0]);
-            ys.push(x[1]);
-        });
-        var i = util.binarySearch(x0,xs);
-        return i;
-        },
-
-    findIndexesOfClosestPoints: function(x0,pointList){
-        var i = util.findIndexOfClosest(x0,pointList);
-        if (pointList[i][0] <= x0)
-        return [i,i+1];
-        else
-        return [i-1,i];
-        },
-        
-
-    findClosestPoints: function (x0,y0, pointList) {
-        var is = util.findIndexesOfClosestPoints(x0,pointList);
-        return [pointList[is[0]],pointList[is[1]]];
+findIndexOfClosest: function (x0,pointList) {
+    var xs = [];
+    var ys = [];
+    pointList.map(function (x) {
+        xs.push(x[0]);
+        ys.push(x[1]);
+    });
+    var i = util.binarySearch(x0,xs);
+    return i;
     },
 
-    binarySearch: function(val,list) {
-        var low = 0;
-        var high = list.length -1;
-        while(high > low){
-            var mid = Math.floor(low + (high-low)/2);
-            if ( val > list[mid]){
-                low = mid+1; 
-            }
-            else {
-                high = mid;
-            }
+findIndexesOfClosestPoints: function(x0,pointList){
+    var i = util.findIndexOfClosest(x0,pointList);
+    if (pointList[i][0] <= x0)
+	return [i,i+1];
+    else
+	return [i-1,i];
+    },
+    
+
+findClosestPoints: function (x0,y0, pointList) {
+    var is = util.findIndexesOfClosestPoints(x0,pointList);
+    return [pointList[(pointList.length+is[0])%pointList.length],pointList[is[1]%pointList.length]];
+},
+findSurfaceBelow: function(body,points,center)
+{	
+	var angle=util.angleOfVector(util.vecMinus(body,center));
+	var angles=[];
+	points.map(function (x) 
+	{
+		angles.push(util.angleOfVector(util.vecMinus(x,center)));
+	});
+	//angles.reverse();
+	var i = util.binarySearch(angle,angles);
+	if(angles[i]<=angle)
+		return [points[i],points[(i+1)%points.length]];
+	else
+	{	
+		if (i===0)
+		return [points[0],points[points.length-1]]
+		else
+		return [points[(points.length+i-1)%points.length],points[i]];
+	}
+},
+//Tekur lista af punktum og vefur utan um center
+wrapListAround: function(points,center)
+{
+	var distance=points[0][0]-points[points.length-1][0];
+	var returnList=[];
+	points.map(function(x){ returnList.push(util.vecPlus(util.polarToCartesian([x[1],2*x[0]/distance*Math.PI]),center))});
+	returnList.pop();
+	returnList.reverse();
+	return returnList;
+},	
+
+
+/*
+findClosestPoints: function (x0,y0, pointList) {
+    var is = util.findIndexesOfClosestPoints(x0,pointList);
+    return [pointList[is[0]],pointList[is[1]]];
+},
+*/
+
+binarySearch: function(val,list) {
+    var low = 0;
+    var high = list.length -1;
+    while(high > low){
+        var mid = Math.floor(low + (high-low)/2);
+        if ( val > list[mid]){
+            low = mid+1; 
         }
-        return low;
-    },
+        else {
+            high = mid;
+        }
+    }
+    return low;
+},
 
     // DISTANCES
     // =========
@@ -203,6 +241,14 @@ signOfCrossProduct : function(a,b) {
    return a[0]*b[1] - a[1]*b[0]; 
 },
 
+crossProdMagn: function(r,v){
+    return util.lengthOfVector(r)*util.lengthOfVector(v)*util.angleBetweenVectors(r,v);
+},
+
+tripleProduct : function (a,b,c){
+    return util.vecMinus(util.mulVecByScalar(util.dotProd(a,c),b),util.mulVecByScalar(util.dotProd(a,b),c));
+},
+
 sign: function(x) {
     if (x > 0) return 1;
     if(x < 0) return -1;
@@ -214,6 +260,7 @@ lineBelow : function(terrain,x,y) {
     var points = util.findClosestPoints(x,y,terrain);
     return points;
     },
+
 
 paramsToRectangle: function(x,y,w,h,rot,cRot) {
     if (rot === undefined) rot = 0;
@@ -236,6 +283,7 @@ avgOfPoints: function(points) {
 
     return util.mulVecByScalar(1/points.length,ps)
 },
+
 translatePoint: function(x,y,tX,tY){
     return [x+tX,y+tY];
 },
@@ -276,10 +324,26 @@ vecMinus: function(a,b) {
 },
     
 
-cartesianToPolar: function(vector) {
+cartesianToPolar: function(vector,refCenter) {
+    if(refCenter === undefined) var refCenter = [0,0];
+    var vector = util.vecMinus(vector,refCenter);
     var ampl = util.lengthOfVector(vector);
     var angle = util.angleOfVector(vector);
     return [ampl,angle];
+},
+
+solveQuadratic: function(coeffs){
+    var a = coeffs[0];
+    var b = coeffs[1];
+    var c = coeffs[2];
+    var d = b*b - 4*a*c
+    if(d > 0){
+        var sqD = Math.sqrt(d);
+        return [(-b-sqD)/(2*a), (-b+sqD)/(2*a)]
+    } else {
+        //No complex numbers
+        return undefined;
+    }
 },
 
 //rotates a list so that element at ind
@@ -369,6 +433,42 @@ strokeCircle: function (ctx, x, y, r) {
     ctx.stroke();
     //ctx.closePath();
 },
+
+strokeEllipseByCenter: function(ctx, cx, cy, w, h,angl,cRot) {
+  ctx.save();
+  ctx.translate(cRot[0],cRot[1]);
+  ctx.rotate(angl);
+  ctx.translate(-cRot[0],-cRot[1]);
+  util.strokeEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h);
+  ctx.restore()
+},
+
+
+strokeEllipse: function(ctx, x, y, w, h) {
+  if(angl === undefined) var angl = 0;
+  if(cRot === undefined) var cRot = [x,y];
+
+  //var p = util.rotatePointAroundPoint([x,y],angl,cRot[0],cRot[1]);
+  //var x = p[0];
+  //var y = p[1];
+  var kappa = .5522848,
+      ox = (w / 2) * kappa, // control point offset horizontal
+      oy = (h / 2) * kappa, // control point offset vertical
+      xe = x + w,           // x-end
+      ye = y + h,           // y-end
+      xm = x + w / 2,       // x-middle
+      ym = y + h / 2;       // y-middle
+  
+  ctx.beginPath();
+  ctx.moveTo(x, ym);
+  ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+  ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+  ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+  ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+  ctx.closePath();
+  ctx.stroke();
+},
+
 
 fillCircle: function (ctx, x, y, r) {
     ctx.beginPath();
@@ -489,4 +589,3 @@ hideAllInputs: function () {
     $('input').hide();
     },
 };
-

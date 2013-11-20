@@ -50,8 +50,8 @@ Ship.prototype.rememberResets = function () {
 
 // Initial, inheritable, default values
 Ship.prototype.rotation = 0;
-Ship.prototype.cx = 200;
-Ship.prototype.cy = 145;
+Ship.prototype.cx = 0;
+Ship.prototype.cy = -1000;
 Ship.prototype.velX = 0;
 Ship.prototype.velY = 0;
 Ship.prototype.launchVel = 2;
@@ -86,6 +86,7 @@ Ship.prototype.attributesFromParts = function () {
         this.center = p.center;
         this.origCenter = this.origCenter || p.center;
         this.radius = Math.min(this.height,this.width)/2
+        this.setCenter(this.center);
     } else {
             var numParts = this.parts.length;
             var totalMass = 0;
@@ -156,7 +157,9 @@ Ship.prototype.disassemble = function(grid) {
 
 
 Ship.prototype.getAltitude = function () {
-    return -(this.cy - g_settings.seaLevel/2 + this.height/2);
+	var terr=entityManager.getTerrain(this.cx,this.cy);
+	var centerDist=Math.sqrt(util.distSq(this.cx,this.cy,terr.center[0],terr.center[1]));
+    return (centerDist - terr.minY + this.height/2);
     }
 
 Ship.prototype._updateSpriteExplosion = function (du) {
@@ -164,7 +167,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
     var numframes = explSpr.dim[0]*explSpr.dim[1];
     var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
     if(this._timeFromExplosion > explSpr.duration/4 && !(this._explCraterAdded)){
-	    entityManager.getTerrain().addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius,this._explosionSpeed);
+	    entityManager.getTerrain(this.cx,this.cy).addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius,this._explosionSpeed);
         this._explCraterAdded = true;
     }
     if (frame <= numframes){
@@ -183,7 +186,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
 Ship.prototype._updateVectorExplosion = function (du){
     if(this._timeFromExplosion < this._explosionDuration/2){
 	    //entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius, this._explosionSpeed);
-	    entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
+	    entityManager.getTerrain(this.cx,this.cy).addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
     }
     if (this._timeFromExplosion > this._explosionDuration){
 	this._explCraterAdded = false;
@@ -246,6 +249,9 @@ Ship.prototype.update = function (du) {
         
     }    
     if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
+    if(this.thrust > 0){
+        this.updateOrbit();
+    }
 
 };
 
@@ -268,8 +274,9 @@ Ship.prototype.computeForces = function (du) {
     //TODO: use intervalRot;
     var accelX = +Math.sin(this.rotation) * this.thrust;
     var accelY = -Math.cos(this.rotation) * this.thrust;
-    
-    accelY += this.computeGravity();
+    var GForce= this.computeGravity();
+	accelX += GForce[0];
+	accelY += GForce[1];
     var accelRot = this.torque/this.mass;
     
     return [accelX,accelY,accelRot];
@@ -290,7 +297,7 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
         var y = p.hitBox[0][1];
         var nx = x
         var ny = y
-        terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
+        terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
     if(terrainHit[0]) break;
     }
     if (!(terrainHit[0])){
@@ -302,7 +309,11 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
 var NOMINAL_GRAVITY = 0.02;
 
 Ship.prototype.computeGravity = function () {
-    return g_useGravity ? NOMINAL_GRAVITY : 0;
+//    return g_useGravity ? NOMINAL_GRAVITY : 0;
+	if(!g_useGravity)
+		return 0;
+	var gravAccel=entityManager.gravityAt(this.cx,this.cy);
+	return gravAccel; //util.mulVecByScalar(1/this.mass,gravForce);
 };
 
 
@@ -376,11 +387,11 @@ Ship.prototype.applyAccel = function (accel,du) {
             var y = p.hitBox[0][1];
             var nx = x + (nextX - this.cx);
             var ny = y + (nextY - this.cy);
-            terrainHit = entityManager.getTerrain().hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
+            terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
 		if(terrainHit[0]) break;
 	    }
         } else {
-            var terrainHit = entityManager.getTerrain().hit(this.cx,this.cy,nextX,nextY,
+            var terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius());
         }
 	if (terrainHit[0]) {
@@ -585,14 +596,68 @@ Ship.prototype.renderHitBox = function(ctx){
     //ctx.stroke();
 };
 
+Ship.prototype.updateOrbit = function() {
+    //DEM ORBITAL MECHANICS
+    var terr = entityManager.getTerrain(this.cx,this.cy);
+    var f = terr.center;
+    var M = terr.mass;
+    var mu = consts.G*(M+this.mass)
+
+    var r = util.vecMinus(this.center,terr.center)
+    var v = [this.velX,this.velY];
+
+    var speed = this.getSpeed(); 
+    var eng = (speed*speed)/2 - (mu/util.lengthOfVector(r));
+    var a = -mu/(2*eng);
+
+    var tripleprod = util.tripleProduct(v,r,v);
+    var vtimeshovermu = util.mulVecByScalar(1/mu,tripleprod); 
+    var unitr = util.normalizeVector(r)
+    var eccVec = util.vecMinus(vtimeshovermu,unitr);
+    var ecc = util.lengthOfVector(eccVec);
+    var ae = a*ecc;
+    var b = a*Math.sqrt(1-ecc*ecc);
+    var cen = [f[0]-ae,f[1]];
+
+    var angl = util.angleOfVector(eccVec);
+    cen = util.rotatePointAroundPoint(cen,angl,f[0],f[1]);
+    this.orbit = [cen[0], cen[1],a,b,angl,f[0],f[1]];
+}
+
+
+Ship.prototype.renderOrbit = function(ctx) {
+    if(this.orbit){
+        var p = this.orbit;
+        var cx     = p[0];
+        var cy     = p[1];
+        var majAx  = p[2];
+        var minAx  = p[3];
+        var angl   = p[4];
+        var fx = p[5];
+        var fy = p[6];
+        ctx.save()
+        ctx.lineWidth = 1/entityManager.cameraZoom;
+        ctx.strokeStyle = "yellow"; 
+        util.strokeCircle(ctx,fx,fy,200);
+        ctx.strokeStyle = "red"; 
+        util.strokeCircle(ctx,cx,cy,200);
+        ctx.strokeStyle = "dodgerblue"; 
+        var angl = util.cartesianToPolar([cx,cy],[fx,fy])[1];
+        util.strokeEllipseByCenter(ctx,cx,cy,majAx*2,minAx*2,angl,[cx,cy])
+        ctx.restore()
+    }
+};
+
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){
     if(this._timeFromExplosion < this._explosionDuration/2){
         this.renderParts(ctx)
     }
 	this._renderExplosion(ctx);
-
     } else {
+        if(entityManager.cameraZoom < 0.3){
+            this.renderOrbit(ctx); 
+        }
         this.renderParts(ctx);
     }
 	

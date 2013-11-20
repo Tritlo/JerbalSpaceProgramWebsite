@@ -35,7 +35,7 @@ function update(dt) {
     // If using variable time, divide the actual delta by the "nominal" rate,
     // giving us a conveniently scaled "du" to work with.
     //
-    var du = (dt / NOMINAL_UPDATE_INTERVAL);
+    var du = (dt / NOMINAL_UPDATE_INTERVAL)/g_settings.timeMultiplier;
     if(!(shouldSkipUpdate())){
         stateManager.update(du);
         g_prevUpdateDt = original_dt;

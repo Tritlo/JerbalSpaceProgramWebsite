@@ -387,6 +387,10 @@ Part.prototype.render = function (ctx) {
         if(this.lineWidth){
             ctx.lineWidth = this.lineWidth;
         }
+
+        if(entityManager.cameraZoom < 0.5){
+            ctx.lineWidth = 1/entityManager.cameraZoom
+        }
 	    var cRot = this.centerOfRot;
 	    var rot = this.rotation;
 	//var outline = this.outline.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
