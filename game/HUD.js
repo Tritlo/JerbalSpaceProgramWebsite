@@ -21,9 +21,15 @@ function renderLowerHud(ctx,ship){
     var cHeight = 50*g_settings.hudSize;
     var translation = [g_canvas.width/2, g_canvas.height - cHeight];
     //Below
+    var orb = ship.orbit;
+    var dirOfOrbVel;
+    if(orb){
+        var shipToOrbc = util.vecMinus(ship.center,[orb[0],orb[1]]);
+        var dirOfOrbVel = util.angleOfVector(shipToOrbc) + Math.PI;
+    }
     ctx.translate(translation[0],translation[1]);
     ctx.scale(g_settings.hudSize, g_settings.hudSize);
-    renderGyroscope(ctx,cRad,speed,dirV,ship.rotation,ship.angularVel);
+    renderGyroscope(ctx,cRad,speed,dirV,ship.rotation,ship.angularVel,dirOfOrbVel);
     renderSpeed(ctx,cRad,speed);
     renderThrottle(ctx,cRad,ship.throttle);
     ctx.restore();
@@ -60,14 +66,14 @@ function renderAltitude(ctx,ship,yoffset) {
     ctx.stroke();
     }
 
-function renderGyroscope(ctx,cRad,speed,dirV,rotation,rotVel){
+function renderGyroscope(ctx,cRad,speed,dirV,rotation,rotVel,dirOfOrbVel){
     var distFromC = speed > 5 ? cRad : cRad*speed/5;
     var indicPos = [dirV[0]*distFromC,dirV[1]*distFromC];
     ctx.beginPath();
     util.strokeCircle(ctx, 0,0, cRad);
     util.fillCircle(ctx,indicPos[0],indicPos[1],1);
     util.strokeCircle(ctx,indicPos[0],indicPos[1],3);
-    if (speed ==0){
+    if (speed === 0){
 	util.fillCircle(ctx,0,0,1);
 	util.strokeCircle(ctx,0,0,3);
 	}
@@ -78,6 +84,11 @@ function renderGyroscope(ctx,cRad,speed,dirV,rotation,rotVel){
     drawCross(ctx,
 	      rotCrossPos,
 	      cRad*0.2,3,angleORotInd+Math.PI,true,true);
+    if(dirOfOrbVel !== undefined){
+        var orbDirPos = util.rotateVector([0,-cRad],dirOfOrbVel);
+        util.strokeCircle(ctx,orbDirPos[0],orbDirPos[1],3);
+        ctx.stroke();
+    }
     g_settings.hudExtra = " " + angleORotInd;
     ctx.closePath();
     ctx.stroke();

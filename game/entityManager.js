@@ -81,7 +81,7 @@ _generateTerrain : function() {
 	"minAngle": minangl,
 	"maxAngle": maxangl,
 	"center" : [0,-10000],
-	"mass" : 5.0e11
+	"mass" : 1.0e15
 	});
     this._terrain.push(terr);
     this._terrain.push(joon);

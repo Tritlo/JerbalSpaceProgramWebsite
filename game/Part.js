@@ -54,11 +54,13 @@ Part.prototype.rotate = function(ind){
 Part.prototype.reset = function(){
     var l = this.outline.length;
     if(l === 0) return; //maybe some error-handling? I dunno.
-    var minx = Number.MAX_VALUE;
-    var maxx = Number.MIN_VALUE;
-    var miny = Number.MAX_VALUE;
-    var maxy = Number.MIN_VALUE;
-    for(var i = 0; i < l; i++){
+    var nx = this.outline[0][0];
+    var ny = this.outline[0][1];
+    var minx = nx;
+    var maxx = nx;
+    var miny = ny;
+    var maxy = ny;
+    for(var i = 1; i < l; i++){
         var nx = this.outline[i][0];
         var ny = this.outline[i][1];
         if(nx > maxx) maxx = nx;
@@ -67,6 +69,7 @@ Part.prototype.reset = function(){
         if(ny < miny) miny = ny;
     }
     this.hitBox = [[minx,miny],[maxx,maxy]];
+    console.log("hib", this.hitBox);
     /*this.hitBox = [
                    [this.center[0] - this.width/2, this.center[1]-this.height/2],
                    [this.center[0] + this.width/2, this.center[1]+this.height/2]

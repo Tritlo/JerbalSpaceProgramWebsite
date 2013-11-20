@@ -14,7 +14,6 @@
 
 // A generic contructor which accepts an arbitrary descriptor object
 function Ship(descr) {
-
     // Common inherited setup logic from Entity
     this.setup(descr);
     this.parts = this.parts.map(function(x){
@@ -113,7 +112,7 @@ Ship.prototype.attributesFromParts = function () {
         this.origCenter = this.origCenter || this.center; 
     }
 
-    this.radius = Math.max(this.height,this.width);
+    this.radius = Math.min(this.height,this.width)/2;
     this.setCenter([this.cx,this.cy]);
 }
 
@@ -186,7 +185,7 @@ Ship.prototype._updateSpriteExplosion = function (du) {
 Ship.prototype._updateVectorExplosion = function (du){
     if(this._timeFromExplosion < this._explosionDuration/2){
 	    //entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius, this._explosionSpeed);
-	    entityManager.getTerrain(this.cx,this.cy).addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
+	    entityManager.getTerrain(this._explosionX,this._explosionY).addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
     }
     if (this._timeFromExplosion > this._explosionDuration){
 	this._explCraterAdded = false;
@@ -249,7 +248,7 @@ Ship.prototype.update = function (du) {
         
     }    
     if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
-    if(this.thrust > 0){
+    if(this.thrust > 0 || this.orbit === undefined){
         this.updateOrbit();
     }
 
@@ -451,9 +450,9 @@ Ship.prototype.explode = function(x,y,speed){
 	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
         this.parts.map(function (p) {p.reset()});
 	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
-        console.log(ship);
+        //console.log(ship);
 	    ship.attributesFromParts();
-        console.log(ship);
+        //console.log(ship);
 	    entityManager.generateShip(ship);
 	    }
     this.parts = [];
