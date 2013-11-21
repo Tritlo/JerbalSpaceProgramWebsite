@@ -1,40 +1,35 @@
-    /*
+/*
 
-    entityManager.js
+entityManager.js
 
-    A module which handles arbitrary entity-management for "Asteroids"
-
-
-    We create this module as a single global object, and initialise it
-    with suitable 'data' and 'methods'.
-
-    "Private" properties are denoted by an underscore prefix convention.
-
-    */
+A module which handles arbitrary entity-management for "Asteroids"
 
 
-    "use strict";
+We create this module as a single global object, and initialise it
+with suitable 'data' and 'methods'.
+
+"Private" properties are denoted by an underscore prefix convention.
+
+*/
 
 
-    // Tell jslint not to complain about my use of underscore prefixes (nomen),
-    // my flattening of some indentation (white), or my use of incr/decr ops 
-    // (plusplus).
-    //
-    /*jslint nomen: true, white: true, plusplus: true*/
+"use strict";
 
 
-    var entityManager = {
+// Tell jslint not to complain about my use of underscore prefixes (nomen),
+// my flattening of some indentation (white), or my use of incr/decr ops 
+// (plusplus).
+//
+/*jslint nomen: true, white: true, plusplus: true*/
+
+
+var entityManager = {
 
     // "PRIVATE" DATA
 
-    _rocks   : [],
-    _bullets : [],
     _ships   : [],
 
     _terrain : [],
-
-    _bShowRocks : true,
-
 
     cameraOffset: [0,0],
     trueOffset: [100,100],
@@ -44,21 +39,14 @@
     lockCamera: false,
 
     // "PRIVATE" METHODS
-    _generateRocks : function() {
-        var i,
-            NUM_ROCKS = 4;
 
-        for (i = 0; i < NUM_ROCKS; ++i) {
-            this.generateRock();
-        }
-    },
-
-_generateTerrain : function() {
+	_generateTerrain : function() {
     
     var sL = g_settings.seaLevel;
     var minangl = Math.PI/30;
     var maxangl = Math.PI/2.2;
     var terr = new Terrain({
+    "name" : "Jerbin",
 	"minX":-10000,
 	"maxX": 10000,
 	"minY": 3200,
@@ -69,9 +57,15 @@ _generateTerrain : function() {
 	"maxAngle": maxangl,
 	"center" : [0,3600],
 	"seaLevel": 3350,
-	"mass" : 5.0e15
+	"mass" : 5.0e15,
+    "color": "green",
+    "oceanColor": "rgba(0,100,255,0.3)",
+    //"waterColor": "blue",
+    //"numOceans" : 3,
+    //"hasOceans" : true
 	});
     var joon = new Terrain({
+    "name" : "Joon",
 	"minX":-5000,
 	"maxX": 5000,
 	"minY": 1600,
@@ -80,8 +74,12 @@ _generateTerrain : function() {
 	"maxLength": 128,
 	"minAngle": minangl,
 	"maxAngle": maxangl,
-	"center" : [0,-10000],
-	"mass" : 5.0e11
+	"center" : [2000,-20000],
+	"mass" : 1.0e15,
+    "color": "#282828",
+    //"waterColor": "#101010",
+    //"hasOceans" : true,
+    //"numOceans" : 3
 	});
     this._terrain.push(terr);
     this._terrain.push(joon);
@@ -155,35 +153,18 @@ KILL_ME_NOW : -1,
 // i.e. thing which need `this` to be defined.
 //
 deferredSetup : function () {
-    this._categories = [this._rocks, this._bullets, this._ships,this._terrain];
+    this._categories = [this._ships,this._terrain];
 },
 
 init: function() {
-    if (g_settings.enableRocks){
-	console.log("generating rocks");
-	this._generateRocks();
-	}
     this._generateTerrain();
     //this._generateShip();
 },
 
-fireBullet: function(cx, cy, velX, velY, rotation) {
-    this._bullets.push(new Bullet({
-        cx   : cx,
-        cy   : cy,
-        velX : velX,
-        velY : velY,
-
-        rotation : rotation
-    }));
-},
-
-generateRock : function(descr) {
-    this._rocks.push(new Rock(descr));
-},
-
 generateShip : function(descr) {
-    this._ships.push(new Ship(descr));
+    	descr.cx=0;
+	descr.cy=0;
+	this._ships.push(new Ship(descr));
 },
 
 killNearestShip : function(xPos, yPos) {
@@ -212,45 +193,40 @@ clearShips: function() {
     this._ships.map(function(x){ if(x){ x.kill()}});
 },
 
-toggleRocks: function() {
-    this._bShowRocks = !this._bShowRocks;
-},
-
-
 updateCamera: function () {
     
     if (eatKey(g_settings.keys.KEY_CAMERA_LOCK)) {
         this.lockCamera = !this.lockCamera;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMIN]) {
-	this.cameraZoom *= g_settings.cameraZoomRate;
+        this.cameraZoom *= g_settings.cameraZoomRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ZOOMOUT]) {
-	this.cameraZoom /= g_settings.cameraZoomRate;
+        this.cameraZoom /= g_settings.cameraZoomRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
-	this.cameraRotation += g_settings.cameraRotateRate;
+        this.cameraRotation += g_settings.cameraRotateRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
-	this.cameraRotation -= g_settings.cameraRotateRate;
+        this.cameraRotation -= g_settings.cameraRotateRate;
     }
     if (keys[g_settings.keys.KEY_CAMERA_UP]) {
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_DOWN]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_LEFT]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
     }										     
     if (keys[g_settings.keys.KEY_CAMERA_RIGHT]) {				     
-	this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
     }
     if (keys[g_settings.keys.KEY_CAMERA_RESET]) {
-	this.cameraOffset = [0,0]
-	this.cameraRotation = 0;
-	this.cameraZoom = 1;
-    this.lockCamera = false;
+        this.cameraOffset = [0,0]
+        this.cameraRotation = 0;
+        this.cameraZoom = 1;
+        this.lockCamera = false;
 	}
 
     if(this._ships.length > 0){
@@ -290,8 +266,6 @@ update: function(du) {
         }
     }
     
-    if (g_settings.enableRocks && this._rocks.length === 0) this._generateRocks();
-
 },
 
 getMainShip: function() {
@@ -322,14 +296,12 @@ render: function(ctx) {
     var debugX = 10, debugY = 100;
     ctx.save();
     this.setUpCamera(ctx);
-    Stars.render(ctx);
+    if(g_settings.graphicsLevel >= 1){
+        Stars.render(ctx);
+        }
     for (var c = 0; c < this._categories.length; ++c) {
 
         var aCategory = this._categories[c];
-
-        if (!this._bShowRocks && 
-            aCategory == this._rocks)
-            continue;
 
         for (var i = 0; i < aCategory.length; ++i) {
 

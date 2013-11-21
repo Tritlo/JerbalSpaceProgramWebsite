@@ -1,30 +1,30 @@
-// GAME-SPECIFIC UPDATE LOGIC
-function updateSimulation(du) {
-    
-    
-    entityManager.update(du);
+    // GAME-SPECIFIC UPDATE LOGIC
+    function updateSimulation(du) {
+        
+        
+        entityManager.update(du);
 
-    // Prevent perpetual firing!
-    eatKey(g_settings.keys.KEY_FIRE);
-}
+        // Prevent perpetual firing!
+        eatKey(g_settings.keys.KEY_FIRE);
+    }
 
-// =================
-// RENDER SIMULATION
-// =================
+    // =================
+    // RENDER SIMULATION
+    // =================
 
-// We take a very layered approach here...
-//
-// The primary `render` routine handles generic stuff such as
-// the diagnostic toggles (including screen-clearing).
-//
-// It then delegates the game-specific logic to `gameRender`
+    // We take a very layered approach here...
+    //
+    // The primary `render` routine handles generic stuff such as
+    // the diagnostic toggles (including screen-clearing).
+    //
+    // It then delegates the game-specific logic to `gameRender`
 
 
-// GAME-SPECIFIC RENDERING
+    // GAME-SPECIFIC RENDERING
 
-function renderSimulation(ctx) {
+    function renderSimulation(ctx) {
 
-    entityManager.render(ctx);
+        entityManager.render(ctx);
     renderHUD(ctx);
 
     if (g_settings.renderSpatialDebug) spatialManager.render(ctx);
@@ -47,6 +47,17 @@ Simulation.prototype.cameraUpdate = function(du) {
     entityManager.updateCamera();
     Stars.update(du);
 };
+
+Simulation.prototype.onActivation = function(){
+    if(g_settings.graphicsLevel == 1){
+        Stars.init({"_STpBL": {min:10, max:30}});
+    }
+    if(g_settings.graphicsLevel == 2){
+        Stars.init({"_STpBL": {min:30, max:80}});
+    }
+    var s = entityManager.getMainShip();
+    entityManager.getTerrain(s.cx,s.cy).addLaunchpad(s);
+}
 
 Simulation.prototype.handleMouse = function (evt,type) {
     if (type === "down"){

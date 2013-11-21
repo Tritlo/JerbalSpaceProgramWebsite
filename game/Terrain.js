@@ -4,9 +4,16 @@
 function Terrain(descr) {
     this.setup(descr);
     this.points = this.genTerrain();
-    //Add landing platform
-    // Only do this for main planet, and later;
-    //this.spliceByAngle([[-100,50],[-50,32],[50,32],[100,50]]);
+    if(this.color){
+        var c = parseCSSColor(this.color);
+        var c = [Math.floor(c[0]*0.5),Math.floor(c[1]*0.5),Math.floor(c[2]*0.5),c[3]];
+        console.log(this.color);
+        this.edgeColor = this.edgeColor || "rgba("+c[0]+","+c[1]+","+c[2]+","+c[3]+")" 
+    }
+
+    if(this.hasOceans){
+        this.generateOceans();
+    }
 };
 
 Terrain.prototype = new Entity();
@@ -16,6 +23,9 @@ Terrain.prototype.spliceByIndex = function (indFrom, indTo, yValues) {
 	this.points[indFrom+i][1] = yValues[i];
 	}
     }
+Terrain.prototype.addLaunchpad = function (ship){
+	this.spliceByAngle([[-100,50],[-50,ship.height/2+5],[50,ship.height/2+5],[100,50]]);
+}
 
 Terrain.prototype.spliceByAngle = function (values) {
     var	C=this.center;
@@ -226,18 +236,36 @@ Terrain.prototype.genTerrain = function () {
 
 Terrain.prototype.renderOcean = function (ctx) {
 	ctx.save();
-	ctx.arc(this.center[0],this.center[1],this.seaLevel,0,2*Math.PI,false);
-	ctx.fillStyle= "rgba(0,100,255,0.3)";
+    ctx.fillStyle= this.oceanColor || "rgba(0,100,255,0.3)";
+    if(this.seaLevel){
+        util.fillCircle(ctx,this.center[0],this.center[1], this.seaLevel)
+    }
 	ctx.fill();
 	ctx.restore();
 }
 
+Terrain.prototype.generateOceans = function(ctx) {
+    var maxRad = this.maxY*0.2
+    var minRad = this.minY*0.2
+    var offset = 100;
+    var edge = this.minY - maxRad - offset;
+    this._Oceans = [];
+    for(var i = 0; i < this.numOceans; i++){
+        var c = [util.randRange(-edge,edge),util.randRange(-edge,edge)];
+        var r = util.randRange(minRad,maxRad);
+        var center = util.vecPlus(this.center,c);
+        this._Oceans.push([center,r]);
+    }
+    console.log(this._Oceans);
+}
+
+
 Terrain.prototype.render = function (ctx) {
-    if(this.seaLevel) this.renderOcean(ctx);
+    if(this.oceanColor) this.renderOcean(ctx);
     var terr = this.points
     ctx.save()
-    ctx.strokeStyle = "white";
-    ctx.fillStyle = "black";
+    ctx.strokeStyle = this.edgeColor || "white";
+    ctx.fillStyle = this.color || "black";
     if(entityManager.cameraZoom < 0.5){
         ctx.lineWidth = 1/entityManager.cameraZoom;
     }
@@ -254,5 +282,11 @@ Terrain.prototype.render = function (ctx) {
     if(g_settings.renderPlanetCenter)
         util.strokeCircle(ctx,this.center[0],this.center[1],100)
 	//ctx.strokeText("C",this.center[0],this.center[1]);
+    if(this._Oceans){
+        ctx.fillStyle = this.waterColor;
+        this._Oceans.map(function(x) {
+            util.fillCircle(ctx,x[0][0],x[0][1],x[1]);
+            ;});
+    }
     ctx.restore();
 };

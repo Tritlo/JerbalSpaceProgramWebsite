@@ -18,14 +18,7 @@ ShipDesigner.prototype.init = function() {
 		{
 		"text" : "Launch",
 		"action" : function(state) {
-            state.currentShip.assemble(state.grid);
-            var protoShip = new Ship();
-            state.currentShip.cx = protoShip.cx;
-            state.currentShip.cy = protoShip.cy;
-            console.log(state.currentShip);
-            entityManager.clearShips();
-            entityManager.generateShip(state.currentShip);
-            stateManager.switchState("simulation");
+            state.launch()
 		}
 		},
         ],
@@ -109,6 +102,16 @@ ShipDesigner.prototype.init = function() {
 
     this.loadShip();
     }
+
+ShipDesigner.prototype.launch = function(){
+    this.currentShip.assemble(this.grid);
+    var protoShip = new Ship();
+    this.currentShip.cx = protoShip.cx;
+    this.currentShip.cy = protoShip.cy;
+    entityManager.clearShips();
+    entityManager.generateShip(this.currentShip);
+    stateManager.switchState("simulation");
+}
 
 ShipDesigner.prototype.newShip = function ()
 {

@@ -10,14 +10,15 @@ State.prototype.setup = function (descr) {
     }
 };
 
+//Called when state is initialized
 State.prototype.init = function () {
     }
 
-//To be done when activaed
+//Called when state is activated
 State.prototype.onActivation = function() {
     }
 
-//To be done when deactivated
+//Called when state is deactivated;
 State.prototype.onDeactivation = function() {
     }
 

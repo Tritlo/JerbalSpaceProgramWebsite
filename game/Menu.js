@@ -33,7 +33,6 @@ Menu.prototype.margin_bottom = 5;
 
 //Must take in context to compute properties
 Menu.prototype.init = function (ctx) {
-    //For computing properties
     ctx.save();
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
@@ -106,24 +105,25 @@ Menu.prototype.handleMouse = function (evt, type) {
 	var pos = util.findPos(g_canvas);
 	g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
         if (this.inMenu(g_mouse[0],g_mouse[1])){
-	    if (type === "down"){
-	    } else if (type === "move") {
-		for (var i = 0; i < this.items.length; i++){
-		    var item = this.items[i];
-		    item.selected = false;
-		    if (util.circInBox(g_mouse[0],g_mouse[1],0,item.hitBox[0],item.hitBox[1])) {
-			item.selected = true;
-		    }
-		}
-	    } else if (type === "up") {
-		for (var i = 0; i < this.items.length; i++){
-		    var item = this.items[i];
-		    if (item.selected){
-			this.onSelected(item);
-			break;
-		    }
-		}
-	    }
+            if (type === "down"){
+
+            } else if (type === "move") {
+                for (var i = 0; i < this.items.length; i++){
+                    var item = this.items[i];
+                    item.selected = false;
+                    if (util.circInBox(g_mouse[0],g_mouse[1],0,item.hitBox[0],item.hitBox[1])) {
+                        item.selected = true;
+                    }
+                }
+            } else if (type === "up") {
+                for (var i = 0; i < this.items.length; i++){
+                    var item = this.items[i];
+                    if (item.selected){
+                        this.onSelected(item);
+                        break;
+                    }
+                }
+            }
 	    }
 };
 
