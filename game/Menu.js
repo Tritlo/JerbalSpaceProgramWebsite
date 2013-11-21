@@ -61,7 +61,7 @@ Menu.prototype.items = [];
 
 Menu.prototype.fill = "lime";
 Menu.prototype.stroke = "lime";
-Menu.prototype.font = "Quantico";
+Menu.prototype.font = "VT323";
 Menu.prototype.height = 0;
 Menu.prototype.width = 0;
 

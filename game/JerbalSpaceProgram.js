@@ -57,6 +57,7 @@ var g_useAveVel = true;
 
 
 var g_settings = {
+          "font": "VT323",
           "useGravity": true,
           "useAveVel": true,
           "renderSpatialDebug":false,
@@ -260,4 +261,5 @@ function preloadDone() {
 //Disable right click on canvas.
 $('body').on('contextmenu','#myCanvas', function(e) {return false;})
 // Kick it off
+g_ctx.font = g_settings.font;
 requestPreloads();
