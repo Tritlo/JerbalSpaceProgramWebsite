@@ -4,7 +4,8 @@ function renderHUD(ctx,ship) {
     ctx.strokeStyle = g_settings.hudColor;
     ctx.fillStyle = g_settings.hudColor;
     ctx.textAlign ="center";
-    ctx.font = g_settings.font;
+    ctx.font = "10pt " +g_settings.font;
+    console.log(g_settings.font);
     var ship = entityManager.getMainShip();
     renderLowerHud(ctx,ship);
     renderUpperHud(ctx,ship);
