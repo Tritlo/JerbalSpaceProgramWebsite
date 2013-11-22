@@ -48,7 +48,6 @@ circInBox: function (x,y,radius,topLeftCorner,bottomRightCorner){
 
 findPos : function(obj) {
     var rect = obj.getBoundingClientRect();
-    console.log(rect);
     return {x: rect.left, y: rect.top}
 },
 
