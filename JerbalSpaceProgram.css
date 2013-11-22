@@ -1,2 +1,4 @@
 /* CSS declarations go here */
-body { background: #282828}
+body { background: #282828;
+       color: white;
+       margin: auto;}
