@@ -23,7 +23,9 @@ function handleMouseUp(evt) { handleMouse(evt,"up"); }
 
 //Just pass to state;
 function handleMouse(evt,type) {
-    stateManager.handleMouse(evt,type);
+    if(stateManager){
+        stateManager.handleMouse(evt,type);
+    }
 }
 
 // Handle "down" and "move" events the same way.
