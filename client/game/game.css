@@ -1,6 +1,6 @@
 #game {
     width: 75%;
-    min-width: 650px;
+    min-width: 955px;
     margin: 0 auto;
     text-align: center;
     color: lime;
@@ -25,4 +25,18 @@ select {
 
 *:-moz-placeholder {
     color: green;
+}
+
+#canvas {
+    margin: 0 auto;
+    width: 650px;
+    float: left;
+}
+
+#instruction {
+    width: 300px;
+    height: 650px;
+    float: right;
+    margin: 0 auto;
+    border: 1px solid black;
 }
