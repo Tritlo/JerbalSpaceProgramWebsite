@@ -1,7 +1,9 @@
-function getScriptsInOrder(files){
+function getScriptsInOrder(files, onFinish){
     var head = files.shift();
-    console.log("Loading " + head);
-    if(head === undefined) return true
+    if(head === undefined){ 
+        if(onFinish) return onFinish();
+        else return true;
+    }
     var script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = head;
@@ -16,40 +18,36 @@ function getScriptsInOrder(files){
 if (Meteor.isClient) {
   Template.game.created = function() {
       var jsFiles = [
-	      "JerbalSpaceProgram/game/csscolorparser.js"
-	    , "JerbalSpaceProgram/game/globals.js"
-	    , "JerbalSpaceProgram/game/consts.js"
-	    , "JerbalSpaceProgram/game/util.js"
-	    , "JerbalSpaceProgram/game/keys.js"
-	    , "JerbalSpaceProgram/game/spatialManager.js"
-	    , "JerbalSpaceProgram/game/Stars.js"
-	    , "JerbalSpaceProgram/game/entityManager.js"
-	    , "JerbalSpaceProgram/game/Sprite.js"
-	    , "JerbalSpaceProgram/game/Entity.js"
-	    , "JerbalSpaceProgram/game/Terrain.js"
-	    , "JerbalSpaceProgram/game/Ship.js" 
-	    , "JerbalSpaceProgram/game/update.js"
-	    , "JerbalSpaceProgram/game/render.js"
-	    , "JerbalSpaceProgram/game/HUD.js"
-	    , "JerbalSpaceProgram/game/imagesPreload.js"
-	    , "JerbalSpaceProgram/game/main.js"
-	    , "JerbalSpaceProgram/game/State.js"
-	    , "JerbalSpaceProgram/game/Grid.js"
-	    , "JerbalSpaceProgram/game/Part.js"
-	    , "JerbalSpaceProgram/game/Menu.js"
-	    , "JerbalSpaceProgram/game/PartsDesigner.js"
-	    , "JerbalSpaceProgram/game/ShipDesigner.js"
-	    , "JerbalSpaceProgram/game/Simulation.js"
-	    , "JerbalSpaceProgram/game/stateManager.js"
-	    , "JerbalSpaceProgram/game/handleMouse.js"
-	    , "JerbalSpaceProgram/game/JerbalSpaceProgram.js"
+	      "game/csscolorparser.js"
+	    , "game/globals.js"
+	    , "game/consts.js"
+	    , "game/util.js"
+	    , "game/keys.js"
+	    , "game/spatialManager.js"
+	    , "game/Stars.js"
+	    , "game/entityManager.js"
+	    , "game/Sprite.js"
+	    , "game/Entity.js"
+	    , "game/Terrain.js"
+	    , "game/Ship.js" 
+	    , "game/update.js"
+	    , "game/render.js"
+	    , "game/HUD.js"
+	    , "game/imagesPreload.js"
+	    , "game/main.js"
+	    , "game/State.js"
+	    , "game/Grid.js"
+	    , "game/Part.js"
+	    , "game/Menu.js"
+	    , "game/PartsDesigner.js"
+	    , "game/ShipDesigner.js"
+	    , "game/Simulation.js"
+	    , "game/stateManager.js"
+	    , "game/handleMouse.js"
+	    , "game/JerbalSpaceProgram.js"
 	  ];
 
-      getScriptsInOrder(jsFiles);
-      
-      
-    $('head').append('<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=VT323">');
-		     
+    getScriptsInOrder(jsFiles);
   }
 
   /*
