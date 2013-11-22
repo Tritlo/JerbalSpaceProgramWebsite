@@ -10,5 +10,5 @@ Template.game.created = function() {
 	  , "game/PartsDesigner.js" , "game/ShipDesigner.js" , "game/Simulation.js"
 	  , "game/stateManager.js" , "game/handleMouse.js" , "game/JerbalSpaceProgram.js"
 	];
-    util.getScriptsInOrder(gameFiles);
+   webUtil.getScriptsInOrder(gameFiles);
 };
