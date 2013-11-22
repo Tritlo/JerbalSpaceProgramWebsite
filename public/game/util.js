@@ -47,15 +47,9 @@ circInBox: function (x,y,radius,topLeftCorner,bottomRightCorner){
 },
 
 findPos : function(obj) {
-    var curleft = 0, curtop = 0;
-    if (obj.offsetParent) {
-        do {
-            curleft += obj.offsetLeft;
-            curtop += obj.offsetTop;
-            } while (obj = obj.offsetParent);
-        return { x: curleft, y: curtop };
-    }
-    return undefined;
+    var rect = obj.getBoundingClientRect();
+    console.log(rect);
+    return {x: rect.left, y: rect.top}
 },
 
 
@@ -88,9 +82,9 @@ findIndexOfClosest: function (x0,pointList) {
 findIndexesOfClosestPoints: function(x0,pointList){
     var i = util.findIndexOfClosest(x0,pointList);
     if (pointList[i][0] <= x0)
-	return [i,i+1];
+    return [i,i+1];
     else
-	return [i-1,i];
+    return [i-1,i];
     },
     
 
