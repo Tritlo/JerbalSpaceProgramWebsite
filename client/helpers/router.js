@@ -9,4 +9,7 @@ Router.map(function() {
     });
     this.route('instructions', {
     });
+    this.route('parts', {
+	path: '/parts'
+    });
 });

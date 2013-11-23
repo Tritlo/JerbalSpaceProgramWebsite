@@ -22,6 +22,10 @@ haven't adopted it here.
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 */
 
+//These do nothing, but should be overwritten.
+function gatherInputs() {}
+function processDiagnostics() {}
+
 
 var main = {
     

@@ -1,40 +1,50 @@
 stateManager = {
-    "currentState": "menu",
-    "states": {
-        "menu" : mainMenu,
-        "simulation" : simulation,
-        "partsDesigner" : partsDesigner,
-        "shipDesigner" : shipDesigner
-		},
-
+    "currentState": undefined,
+    setStates: function(states){
+	this.states = states;
+    },
     cameraUpdate: function(du){
-        this.states[this.currentState].cameraUpdate();
+	if(this.currentState){
+	    this.states[this.currentState].cameraUpdate();
+	}
     },
 
     update: function(du){
-        this.states[this.currentState].update(du);
+	if(this.currentState){
+	    this.states[this.currentState].update(du);
+	}
     },
 
     render: function(ctx) {
-        this.states[this.currentState].render(ctx);
+	if(this.currentState){
+	    this.states[this.currentState].render(ctx);
+	}
     },
 
     handleMouse : function(evt,type) {
-        this.states[this.currentState].handleMouse(evt,type);
+	if(this.currentState){
+	    this.states[this.currentState].handleMouse(evt,type);
+	}
     },
 
     switchState : function(state) {
 	var keys = Object.keys(this.states);
         if (state) {
             if (keys.indexOf(state) > -1){
-		this.states[this.currentState].onDeactivation();
+		if(this.currentState){
+		    this.states[this.currentState].onDeactivation();
+		}
                 this.currentState = state;
 		this.states[this.currentState].onActivation();
             }
         } else {
-	    this.states[this.currentState].onDeactivation();
-            this.currentState = states[ keys[keys.indexOf((currentState) + 1) % keys.length]];
+	    if(this.currentState){
+		this.states[this.currentState].onDeactivation();
+		this.currentState = states[ keys[keys.indexOf((currentState) + 1) % keys.length]];
+	    } else this.currenState = states[0];
 	    this.states[this.currentState].onActivation();
         }
     }
-}
+};
+
+			 

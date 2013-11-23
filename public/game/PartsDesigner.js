@@ -16,7 +16,7 @@ PartsDesigner.prototype.init = function() {
 	    "action" : function (state) {
 		stateManager.switchState("menu");
 		}
-	    },
+	    }
         ],
 	"width" : 100,
 	"height" : 100,
