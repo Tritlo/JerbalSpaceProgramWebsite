@@ -1,10 +1,3 @@
-#game {
-    width: 75%;
-    min-width: 955px;
-    margin: 0 auto;
-    text-align: center;
-    color: lime;
-	}
 input {
   border: 1px solid #00ff00;
   background: black;
@@ -31,12 +24,4 @@ select {
     margin: 0 auto;
     width: 650px;
     float: left;
-}
-
-#instruction {
-    width: 300px;
-    height: 650px;
-    float: right;
-    margin: 0 auto;
-    border: 1px solid black;
 }

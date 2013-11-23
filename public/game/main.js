@@ -61,7 +61,7 @@ main._iterCore = function (dt) {
     
     // Handle QUIT
     if (requestedQuit()) {
-        this.gameOver();
+	stateManager.switchState('menu');
         return;
     }
     

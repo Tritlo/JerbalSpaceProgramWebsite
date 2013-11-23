@@ -110,6 +110,10 @@ gravityAt : function (x,y,terr) {
 	return util.mulVecByScalar(force/distance ,util.vecMinus(terr.center,[x,y]));
 },
 
+createInitialShips: function(){
+    this.generateShip(ships[0]);
+},
+
 _findNearestShip : function(posX, posY) {
     var closestShip = null,
         closestIndex = -1,
@@ -157,8 +161,15 @@ deferredSetup : function () {
 },
 
 init: function() {
+    this.deferredSetup();
     this._generateTerrain();
-    //this._generateShip();
+},
+
+deInit: function() {
+    this._terrain = [];
+    this._ships   = [];
+    this._categories = [];
+    this.resetCamera();
 },
 
 generateShip : function(descr) {
@@ -193,6 +204,13 @@ clearShips: function() {
     this._ships.map(function(x){ if(x){ x.kill()}});
 },
 
+resetCamera: function() {
+        this.cameraOffset = [0,0];
+        this.cameraRotation = 0;
+        this.cameraZoom = 1;
+        this.lockCamera = false;
+    },
+    
 updateCamera: function () {
     
     if (eatKey(g_settings.keys.KEY_CAMERA_LOCK)) {
@@ -223,11 +241,8 @@ updateCamera: function () {
         this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
     }
     if (keys[g_settings.keys.KEY_CAMERA_RESET]) {
-        this.cameraOffset = [0,0]
-        this.cameraRotation = 0;
-        this.cameraZoom = 1;
-        this.lockCamera = false;
-	}
+	this.resetCamera();
+    }
 
     if(this._ships.length > 0){
         var s = this.getMainShip();
@@ -312,11 +327,9 @@ render: function(ctx) {
         debugY += 10;
     }
     ctx.restore();
-},
-
-
 }
 
+};
+
 // Some deferred setup which needs the object to have been created first
-entityManager.deferredSetup();
 

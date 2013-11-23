@@ -5,7 +5,6 @@ function renderHUD(ctx,ship) {
     ctx.fillStyle = g_settings.hudColor;
     ctx.textAlign ="center";
     ctx.font = "10pt " +g_settings.font;
-    console.log(g_settings.font);
     var ship = entityManager.getMainShip();
     renderLowerHud(ctx,ship);
     renderUpperHud(ctx,ship);
@@ -13,7 +12,7 @@ function renderHUD(ctx,ship) {
     }
 
 function renderLowerHud(ctx,ship){
-    ctx.save()
+    ctx.save();
     var vX = ship.velX;
     var vY = ship.velY;
     var speed = Math.sqrt(vX*vX + vY*vY);
@@ -23,7 +22,6 @@ function renderLowerHud(ctx,ship){
     var translation = [g_canvas.width/2, g_canvas.height - cHeight];
     //Below
     var orb = ship.orbit;
-    var dirOfOrbVel;
     if(orb){
         var shipToOrbc = util.vecMinus(ship.center,[orb[0],orb[1]]);
         var dirOfOrbVel = util.angleOfVector(shipToOrbc) + Math.PI;
@@ -37,7 +35,7 @@ function renderLowerHud(ctx,ship){
     }
 
 function renderUpperHud(ctx,ship){
-    ctx.save()
+    ctx.save();
     var uHeight = 10*g_settings.hudSize;
     ctx.translate(g_canvas.width/2,uHeight);
     ctx.scale(g_settings.hudSize, g_settings.hudSize);

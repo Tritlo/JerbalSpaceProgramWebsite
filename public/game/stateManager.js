@@ -20,7 +20,7 @@ stateManager = {
     },
 
     handleMouse : function(evt,type) {
-        this.states[this.currentState].handleMouse(evt,type)
+        this.states[this.currentState].handleMouse(evt,type);
     },
 
     switchState : function(state) {
@@ -33,7 +33,7 @@ stateManager = {
             }
         } else {
 	    this.states[this.currentState].onDeactivation();
-            this.currentState = states[ keys[keys.indexOf((currentState) + 1) % keys.length]]
+            this.currentState = states[ keys[keys.indexOf((currentState) + 1) % keys.length]];
 	    this.states[this.currentState].onActivation();
         }
     }

@@ -1,6 +1,6 @@
 Template.game.created = function() {
     var gameFiles = [
-	    "game/csscolorparser.js" , "game/globals.js" , "game/consts.js"
+	    "game/data.js","game/csscolorparser.js" , "game/globals.js" , "game/consts.js"
 	  , "game/util.js" , "game/keys.js" , "game/spatialManager.js"
 	  , "game/Stars.js" , "game/entityManager.js" , "game/Sprite.js"
 	  , "game/Entity.js" , "game/Terrain.js" , "game/Ship.js" 

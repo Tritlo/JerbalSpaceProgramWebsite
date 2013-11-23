@@ -5,7 +5,7 @@ MenuItem.prototype.setup = function (descr) {
     for (var property in descr) {
         this[property] = descr[property];
     }
-}
+};
 
 MenuItem.prototype.hitBox = false;
 MenuItem.prototype.selected = false;
@@ -19,11 +19,11 @@ Menu.prototype.setup = function (descr) {
     for (var property in descr) {
         this[property] = descr[property];
     }
-}
+};
 
 Menu.prototype.inMenu = function(x,y) {
      return (this.initialized &&  util.circInBox(x,y,0,this.hitBox[0],this.hitBox[1]));
-    }
+};
     
     
 
@@ -51,9 +51,9 @@ Menu.prototype.init = function (ctx) {
     }
     ctx.restore();
 
-    this.hitBox = [[this.location[0] - this.width/2, this.location[1]], [this.location[0]+this.width/2, this.location[1]+this.height]]
+    this.hitBox = [[this.location[0] - this.width/2, this.location[1]], [this.location[0]+this.width/2, this.location[1]+this.height]];
     this.initialized = true;
-}
+};
 
 Menu.prototype.initialized = false;
 
@@ -99,7 +99,7 @@ Menu.prototype.update = function (du) {
 
 Menu.prototype.onSelected = function (item) {
     item.action(this.state);
-}
+};
 
 Menu.prototype.handleMouse = function (evt, type) {
 	var pos = util.findPos(g_canvas);

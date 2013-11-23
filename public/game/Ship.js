@@ -84,7 +84,7 @@ Ship.prototype.attributesFromParts = function () {
         this.width  = p.width;
         this.center = p.center;
         this.origCenter = this.origCenter || p.center;
-        this.radius = Math.min(this.height,this.width)/2
+        this.radius = Math.min(this.height,this.width)/2;
         this.setCenter(this.center);
     } else {
         var numParts = this.parts.length;
@@ -98,7 +98,7 @@ Ship.prototype.attributesFromParts = function () {
             this.fuel+=this.parts[i].fuel;
             this.maxThrust+=this.parts[i].thrust;
         }
-        var maxx = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0]}));
+        var maxx = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0];}));
         var minx = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
         var maxy = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
         var miny = Math.min.apply(null, this.parts.map(function (p){return p.hitBox[0][1]}));
@@ -118,17 +118,17 @@ Ship.prototype.attributesFromParts = function () {
 
 Ship.prototype.setCenter = function(newCenter) {
     if(this.center === undefined){
-        this.center = [this.reset_cx,this.reset_cy]
+        this.center = [this.reset_cx,this.reset_cy];
     }
     if(newCenter === undefined){
         newCenter = [0,0];
     }
     var diff = util.vecMinus(newCenter,this.center);
-    this.parts.map(function (p) { p.updateCenter(util.vecPlus(diff,p.center))});
+    this.parts.map(function (p) { p.updateCenter(util.vecPlus(diff,p.center));});
     this.center = newCenter;
     this.cx = newCenter[0];
     this.cy = newCenter[1];
-}
+};
 
 Ship.prototype.assemble = function(grid) {
     //Assembles the ship from its parts
@@ -138,7 +138,8 @@ Ship.prototype.assemble = function(grid) {
     this.attributesFromParts();
     var cen = this.center;
     this.parts.map(function(x) { x.centerOfRot = cen;});
-}
+};
+
 Ship.prototype.disassemble = function(grid) {
     //Disassembles the ship and puts the parts back into normal form
     var cen = this.center;
@@ -172,11 +173,11 @@ Ship.prototype._updateSpriteExplosion = function (du) {
 	this._isExploding = false;
 	this._timeFromExplosion = 0;
 	this._explCraterAdded = false;
-	createInitialShips();
+	entityManager.createInitialShips();
 	return entityManager.KILL_ME_NOW;
     }
     
-}
+};
 
 Ship.prototype._updateVectorExplosion = function (du){
     if(this._timeFromExplosion < this._explosionDuration/2){
@@ -193,7 +194,7 @@ Ship.prototype._updateVectorExplosion = function (du){
 	this._explosionDuration = 0;
 	this._timeFromExplosion = 0;
 	if(this.isMain){
-	    createInitialShips();
+	    entityManager.createInitialShips();
 	    }
 	return entityManager.KILL_ME_NOW;
 	}

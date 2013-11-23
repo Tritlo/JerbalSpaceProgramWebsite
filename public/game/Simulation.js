@@ -1,4 +1,4 @@
-    // GAME-SPECIFIC UPDATE LOGIC
+// GAME-SPECIFIC UPDATE LOGIC
     function updateSimulation(du) {
         
         
@@ -55,9 +55,18 @@ Simulation.prototype.onActivation = function(){
     if(g_settings.graphicsLevel == 2){
         Stars.init({"_STpBL": {min:30, max:80}});
     }
+    
+    entityManager.init();
+    entityManager.createInitialShips();
     var s = entityManager.getMainShip();
     entityManager.getTerrain(s.cx,s.cy).addLaunchpad(s);
-}
+};
+
+Simulation.prototype.onDeactivation = function() {
+    entityManager.deInit();
+    spatialManager.unregisterAll();
+
+};
 
 Simulation.prototype.handleMouse = function (evt,type) {
     if (type === "down"){
