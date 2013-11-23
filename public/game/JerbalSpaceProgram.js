@@ -6,44 +6,16 @@
 
 /* jshint browser: true, devel: true, globalstrict: true */
 
-var g_canvas = document.getElementById("myCanvas");
-var g_ctx = g_canvas.getContext("2d");
 
 /*
 0        1         2         3         4         5         6         7         8
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 */
 
-
-// ====================
-// CREATE INITIAL SHIPS
-// ====================
-
-
-
-// =============
-// GATHER INPUTS
-// =============
-
 function gatherInputs() {
     // Nothing to do here!
     // The event handlers do everything we need for now.
 }
-
-
-// =================
-// UPDATE SIMULATION
-// =================
-
-// We take a very layered approach here...
-//
-// The primary `update` routine handles generic stuff such as
-// pausing, single-step, and time-handling.
-//
-// It then delegates the game-specific logic to `updateSimulation`
-
-
-
 
 // GAME-SPECIFIC DIAGNOSTICS
 
@@ -62,7 +34,6 @@ var g_settings = {
           "useAveVel": true,
           "renderSpatialDebug":false,
           "hitBox": true,
-          "spriteExplosion": false,
           "cameraMoveRate": 10,
           "cameraZoomRate": 1.1,
           "cameraRotateRate" : Math.PI/50,
@@ -104,7 +75,7 @@ var g_settings = {
                 "KEY_CAMERA_ROTATE_COUNTERCLOCKWISE" : keyCode('I'),
                 "KEY_CAMERA_ZOOMIN" : keyCode('9'),
                 "KEY_CAMERA_ZOOMOUT" : keyCode('8'),
-                "KEY_CAMERA_LOCK" : keyCode('Y'),
+                "KEY_CAMERA_LOCK" : keyCode('Y')
               },
           "debugKeys" : {
               "KEY_GRAVITY" : keyCode('G'),
@@ -179,19 +150,6 @@ function processDiagnostics() {
 }
 
 
-
-// =============
-// PRELOAD STUFF
-// =============
-
-var g_images = {};
-function requestPreloads() {
-    var requiredImages = {
-	explosion : "https://raw.github.com/Tritlo/JerbalSpaceProgram/master/game/sprites/explosion.png"
-        };
-    imagesPreload(requiredImages, g_images, preloadDone);
-}
-
 // =========
 // LOAD DEFAULTS
 // =========
@@ -216,15 +174,9 @@ if(util.storageLoad('ships') === undefined){
 var ships = util.storageLoad('ships') || [{}];
 var g_sprites = {};
 
-function preloadDone() {
-    g_sprites.explosion = new Sprite(g_images.explosion, [5,5],[64,64], 50);
-
-    main.init();
-}
-
 //Disable right click menu on canvas.
-$('body').on('contextmenu','#myCanvas', function(e) {return false;});
 
 // Kick it off
 g_ctx.font = g_settings.font;
-requestPreloads();
+//requestPreloads();
+main.init();

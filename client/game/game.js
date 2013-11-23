@@ -8,7 +8,8 @@ Template.game.created = function() {
 	  , "game/imagesPreload.js" , "game/main.js" , "game/State.js"
 	  , "game/Grid.js" , "game/Part.js" , "game/Menu.js"
 	  , "game/PartsDesigner.js" , "game/ShipDesigner.js" , "game/Simulation.js"
-	  , "game/stateManager.js" , "game/handleMouse.js" , "game/JerbalSpaceProgram.js"
+	  , "game/stateManager.js" , "game/handleMouse.js" ,  "game/init.js"
+	  ,"game/JerbalSpaceProgram.js"
 	];
    webUtil.getScriptsInOrder(gameFiles);
 };

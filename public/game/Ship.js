@@ -504,11 +504,7 @@ Ship.prototype.computeTorqueMag = function (du) {
 };
 
 Ship.prototype._renderExplosion = function (ctx) {
-    if (g_settings.spriteExplosion) {
-	this._renderSpriteExplosion(ctx);
-    } else {
 	this._renderVectorExplosion(ctx);
-    }
 };
 
 Ship.prototype._renderVectorExplosion = function (ctx) {
@@ -521,41 +517,6 @@ Ship.prototype._renderVectorExplosion = function (ctx) {
     
 };
 
-Ship.prototype._renderSpriteExplosion = function (ctx) {
-    var origSprite = this.sprite
-    this.sprite = g_sprites.explosion;
-    var origScale = this.sprite.scale;
-    // pass my scale into the sprite, for drawing
-    //this.sprite.scale = this._scale;
-    this.sprite.scale = this._scale*this._explosionRadius/32;
-    this.sprite.drawCentredAt(
-	ctx, this.cx, this.cy+this.getRadius(), this.rotation, this._explosionFrame
-    );
-    this.sprite.scale = origScale;
-    this.sprite = origSprite;
-};
-
-Ship.prototype._renderSprite = function (ctx) {
-    var origScale = this.sprite.scale;
-    // pass my scale into the sprite, for drawing
-    ctx.save()
-    var x = this.cx;
-    var y = this.cy;
-    var w = this.width;
-    var h = this.height;
-    var t = this.thrust/this.maxThrust;
-    var rot = this.rotation;
-    ctx.strokeStyle = "yellow";
-    util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*t +h*0.3,rot,x,y);
-    ctx.strokeStyle = "red";
-    util.strokeTriangle(ctx,x-w*0.2,y+h*0.3,x+w*0.2,y+h*0.3,x,y+h*0.6*t +h*0.3,rot,x,y);
-    ctx.restore();
-    this.sprite.scale = this._scale;
-    this.sprite.drawCentredAt(
-	ctx, this.cx, this.cy, this.rotation
-    );
-    this.sprite.scale = origScale;
-};
 
 Ship.prototype.renderCenter = function(ctx){
 ctx.strokeStyle = "white";
@@ -563,9 +524,9 @@ util.strokeCircle(ctx,this.cx,this.cy,5);
 }
 
 Ship.prototype.renderParts = function(ctx){
-    ctx.save()
+    ctx.save();
     this.parts.map(function (x) {x.render(ctx)});
-    ctx.restore()
+    ctx.restore();
 }
 
 Ship.prototype.renderHitBox = function(ctx){
@@ -580,9 +541,9 @@ Ship.prototype.updateOrbit = function() {
     var terr = entityManager.getTerrain(this.cx,this.cy);
     var f = terr.center;
     var M = terr.mass;
-    var mu = consts.G*(M+this.mass)
+    var mu = consts.G*(M+this.mass);
 
-    var r = util.vecMinus(this.center,terr.center)
+    var r = util.vecMinus(this.center,terr.center);
     var v = [this.velX,this.velY];
 
     var speed = this.getSpeed(); 
@@ -591,7 +552,7 @@ Ship.prototype.updateOrbit = function() {
 
     var tripleprod = util.tripleProduct(v,r,v);
     var vtimeshovermu = util.mulVecByScalar(1/mu,tripleprod); 
-    var unitr = util.normalizeVector(r)
+    var unitr = util.normalizeVector(r);
     var eccVec = util.vecMinus(vtimeshovermu,unitr);
     var ecc = util.lengthOfVector(eccVec);
     var ae = a*ecc;
@@ -625,15 +586,15 @@ Ship.prototype.renderOrbit = function(ctx) {
         }
         ctx.strokeStyle = "dodgerblue"; 
         var angl = util.cartesianToPolar([cx,cy],[fx,fy])[1];
-        util.strokeEllipseByCenter(ctx,cx,cy,majAx*2,minAx*2,angl,[cx,cy])
-        ctx.restore()
+        util.strokeEllipseByCenter(ctx,cx,cy,majAx*2,minAx*2,angl,[cx,cy]);
+        ctx.restore();
     }
 };
 
 Ship.prototype.render = function (ctx) {
     if (this._isExploding){
     if(this._timeFromExplosion < this._explosionDuration/2){
-        this.renderParts(ctx)
+        this.renderParts(ctx);
     }
 	this._renderExplosion(ctx);
     } else {
