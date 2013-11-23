@@ -169,6 +169,7 @@ deInit: function() {
     this._terrain = [];
     this._ships   = [];
     this._categories = [];
+    stateManager.unregisterAll();
     this.resetCamera();
 },
 

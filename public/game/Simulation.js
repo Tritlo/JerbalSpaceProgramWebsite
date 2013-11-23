@@ -64,8 +64,6 @@ Simulation.prototype.onActivation = function(){
 
 Simulation.prototype.onDeactivation = function() {
     entityManager.deInit();
-    spatialManager.unregisterAll();
-
 };
 
 Simulation.prototype.handleMouse = function (evt,type) {
