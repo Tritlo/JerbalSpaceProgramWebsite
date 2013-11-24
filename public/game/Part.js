@@ -392,7 +392,7 @@ Part.prototype.render = function (ctx) {
 
 	if(typeof(entityManager) !== 'undefined'){
 	    if(entityManager.cameraZoom < 0.5){
-		ctx.lineWidth = 1/entityManager.cameraZoom
+		ctx.lineWidth = 1/entityManager.cameraZoom;
 	    }
 	}
 	var cRot = this.centerOfRot;

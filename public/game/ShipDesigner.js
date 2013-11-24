@@ -1,6 +1,5 @@
 function ShipDesigner(descr) {
     this.setup(descr);
-    this.init();
 };
 
 ShipDesigner.prototype = new State();
@@ -300,7 +299,7 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
         return true;
     }
 	this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
-	this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]]
+	this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]];
     if (type === "down") {
         this.handleDown(evt,type);
     } else if (type === "move") {
@@ -320,4 +319,4 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
     } 
 };
 
-var shipDesigner = new ShipDesigner()
+var shipDesigner = new ShipDesigner();

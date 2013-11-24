@@ -2,7 +2,6 @@
 // Maximum parallax, affects render and genration radius
 _maxPar: 5,
 // The size of each render/generation block. Think Minecraft.
-_blockSize: {x: g_canvas.width, y: g_canvas.height},
 // The Level says whether a star is generated or not,
 // the more you zoom out, the fewer levels are rendered.
 _maxLevel: 256,
@@ -22,6 +21,7 @@ init: function(properties){
     for(var i = 0; i<keys.length;i++){
         this[keys[i]] = properties[keys[i]];
     }
+    this._blockSize = {x: g_canvas.width, y: g_canvas.height};
 },
 
 // Generate any Stars I might render

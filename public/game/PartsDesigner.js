@@ -1,6 +1,5 @@
 function PartsDesigner(descr) {
     this.setup(descr);
-    this.init();
 };
 
 

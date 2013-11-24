@@ -26,7 +26,7 @@ Template.parts.created = function (){
 		"height" : 290,
 		"location": [10,10]
 		}
-	});
+	}, "viewerCanvas");
 	if(id){viewer.loadPart(Parts.findOne(id));}
     });
 };

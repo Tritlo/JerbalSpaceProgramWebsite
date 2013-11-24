@@ -22,8 +22,15 @@ starts = {
     }
 };
 
-function start(which,options){
+function start(which,options,canvasId){
+    if(canvasId){
+        g_canvas = document.getElementById(canvasId);
+    } else {
+        g_canvas = document.getElementById("myCanvas");
+    }
+    g_ctx = g_canvas.getContext("2d");
     g_ctx.font = "VT323";
+    g_ctx.setTransform(1, 0, 0, 1, 0, 0);
     $('body').on('contextmenu','#myCanvas', function(e) {return false;});
     starts[which](options);
 }

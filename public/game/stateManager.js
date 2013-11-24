@@ -1,7 +1,31 @@
 stateManager = {
     "currentState": undefined,
     setStates: function(states){
+	if(this.currentState){
+	    this.states[this.currentState].onDeactivation();
+	}
+	
+	//Deactivate all other possible states
+	if(typeof(partsDesigner) !== 'undefined'){
+	    simulation.onDeactivation();
+	}
+	if(typeof(shipDesigner) !== 'undefined'){
+	    shipDesigner.onDeactivation();
+	}
+	if(typeof(mainMenu) !== 'undefined'){
+	    mainMenu.onDeactivation();
+	}
+	if(typeof(viewer) !== 'undefined'){
+	    viewer.onDeactivation();
+	}
+	
 	this.states = states;
+	var stateK = Object.keys(states);
+	for(var i = 0; i < stateK.length; i++){
+	    var state = stateK[i];
+	    console.log("Initializing " + state);
+	    this.states[state].init();
+	}
     },
     cameraUpdate: function(du){
 	if(this.currentState){
