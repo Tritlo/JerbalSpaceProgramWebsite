@@ -95,7 +95,7 @@ PartsDesigner.prototype.init = function() {
 	    "dims" : [64,64],
         "width" : 525,
         "height" : 525,
-        "location": [375,375]
+        "location": [113,113]
 	});
 
     this.newPart();

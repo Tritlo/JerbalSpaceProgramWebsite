@@ -8,12 +8,12 @@ Part.prototype.setup = function (descr) {
     }
 
     this.updateAttributes();
-}
+};
 
 Part.prototype.renderHb = false;
 Part.prototype.name = "NO NAME";
 Part.prototype.mass = 0.1;
-Part.prototype.currentMass = 0.1
+Part.prototype.currentMass = 0.1;
 Part.prototype.thrust = 0;
 Part.prototype.currentThrust = 0;
 Part.prototype.fuel = 0;
@@ -36,21 +36,21 @@ Part.prototype.attached = false;
 //last point.
 
 Part.prototype.setFlame = function (ps) {
+    this.flame = ps;
     var center = util.mulVecByScalar(0.5,util.vecPlus(ps[0],ps[1]));
     var cToTip = util.vecMinus(ps[2],center);
     var dir = util.normalizeVector(cToTip);
     var len = util.lengthOfVector(cToTip);
-    this.flame = { "points" : ps,
+    this.flameProperties = { "points" : ps,
 		   "center" : center,
 		   "direction" : dir,
 		   "length" : len
-		   }
-    
-}
+		   };
+};
 
 Part.prototype.rotate = function(ind){
     this.outline = util.rotateList(this.outline,util.lastIndexOfObj(this.outline,ind));
-}
+};
 
 Part.prototype.reset = function(){
     var l = this.outline.length;
@@ -153,11 +153,11 @@ Part.prototype.toDesigner = function(grid){
         this.attachmentPoints = grid.fromGridCoords(this.attachmentPoints);    
     }
     if(this.flame){
-        this.setFlame(grid.fromGridCoords(this.flame.points));  
+        this.setFlame(grid.fromGridCoords(this.flame));  
     }
     this.center = grid.fromGridCoord(this.center);
-    this.gridCenterOffset[0] *= grid.cellDim[0]
-    this.gridCenterOffset[1] *= grid.cellDim[0]
+    this.gridCenterOffset[0] *= grid.cellDim[0];
+    this.gridCenterOffset[1] *= grid.cellDim[0];
     this.hitBox = grid.fromGridCoords(this.hitBox);    
     this.lineWidth = 4;
     this.updateAttributes();
@@ -174,7 +174,7 @@ Part.prototype.mapFuncOverAll = function (f,alsoHitbox) {
         this.attachmentPoints = this.attachmentPoints.map(f);
     }
     if(this.flame){
-        this.setFlame(this.flame.points.map(f));  
+        this.setFlame(this.flame.map(f));  
     }
     if(alsoHitbox){
         this.hitBox = this.hitBox.map(f);
@@ -190,7 +190,7 @@ Part.prototype.finalize = function(grid,translate){
         this.attachmentPoints = grid.toGridCoords(this.attachmentPoints);
     }
     if(this.flame){
-        this.setFlame(grid.toGridCoords(this.flame.points));  
+        this.setFlame(grid.toGridCoords(this.flame));  
     }
     // so they make sense when drawn
     // (otherwise dims become crazy);
@@ -260,13 +260,13 @@ Part.prototype.updateCenter = function(newCenter)
     var ty = translation[1];
     var trans =  function(point){
         return util.translatePoint(point[0],point[1],tx,ty);
-	}
+	};
     this.center = trans(this.center);
     this.centerOfRot = trans(this.centerOfRot);
     this.mapFuncOverAll(trans,true);
     //this.hitBox = this.hitBox.map(trans);
     //this.updateAttributes();
-}
+};
 
 Part.prototype.finalizeNumbers = function(){
     if(isNaN(this.mass)){
@@ -281,7 +281,7 @@ Part.prototype.finalizeNumbers = function(){
     if(isNaN(this.efficiency)){
         this.efficiency = 0;
     }
-}
+};
 
 Part.prototype._renderFlame = function (ctx) {
     if (this.flame && this.thrust != 0) {
@@ -290,10 +290,10 @@ Part.prototype._renderFlame = function (ctx) {
         var rot = this.rotation;
         ctx.save();
         ctx.lineWidth = 1;
-        var ps = this.flame.points;
-        var c = this.flame.center;
-        var l = this.flame.length;
-        var dir = this.flame.direction;
+        var ps = this.flame;
+        var c = this.flameProperties.center;
+        var l = this.flameProperties.length;
+        var dir = this.flameProperties.direction;
         var cRot = this.centerOfRot;
         ctx.strokeStyle = "blue";
         var tip = util.vecPlus(c,util.mulVecByScalar(0.2*l*t,dir));
@@ -390,13 +390,15 @@ Part.prototype.render = function (ctx) {
             ctx.lineWidth = this.lineWidth;
         }
 
-        if(entityManager.cameraZoom < 0.5){
-            ctx.lineWidth = 1/entityManager.cameraZoom
-        }
-	    var cRot = this.centerOfRot;
-	    var rot = this.rotation;
+	if(typeof(entityManager) !== 'undefined'){
+	    if(entityManager.cameraZoom < 0.5){
+		ctx.lineWidth = 1/entityManager.cameraZoom
+	    }
+	}
+	var cRot = this.centerOfRot;
+	var rot = this.rotation;
 	//var outline = this.outline.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
-	    var outline = this.outline;//.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
+	var outline = this.outline;//.map(function(p) { return util.rotatePointAroundPoint(p,rot, cRot[0],cRot[1])});
         ctx.beginPath();
         ctx.moveTo(outline[0][0],outline[0][1]);
         for(var i = 0; i < outline.length; i++){
@@ -406,8 +408,8 @@ Part.prototype.render = function (ctx) {
         ctx.closePath();
         ctx.stroke();
         if(this.fill) {
-            ctx.fill()
+            ctx.fill();
             }
         ctx.restore();
     }
-}
+};

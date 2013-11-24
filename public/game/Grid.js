@@ -38,7 +38,8 @@ Grid.prototype.fromGridCoord = function(iorpoint,j){
     } else {
         var i = iorpoint;
     }
-    return [i*this.width/this.dims[0] + this.location[0] - this.width/2,j*this.height/this.dims[1]+ this.location[1] - this.height/2];
+    //return [i*this.width/this.dims[0] + this.location[0] - this.width/2,j*this.height/this.dims[1]+ this.location[1] - this.height/2];
+    return [i*this.width/this.dims[0] + this.location[0],j*this.height/this.dims[1]+ this.location[1]];
 }
 
 Grid.prototype.fromGridCoords = function(coords){
@@ -83,8 +84,8 @@ Grid.prototype.render = function (ctx) {
 	ctx.save();
         ctx.strokeStyle = this.color;
 	//ctx.beginPath()
-        var n = this.points[0].length
-        var m = this.points.length
+        var n = this.points[0].length;
+        var m = this.points.length;
 	for(var i = 1; i < n-1; i++){
 	    if (i % (n/4) === 0){
 		ctx.lineWidth *= 2;
