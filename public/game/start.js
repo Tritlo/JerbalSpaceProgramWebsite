@@ -15,7 +15,7 @@ starts = {
 	    viewer = new Viewer(options);
 	}
 	stateManager.setStates({
-		"viewer" : Viewer
+		"viewer" : viewer
 			});
 	stateManager.switchState("viewer");
 	main.init();

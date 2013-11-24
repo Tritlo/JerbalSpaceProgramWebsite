@@ -19,8 +19,15 @@ Template.parts.created = function (){
     });
     var id = Session.get('currentPart');
     webUtil.getScriptsInOrder(partFiles, function() {
-	start("Viewer");
-	if(id){Viewer.loadPart(Parts.findOne(id));}
+	start("Viewer",{
+	    grid: {
+		"dims" : [32,32],
+		"width" : 290,
+		"height" : 290,
+		"location": [10,10]
+		}
+	});
+	if(id){viewer.loadPart(Parts.findOne(id));}
     });
 };
 
@@ -33,7 +40,7 @@ Template.parts.helpers({
 Template.parts.events({
     "click a": function(event){
 	var id = event.toElement.name;
-	Viewer.loadPart(Parts.findOne(id));
+	viewer.loadPart(Parts.findOne(id));
 	}
 });
 

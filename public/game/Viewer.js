@@ -53,7 +53,7 @@ Viewer.prototype.render = function(ctx){
 
 Viewer.prototype.update = function(du){};
 
-Viewer = new Viewer({
+viewer = new Viewer({
     grid: {
 	"dims" : [32,32],
         "width" : 290,

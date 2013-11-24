@@ -11,5 +11,8 @@ Template.game.created = function() {
 	  , "game/Viewer.js" , "game/stateManager.js" , "game/handleMouse.js"
 	  ,"game/JerbalSpaceProgram.js", "game/start.js"
 	];
+    gameFiles = gameFiles.map(function(s){
+	return Meteor.absoluteUrl(s);
+    });
    webUtil.getScriptsInOrder(gameFiles,function() {start("JSP");});
 };

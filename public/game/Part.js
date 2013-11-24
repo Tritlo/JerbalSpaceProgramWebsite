@@ -6,7 +6,7 @@ Part.prototype.setup = function (descr) {
     for (var property in descr) {
         this[property] = descr[property];
     }
-    this.setFlame(this.flame);
+    if(this.flame){this.setFlame(this.flame);}
     this.updateAttributes();
 };
 
@@ -37,6 +37,7 @@ Part.prototype.attached = false;
 
 Part.prototype.setFlame = function (ps) {
     this.flame = ps;
+    console.log(ps);
     var center = util.mulVecByScalar(0.5,util.vecPlus(ps[0],ps[1]));
     var cToTip = util.vecMinus(ps[2],center);
     var dir = util.normalizeVector(cToTip);
@@ -374,7 +375,7 @@ Part.prototype._renderCenter = function(ctx){
 	ctx.strokeStyle = "yellow";
 	util.strokeCircle(ctx,this.center[0],this.center[1],2);
 	ctx.restore();
-    }
+    };
 
 Part.prototype.render = function (ctx) {
     if(this.outline){
