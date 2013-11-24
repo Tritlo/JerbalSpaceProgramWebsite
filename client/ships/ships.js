@@ -10,6 +10,8 @@ Template.ships.created = function (){
 	,"game/settings.js"
 	,"game/Grid.js"
 	,"game/Part.js"
+	,"game/Entity.js"
+	,"game/Ship.js"
 	,"game/State.js"
 	,"game/Viewer.js"
 	,"game/stateManager.js"
@@ -21,15 +23,19 @@ Template.ships.created = function (){
     var id = Session.get('currentShip');
     webUtil.getScriptsInOrder(shipFiles, function() {
 	start("Viewer",{
-
-
+	    grid: {
+		"dims" : [64,64],
+		"width" : 640,
+		"height" : 640,
+		"location": [10,10]
+		}
 	});
 	if(id){viewer.loadShip(Ships.findOne(id));}
     });
 };
 
 Template.ships.helpers({
-    parts: function(){
+    ships: function(){
 	return Ships.find();
 	}
     });

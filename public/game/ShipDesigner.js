@@ -186,7 +186,7 @@ ShipDesigner.prototype.onActivation = function ()
 	$('#in9').show();
 	$('#in5').show();
 	$('#in7').show();
-    var canvas_pos = util.findPos(g_canvas);
+    var canvas_pos = util.findPosOnPage(g_canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
     $('#in5').offset({top:canvas_pos.y + offsetFromMenu +100, left: canvas_pos.x+5});

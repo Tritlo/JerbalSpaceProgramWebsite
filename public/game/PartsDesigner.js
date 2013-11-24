@@ -198,7 +198,7 @@ PartsDesigner.prototype.onActivation = function () {
     for(var i = 1; i < 10; i++){
 	$('#in'+i).show();
 	}
-    var canvas_pos = util.findPos(g_canvas);
+    var canvas_pos = util.findPosOnPage(g_canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
     $('#in8').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x+5});

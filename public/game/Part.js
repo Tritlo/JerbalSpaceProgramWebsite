@@ -37,7 +37,6 @@ Part.prototype.attached = false;
 
 Part.prototype.setFlame = function (ps) {
     this.flame = ps;
-    console.log(ps);
     var center = util.mulVecByScalar(0.5,util.vecPlus(ps[0],ps[1]));
     var cToTip = util.vecMinus(ps[2],center);
     var dir = util.normalizeVector(cToTip);
