@@ -5,6 +5,10 @@
 
 "use strict";
 
+// A tiny little convenience function
+function keyCode(keyChar) {
+    return keyChar.charCodeAt(0);
+}
 
 var util = {
 

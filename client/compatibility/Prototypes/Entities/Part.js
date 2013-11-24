@@ -3,10 +3,10 @@ function Part(instance,descr) {
 }
 
 Part.prototype.setup = function (instance,descr) {
+    this.instance = instance;
     for (var property in descr) {
         this[property] = descr[property];
     }
-    this.instance = instance;
     if(this.flame){this.setFlame(this.flame);}
     this.updateAttributes();
 };

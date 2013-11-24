@@ -9,6 +9,11 @@ InstanceManager.getNewID = function(){
     return this._nextInstanceID++;
 };
 
+InstanceManager.clear = function(){
+    this._nextInstanceID = 0;
+    this.instances = [];
+};
+
 InstanceManager.addInstance = function(instance){
     console.log("adding instance with ID: "+ instance.ID);
     console.log(instance);
@@ -38,6 +43,16 @@ InstanceManager.handleMouse = function(evt,type){
 	    }
 	}
     return false;
+};
+
+InstanceManager.quit = function(){
+    for(var ID in this.instances){
+	    var inst = this.instances[ID];
+	    var reqQ = keys[inst.settings.keys.KEY_QUIT];
+	    if (reqQ) {
+		inst.stateManager.switchState('menu');
+	    }
+	}
 };
 
 InstanceManager.init();

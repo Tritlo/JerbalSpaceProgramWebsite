@@ -3,6 +3,38 @@ function Instance(descr){
     this.init();
 }
 
+Instance.prototype.loadShips = function(){
+    // =========
+    // LOAD DEFAULTS
+    // =========
+    var inst = this;
+    g_defaultShips = g_defaultShips.map(function (str) {
+	var s = new Ship(inst,$.parseJSON(str));
+	console.log(s);
+	s.disconnect();
+	return s;
+    });
+
+    //Load default parts;
+    g_defaultParts = g_defaultParts.map(function (str) {
+	var p = new Part(inst,$.parseJSON(str));
+	p.instance = undefined;
+	return p;
+    });
+
+    if(util.storageLoad('parts') === undefined){
+	util.storageSave('parts',g_defaultParts);
+    }
+
+    if(util.storageLoad('ships') === undefined){
+	util.storageSave('ships',g_defaultShips);
+    }
+    this.ships = util.storageLoad('ships') || [{}];
+    this.ships.map(function(s) {
+	return new Ship(inst,s);
+    });
+};
+
 Instance.prototype.init = function (){
     if(this.settings === undefined){
         this.settings = g_settings;
@@ -14,9 +46,10 @@ Instance.prototype.init = function (){
     this.partsDesigner = new PartsDesigner(this);
     this.shipDesigner = new ShipDesigner(this);
     this.simulation = new Simulation(this);
-    if(this.grid)
-        this.viewer = new Viewer(this,this.grid);
-
+    if(this.grid){
+        this.viewer = new Viewer(this,{grid: this.grid});
+    }
+    this.loadShips();
     this.stateManager.init();
 };
 

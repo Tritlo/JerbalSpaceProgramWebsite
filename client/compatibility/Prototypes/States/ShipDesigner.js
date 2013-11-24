@@ -17,7 +17,7 @@ ShipDesigner.prototype.init = function() {
 		{
 		"text" : "Launch",
 		"action" : function(state) {
-		    state.launch()
+		    state.launch();
 		}
 		},
         ],
@@ -99,7 +99,6 @@ ShipDesigner.prototype.init = function() {
         "location": [113,113]
 	});
 
-    this.loadShip();
     };
 
 ShipDesigner.prototype.launch = function(){
@@ -142,26 +141,32 @@ ShipDesigner.prototype.addPart = function (partInd){
 
 ShipDesigner.prototype.saveShip = function ()
 {
-    this.currentShip = new Ship(this.instance,{"parts" : this.addedParts,
-    "name": $('#in5').val()
-    });
+    this.currentShip = new Ship(this.instance,
+				{"parts" : this.addedParts,
+				 "name": $('#in5').val()}
+			       );
 
     if(this.currentShip)
     {
         this.currentShip.assemble(this.grid);
-        var ships = util.storageLoad("ship");
+        var ships = util.storageLoad("ships");
+	console.log(ships);
         if (ships){
             ships.push(this.currentShip);
         } else {
             ships = [this.currentShip];
             }
         util.storageSave("ships",ships);
-        this.currentShip.disassemble(this.grid);
-        var ships = util.storageLoad("ships");
+        this.currentShip.disassemble(this.grid,this.instance);
+        this.instance.ships = util.storageLoad("ships");
+	var inst = this.instance;
+	this.instance.ships.map(function(s) {
+	    return new Ship(inst,s);
+	});
         $("#in9").empty();
-        if(ships)
+        if(inst.ships)
         {
-            $.each(ships, function (key,value) {
+            $.each(inst.ships, function (key,value) {
                 $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
         }
     }
@@ -172,18 +177,19 @@ ShipDesigner.prototype.loadShip = function ()
     var ships = util.storageLoad("ships");
     var selVal = $('#in9').val() || 0;
     var ship = new Ship(this.instance, ships[selVal]);
-    var ship = ship.disassemble(this.grid);
-	this.currentShip = ship;
+    var ship = ship.disassemble(this.grid,this.instance);
+    this.currentShip = ship;
     var gri = this.grid;
     this.addedParts = ship.parts;
-	console.log(this.currentShip);
+    console.log(this.currentShip);
 }
 
 ShipDesigner.prototype.onActivation = function ()
 {
-	$('#in9').show();
-	$('#in5').show();
-	$('#in7').show();
+    this.loadShip();
+    $('#in9').show();
+    $('#in5').show();
+    $('#in7').show();
     var canvas_pos = util.findPosOnPage(this.instance.canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});

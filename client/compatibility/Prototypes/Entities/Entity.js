@@ -39,6 +39,8 @@ Entity.prototype.setup = function (instance,descr) {
         this[property] = descr[property];
     }
     this.instance = instance;
+
+    console.log(this.instance);
     if(typeof(this.instance.spatialManager) !== 'undefined'){
 	// Get my (unique) spatial ID
 	this._spatialID = this.instance.spatialManager.getNewSpatialID();
@@ -74,7 +76,9 @@ Entity.prototype.register = function(){
 };
 
 Entity.prototype.unregister = function(){
-    this.instance.spatialManager.unregister(this);
+    if(typeof(this.instance.spatialManager) !== 'undefined'){
+	this.instance.spatialManager.unregister(this);
+	}
 };
 
 Entity.prototype.findHitEntity = function () {

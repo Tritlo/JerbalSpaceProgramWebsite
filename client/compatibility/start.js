@@ -1,11 +1,11 @@
 starts = {
     "JSP":  function(options,canvas){
-	var jsp = new Instance({canvas: canvas});
-	jsp.ctx.font = jsp.settings.font;
-	jsp.init();
-	jsp.start();
-	jsp.stateManager.switchState("menu");
-	return jsp.id;
+        var jsp = new Instance({canvas: canvas});
+        jsp.ctx.font = jsp.settings.font;
+        jsp.init();
+        jsp.start();
+        jsp.stateManager.switchState("menu");
+        return jsp.id;
     },
     "Viewer": function(options,canvas) {
 	options.canvas = canvas;
@@ -21,12 +21,12 @@ starts = {
 
 function start(which,options,canvasId){
     //Make sure last one is stopped:
-    main.gameOver();
     if(!canvasId){
-	var canvasId = "myCanvas";
+        var canvasId = "myCanvas";
     }
     $('body').on('contextmenu','#'+canvasId, function(e) {return false;});
     var canvas = document.getElementById(canvasId);
+    InstanceManager.clear();
     var instanceID = starts[which](options,canvas);
     if(!main.initialized) main.init();
     else {

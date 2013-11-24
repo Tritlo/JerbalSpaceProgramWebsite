@@ -5,10 +5,10 @@ function State(instance, descr) {
 
 State.prototype.setup = function (instance, descr) {
     // Apply all setup properies from the (optional) descriptor
+    this.instance = instance;
     for (var property in descr) {
         this[property] = descr[property];
     }
-    this.instance = instance;
 };
 
 //Called when state is initialized

@@ -188,8 +188,7 @@ EntityManager.prototype.deInit =  function() {
 EntityManager.prototype.generateShip = function(descr) {
     	descr.cx=0;
 	descr.cy=0;
-        var inst = this.instance;
-	this._ships.push(new Ship(inst,descr));
+	this._ships.push(new Ship(this.instance,descr));
 };
 
 EntityManager.prototype.killNearestShip = function(xPos, yPos) {
@@ -256,10 +255,6 @@ EntityManager.prototype.updateCamera = function () {
     }
     if (keys[this.instance.settings.keys.KEY_CAMERA_RESET]) {
 	this.resetCamera();
-    }
-    
-    if (eatKey(this.instance.settings.keys.KEY_RENDER_ORBIT)) {
-	this.instance.settings.renderOrbit = !this.instance.settings.renderOrbit;
     }
 
     if(this._ships.length > 0){

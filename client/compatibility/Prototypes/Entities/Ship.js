@@ -13,9 +13,9 @@
 
 
 // A generic contructor which accepts an arbitrary descriptor object
-function Ship(descr,instance) {
+function Ship(instance,descr) {
     // Common inherited setup logic from Entity
-    this.setup(descr,instance);
+    this.setup(instance,descr);
     var inst = this.instance;
     this.parts = this.parts.map(function(x){
         var p =  new Part(inst,x);
@@ -39,7 +39,13 @@ function Ship(descr,instance) {
     }
 };
 
-    Ship.prototype = new Entity();
+
+Ship.prototype = new Entity();
+
+Ship.prototype.disconnect = function(){
+    this.instance = undefined;
+    this.parts.map(function(p) {p.instance = undefined;});
+};
 
 Ship.prototype.rememberResets = function () {
     // Remember my reset positions
@@ -133,22 +139,31 @@ Ship.prototype.setCenter = function(newCenter) {
 
 Ship.prototype.assemble = function(grid) {
     //Assembles the ship from its parts
-    this.parts.map(function(x) { x.finalize(grid,false);});
-    this.parts.map(function(x) { x.lineWidth = 1;});
+    this.parts.map(function(x) {
+	x.finalize(grid,false);
+	x.lineWidth = 1;
+    });
 
     this.attributesFromParts();
     var cen = this.center;
-    this.parts.map(function(x) { x.centerOfRot = cen;});
+    this.parts.map(function(x) {
+	x.centerOfRot = cen;
+    });
+    this.disconnect();
 };
 
-Ship.prototype.disassemble = function(grid) {
+Ship.prototype.disassemble = function(grid,instance) {
     //Disassembles the ship and puts the parts back into normal form
+    this.instance = instance;
     var cen = this.center;
     if(this.origCenter){
         this.setCenter(this.origCenter);
     }
-    this.parts.map(function(x) { x.lineWidth = 4;});
-    this.parts.map(function(x) { x.toDesigner(grid);});
+    this.parts.map(function(x) {
+	x.lineWidth = 4;
+	x.toDesigner(grid);
+	x.instance = instance;
+    });
     return this;
 };
 
@@ -288,9 +303,9 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
     }
 };
 
-var NOMINAL_GRAVITY = 0.02;
 
 Ship.prototype.computeGravity = function () {
+        var NOMINAL_GRAVITY = 0.02;
 	if(!this.instance.settings.useGravity) return 0;
 	var gravAccel=this.instance.entityManager.gravityAt(this.cx,this.cy);
 	return gravAccel;
@@ -468,10 +483,10 @@ Ship.prototype.halt = function () {
     this.velY = 0;
 };
 
-var NOMINAL_ROTATE_RATE = 0.1;
-var NOMINAL_TORQUE_RATE = 0.001;
 
 Ship.prototype.computeTorqueMag = function (du) {
+    var NOMINAL_ROTATE_RATE = 0.1;
+    var NOMINAL_TORQUE_RATE = 0.001;
     this.torque = 0;
     if(this.instance.entityManager.getMainShip() === this){
 	if (keys[this.instance.settings.keys.KEY_LEFT]) {
@@ -480,7 +495,7 @@ Ship.prototype.computeTorqueMag = function (du) {
 	if (keys[this.instance.settings.keys.KEY_RIGHT]) {
 	    this.torque += NOMINAL_TORQUE_RATE;
 	}
-	}
+    }
 
 };
 
@@ -548,7 +563,8 @@ Ship.prototype.updateOrbit = function() {
 
 Ship.prototype.renderOrbit = function(ctx) {
     //Render the orbit
-    if(this.orbit){
+    console.log(this.orbit);
+    if(this.orbit && this.instance.settings.renderOrbit){
         var p = this.orbit;
         var cx     = p[0];
         var cy     = p[1];
@@ -559,6 +575,7 @@ Ship.prototype.renderOrbit = function(ctx) {
         var fy = p[6];
         ctx.save();
         ctx.lineWidth = 1/this.instance.entityManager.cameraZoom;
+	console.log(this.instance.entityManager.cameraZoom);
         if(this.instance.settings.enbleDebug){
             ctx.strokeStyle = "yellow"; 
             util.strokeCircle(ctx,fx,fy,200);

@@ -1,6 +1,6 @@
     function Viewer(instance,descr){
     this.setup(instance,descr);
-    console.log(instance);
+    console.log(descr);
     this.init();
 };
 
@@ -32,7 +32,7 @@ Viewer.prototype.loadShip = function(ship){
     var r = Math.max(w,h)+1;
     this.grid.dims = [r,r];
     this.grid = new Grid(this.grid);
-    this.ship = ship.disassemble(this.grid);
+    this.ship = ship.disassemble(this.grid,this.instance);
     this.parts = ship.parts;
 };
 

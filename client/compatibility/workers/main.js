@@ -72,16 +72,7 @@ main._iterCore = function (dt) {
 };
 
 main.quit = function(){
-    if(typeof(Instances) !== "undefined"){
-	for(var i = 0; i < Instances.length; i++){
-	    var inst = Instances[i];
-	    var reqQ = keys[inst.settings.keys.KEY_QUIT];
-	    if (reqQ) {
-		inst.stateManager.switchState('menu');
-		return;
-	    }
-	}
-    }
+    InstanceManager.quit()
 };
 
 main._isGameOver = false;

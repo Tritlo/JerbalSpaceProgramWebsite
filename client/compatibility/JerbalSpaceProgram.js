@@ -1,6 +1,3 @@
-// =========
-// ASTEROIDS
-// =========
 /*
 "use strict";
 
@@ -69,29 +66,6 @@ function processDiagnostics() {
     }
 }
 
-
-// =========
-// LOAD DEFAULTS
-// =========
-
-g_defaultShips = g_defaultShips.map(function (str) {
-    return new Ship($.parseJSON(str));
-});
-
-//Load default parts;
-g_defaultParts = g_defaultParts.map(function (str) {
-    return new Part($.parseJSON(str));
-});
-
-if(util.storageLoad('parts') === undefined){
-    util.storageSave('parts',g_defaultParts);
-}
-
-if(util.storageLoad('ships') === undefined){
-    util.storageSave('ships',g_defaultShips);
-}
-
-var ships = util.storageLoad('ships') || [{}];
-var g_sprites = {};
+var ships = [];
 
 
