@@ -64,14 +64,24 @@ main._updateClocks = function (frameTime) {
 main._iterCore = function (dt) {
     
     // Handle QUIT
-    if (requestedQuit()) {
-	stateManager.switchState('menu');
-        return;
-    }
+    main.quit();
     
     gatherInputs();
     update(dt);
-    render(g_ctx);
+    render();
+};
+
+main.quit = function(){
+    if(typeof(Instances) !== "undefined"){
+	for(var i = 0; i < Instances.length; i++){
+	    var inst = Instances[i];
+	    var reqQ = keys[inst.settings.keys.KEY_QUIT];
+	    if (reqQ) {
+		inst.stateManager.switchState('menu');
+		return;
+	    }
+	}
+    }
 };
 
 main._isGameOver = false;
@@ -80,12 +90,6 @@ main.gameOver = function () {
     this._isGameOver = true;
     console.log("gameOver: quitting...");
 };
-
-// Simple voluntary quit mechanism
-//
-function requestedQuit() {
-    return keys[g_settings.keys.KEY_QUIT];
-}
 
 // Annoying shim for Firefox and Safari
 window.requestAnimationFrame = 

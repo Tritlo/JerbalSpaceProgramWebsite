@@ -16,53 +16,63 @@ e.g. general collision detection.
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 */
 
-var spatialManager = {
+function SpatialManager(instance,descr){
+    this.setup(instance,descr);
+}
 
-// "PRIVATE" DATA
+SpatialManager.prototype = new Manager();
 
-_nextSpatialID : 1, // make all valid IDs non-falsey (i.e. don't start at 0)
+SpatialManager.prototype.setup = function (instance,descr) {
+    this.instance = instance;
+    if(!(descr)){
+	descr = {
+	    _nextSpatialID : 1,
+	    _entities : []
+	};
+    };
+    for (var property in descr) {
+        this[property] = descr[property];
+    }
+};
 
-_entities : [],
 
-// "PRIVATE" METHODS
-//
 
-_inBox : function (entity, topLeftCorner, bottomRightCorner) {
-    if (!(entity)) return;
-    var ePos = entity.getPos()
+SpatialManager.prototype._inBox = function (entity, topLeftCorner, bottomRightCorner) {
+    if (!(entity)) return undefined;
+    var ePos = entity.getPos();
     return util.circInBox(ePos["posX"],ePos["posY"],entity.getRadius(), topLeftCorner,bottomRightCorner);
-    },
+};
 
 
 // PUBLIC METHODS
 
-getNewSpatialID : function() {
+SpatialManager.prototype.getNewSpatialID = function() {
 
     return this._nextSpatialID++;
 
 
-},
+};
 
-register: function(entity) {
+SpatialManager.prototype.register = function(entity) {
     var pos = entity.getPos();
     var spatialID = entity.getSpatialID();
 
     this._entities[spatialID] = entity;
 
-},
+};
 
-unregisterAll: function (){
+SpatialManager.prototype.unregisterAll = function (){
     this._entities= [];
-},
+};
 
-unregister: function(entity) {
+SpatialManager.prototype.unregister = function(entity) {
     var spatialID = entity.getSpatialID();
 
     this._entities[spatialID] = undefined;
 
-},
+}
 
-findEntityInRange: function(posX, posY, radius) {
+SpatialManager.prototype.findEntityInRange = function(posX, posY, radius) {
     for ( var ID in this._entities) {
         var e = this._entities[ID];
         if(e) {
@@ -72,28 +82,27 @@ findEntityInRange: function(posX, posY, radius) {
             return e;
             }
 	}
-},
+    return undefined;
+};
 
-render: function(ctx) {
+SpatialManager.prototype.render = function(ctx) {
     ctx.save();
     ctx.strokeStyle = "red";
-    entityManager.setUpCamera(ctx);
+    this.instance.entityManager.setUpCamera(ctx);
     
     for (var ID in this._entities) {
         var e = this._entities[ID];
 	if (e) {
-	    var pos = e.getPos()
-        if (g_settings.hitBox){
+	    var pos = e.getPos();
+        if (this.instance.settings.hitBox){
             ctx.save();
 	        e.renderHitBox(ctx);
             ctx.stroke();
             ctx.restore();
         } else {
-            util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius()*entityManager.cameraZoom);
+            util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius()*this.instance.entityManager.cameraZoom);
         }
 	    }
     }
     ctx.restore();
-}
-
 };

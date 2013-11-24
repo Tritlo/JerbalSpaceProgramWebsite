@@ -1,5 +1,5 @@
-function ShipDesigner(descr) {
-    this.setup(descr);
+function ShipDesigner(instance,descr) {
+    this.setup(instance,descr);
 };
 
 ShipDesigner.prototype = new State();
@@ -11,19 +11,19 @@ ShipDesigner.prototype.init = function() {
         {
 	    "text" : "Back",
 	    "action" : function (state) {
-		stateManager.switchState("menu");
+		this.instance.stateManager.switchState("menu");
 		}
 	    },
 		{
 		"text" : "Launch",
 		"action" : function(state) {
-            state.launch()
+		    state.launch()
 		}
 		},
         ],
 	"width" : 100,
 	"height" : 100,
-	"location" : [ g_canvas.width - 100, 0]
+	"location" : [this.instance.canvas.width - 100, 0]
 	});
 
     this.menu2 = new Menu({
@@ -86,9 +86,9 @@ ShipDesigner.prototype.init = function() {
 		}
 	    ],
 	    "width" : 100,
-	    "height" : g_canvas.height*2,
+	    "height" : this.instance.canvas.height*2,
 	    "itemHeight" : 25,
-		"location": [55,-g_canvas.height+70]
+		"location": [55,-this.instance.canvas.height+70]
     });
 
     
@@ -185,7 +185,7 @@ ShipDesigner.prototype.onActivation = function ()
 	$('#in9').show();
 	$('#in5').show();
 	$('#in7').show();
-    var canvas_pos = util.findPosOnPage(g_canvas);
+    var canvas_pos = util.findPosOnPage(this.instance.canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
     $('#in5').offset({top:canvas_pos.y + offsetFromMenu +100, left: canvas_pos.x+5});
@@ -244,8 +244,8 @@ ShipDesigner.prototype.update = function (du) {
 };
 
 ShipDesigner.prototype.handleMenus = function(evt,type){
-    var pos = util.findPos(g_canvas);
-    g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+    var pos = util.findPos(this.instance.canvas);
+    var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if (this.menu.inMenu(g_mouse[0],g_mouse[1])){
         this.menu.handleMouse(evt,type);
         return true;
@@ -267,8 +267,8 @@ ShipDesigner.prototype.handleDown = function(evt,type) {
         if(evt.button === 0) {
             if(this.addedParts)
             {
-                var pos = util.findPos(g_canvas);
-                g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+                var pos = util.findPos(this.instance.canvas);
+                var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
 				for(var i = 0; i < this.addedParts.length; i++){
 				   var p = this.addedParts[i];
 				   if(util.circInBox(g_mouse[0],g_mouse[1],
@@ -282,7 +282,7 @@ ShipDesigner.prototype.handleDown = function(evt,type) {
             }
         } else if (evt.button === 2) {
 	    	if(this.heldPart && !(this.heldPart.attached || this.indexOfHeldPart === 0)){
-				this.addedParts.splice(this.indexOfHeldPart,1)
+				this.addedParts.splice(this.indexOfHeldPart,1);
 				this.indexOfHeldPart = -1;
 			}
 			this.heldPart = undefined;
@@ -293,8 +293,8 @@ ShipDesigner.prototype.handleDown = function(evt,type) {
 }
 
 ShipDesigner.prototype.handleMouse = function (evt,type) {
-    var pos = util.findPos(g_canvas);
-    g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+    var pos = util.findPos(this.instance.canvas);
+    var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if(this.handleMenus(evt,type)){
         return true;
     }

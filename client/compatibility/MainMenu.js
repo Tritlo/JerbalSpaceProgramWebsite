@@ -1,5 +1,5 @@
-function MainMenu(descr){
-    this.setup(descr);
+function MainMenu(instance,descr){
+    this.setup(instance,descr);
 }
 
 MainMenu.prototype = new State();
@@ -29,16 +29,14 @@ MainMenu.prototype.init =  function () {
 		  "state" : "shipDesigner"
 		}
 	],
-	    "location": [g_canvas.width/2,0],
+	    "location": [this.instance.canvas.width/2,0],
 	"titleHeight" : 50,
 	"itemHeight" : 42,
-	"width" : g_canvas.width,
-	"height" : g_canvas.height,
+	"width" : this.instance.canvas.width,
+	"height" :this.instance.canvas.height,
 	"margin_bottom" : 5,
 	"onSelected" : function (item) {
-	     stateManager.switchState(item.state);
+	     this.instance.stateManager.switchState(item.state);
 	}
 	});
 	};
-
-var mainMenu = new MainMenu();

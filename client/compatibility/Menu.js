@@ -1,7 +1,8 @@
-function MenuItem(descr) {
-    this.setup(descr);
+function MenuItem(descr,instance) {
+    this.setup(descr,instance);
 };
-MenuItem.prototype.setup = function (descr) {
+MenuItem.prototype.setup = function (descr,instance) {
+    this.instance = instance;
     for (var property in descr) {
         this[property] = descr[property];
     }
@@ -102,8 +103,8 @@ Menu.prototype.onSelected = function (item) {
 };
 
 Menu.prototype.handleMouse = function (evt, type) {
-	var pos = util.findPos(g_canvas);
-	g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+	var pos = util.findPos(this.instance.canvas);
+	var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
         if (this.inMenu(g_mouse[0],g_mouse[1])){
             if (type === "down"){
 

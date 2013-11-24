@@ -29,31 +29,19 @@ function update(dt) {
     //
     if (dt > 200) {
         console.log("Big dt =", dt, ": CLAMPING TO NOMINAL");
-        dt = NOMINAL_UPDATE_INTERVAL;
+        dt = consts.NOMINAL_UPDATE_INTERVAL;
     }
     
     // If using variable time, divide the actual delta by the "nominal" rate,
     // giving us a conveniently scaled "du" to work with.
     //
-    var du = (dt / NOMINAL_UPDATE_INTERVAL)/g_settings.timeMultiplier;
-    if(!(shouldSkipUpdate())){
-        stateManager.update(du);
-        g_prevUpdateDt = original_dt;
-        g_prevUpdateDu = du;
-        g_isUpdateOdd = !g_isUpdateOdd;
-    }
-    stateManager.cameraUpdate(du);
+
+    InstanceManager.update(dt,original_dt);
     
-}
+    }
 
 // Togglable Pause Mode
 //
 
 var g_isUpdatePaused = false;
 
-function shouldSkipUpdate() {
-    if (eatKey(g_settings.keys.KEY_PAUSE)) {
-        g_isUpdatePaused = !g_isUpdatePaused;
-    }
-    return g_isUpdatePaused && !eatKey(g_settings.keys.KEY_STEP);    
-}

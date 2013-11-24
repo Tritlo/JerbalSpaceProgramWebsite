@@ -13,11 +13,11 @@
 
 
 // A generic contructor which accepts an arbitrary descriptor object
-function Ship(descr) {
+function Ship(descr,instance) {
     // Common inherited setup logic from Entity
-    this.setup(descr);
+    this.setup(descr,instance);
     this.parts = this.parts.map(function(x){
-        var p =  new Part(x);
+        var p =  new Part(this.instance,x);
         return p;
     });
     this.rememberResets();
@@ -149,40 +149,20 @@ Ship.prototype.disassemble = function(grid) {
     this.parts.map(function(x) { x.lineWidth = 4;});
     this.parts.map(function(x) { x.toDesigner(grid);});
     return this;
-}
+};
 
 
 Ship.prototype.getAltitude = function () {
-	var terr=entityManager.getTerrain(this.cx,this.cy);
+	var terr= this.instance.entityManager.getTerrain(this.cx,this.cy);
 	var centerDist=Math.sqrt(util.distSq(this.cx,this.cy,terr.center[0],terr.center[1]));
     return (centerDist - terr.minY + this.height/2);
-    }
+    };
 
-Ship.prototype._updateSpriteExplosion = function (du) {
-    var explSpr = g_sprites.explosion;
-    var numframes = explSpr.dim[0]*explSpr.dim[1];
-    var frame = Math.floor(numframes * this._timeFromExplosion/explSpr.duration);
-    if(this._timeFromExplosion > explSpr.duration/4 && !(this._explCraterAdded)){
-	    entityManager.getTerrain(this.cx,this.cy).addCrater(this.cx,this.cy,this.getRadius(),this._explosionRadius,this._explosionSpeed);
-        this._explCraterAdded = true;
-    }
-    if (frame <= numframes){
-	this._explosionFrame = frame;
-        return 0;
-    } else {
-	this._isExploding = false;
-	this._timeFromExplosion = 0;
-	this._explCraterAdded = false;
-	entityManager.createInitialShips();
-	return entityManager.KILL_ME_NOW;
-    }
-    
-};
 
 Ship.prototype._updateVectorExplosion = function (du){
     if(this._timeFromExplosion < this._explosionDuration/2){
 	    //entityManager.getTerrain().addCrater(this._explosionX,this._explosionY,this.getRadius(),this._explosionRadius, this._explosionSpeed);
-	    entityManager.getTerrain(this._explosionX,this._explosionY).addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
+	    this.instance.entityManager.getTerrain(this._explosionX,this._explosionY).addCrater(this._explosionX,this._explosionY,this.getRadius(),this.currentExplosionRadius, this._explosionSpeed);
     }
     if (this._timeFromExplosion > this._explosionDuration){
 	this._explCraterAdded = false;
@@ -194,16 +174,16 @@ Ship.prototype._updateVectorExplosion = function (du){
 	this._explosionDuration = 0;
 	this._timeFromExplosion = 0;
 	if(this.isMain){
-	    entityManager.createInitialShips();
+	    this.instance.entityManager.createInitialShips();
 	    }
-	return entityManager.KILL_ME_NOW;
+	return this.instance.entityManager.KILL_ME_NOW;
 	}
     
 }
 
 Ship.prototype._updateExplosion = function (du) {
     this._timeFromExplosion += du;
-    if (g_settings.spriteExplosion){
+    if (this.instance.settings.spriteExplosion){
 	return this._updateSpriteExplosion(du);
     }
     else {
@@ -224,9 +204,9 @@ Ship.prototype.update = function (du) {
 	return this._updateExplosion(du);
 	}
     
-    spatialManager.unregister(this);
+    this.unregister(this);
     if (this._isDeadNow)
-	return entityManager.KILL_ME_NOW;
+	return this.instance.entityManager.KILL_ME_NOW;
 
     // Perform movement substeps
     var steps = this.numSubSteps;
@@ -236,7 +216,7 @@ Ship.prototype.update = function (du) {
     }
     
 
-    var hitEnt = this.isColliding()
+    var hitEnt = this.isColliding();
     if (hitEnt){
         this.explode(this.cx,this.cy,this.getSpeed());
         if (hitEnt.getSpeed){
@@ -244,12 +224,12 @@ Ship.prototype.update = function (du) {
         }
         
     }    
-    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) spatialManager.register(this);
+    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) this.register(this);
     
 
     //Orbit only changes when the orbiting body changes
     //or thrust is applied.
-    var tN = entityManager.getTerrain(this.cx,this.cy).name;
+    var tN = this.instance.entityManager.getTerrain(this.cx,this.cy).name;
     if(this.thrust > 0 || (this.primaryBodyName && !(tN.localeCompare(this.primaryBodyName)))  ){
           this.updateOrbit();
     }
@@ -257,8 +237,8 @@ Ship.prototype.update = function (du) {
 };
 
 Ship.prototype.getSpeed = function () {
-    var speed = Math.sqrt(this.velX*this.velX + this.velY*this.velY) 
-    return speed
+    var speed = Math.sqrt(this.velX*this.velX + this.velY*this.velY);
+    return speed;
 }
 
 Ship.prototype.computeSubStep = function (du) {
@@ -296,9 +276,9 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
         var r = p.getRadius();
         var x = p.hitBox[0][0];
         var y = p.hitBox[0][1];
-        var nx = x
-        var ny = y
-        terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
+        var nx = x;
+        var ny = y;
+        terrainHit = this.instance.entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],newRot,p.centerOfRot);
     if(terrainHit[0]) break;
     }
     if (!(terrainHit[0])){
@@ -310,8 +290,8 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
 var NOMINAL_GRAVITY = 0.02;
 
 Ship.prototype.computeGravity = function () {
-	if(!g_useGravity) return 0;
-	var gravAccel=entityManager.gravityAt(this.cx,this.cy);
+	if(!this.instance.settings.useGravity) return 0;
+	var gravAccel=this.instance.entityManager.gravityAt(this.cx,this.cy);
 	return gravAccel;
 };
 
@@ -319,15 +299,15 @@ Ship.prototype.computeGravity = function () {
 Ship.prototype.computeThrustMag = function (du) {
 
 
-    if (entityManager.getMainShip() === this){
+    if (this.instance.entityManager.getMainShip() === this){
 
-	if (keys[g_settings.keys.KEY_THRUST]) {
+	if (this.instance.keys[this.instance.settings.keys.KEY_THRUST]) {
 	    this.throttle += this.throttle < 100 ? 1 : 0;
 	}
-	if (keys[g_settings.keys.KEY_RETRO]) {
+	if (this.instance.keys[this.instance.settings.keys.KEY_RETRO]) {
 	    this.throttle -= this.throttle > 0 ? 1 : 0;
 	}
-	if (eatKey(g_settings.keys.KEY_KILLTHROTTLE)) {
+	if (this.instance.eatKey(this.instance.settings.keys.KEY_KILLTHROTTLE)) {
 	    this.throttle = 0;
 	    }
 	}
@@ -364,30 +344,30 @@ Ship.prototype.applyAccel = function (accel,du) {
     var aveVelY = (oldVelY + this.velY) / 2;
     
     // Decide whether to use the average or not (average is best!)
-    var intervalVelX = g_useAveVel ? aveVelX : this.velX;
-    var intervalVelY = g_useAveVel ? aveVelY : this.velY;
+    var intervalVelX = this.instance.settings.useAveVel ? aveVelX : this.velX;
+    var intervalVelY = this.instance.settings.useAveVel ? aveVelY : this.velY;
     
     // s = s + v_ave * t
     var nextX = this.cx + intervalVelX * du;
     var nextY = this.cy + intervalVelY * du;
 
     // bounce
-    if (g_settings.useGravity) {
-        if (g_settings.hitBox){
+    if (this.instance.settings.useGravity) {
+        if (this.instance.settings.hitBox){
             var terrainHit;
             for(var i = 0; i < this.parts.length; i++){
                 var p = this.parts[i];
                 var d = p.getHitBoxDimensions();
-                var r = p.getRadius()
+                var r = p.getRadius();
                 var x = p.hitBox[0][0];
                 var y = p.hitBox[0][1];
                 var nx = x + (nextX - this.cx);
                 var ny = y + (nextY - this.cy);
-                terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
+                terrainHit = this.instance.entityManager.getTerrain(this.cx,this.cy).hit(x,y,nx,ny,r,d[0],d[1],p.rotation,p.centerOfRot);
                 if(terrainHit[0]) break;
             }
         } else {
-            var terrainHit = entityManager.getTerrain(this.cx,this.cy).hit(this.cx,this.cy,nextX,nextY,
+            var terrainHit = this.instance.entityManager.getTerrain(this.cx,this.cy).hit(this.cx,this.cy,nextX,nextY,
                     this.getRadius());
         }
 	if (terrainHit[0]) {
@@ -397,12 +377,12 @@ Ship.prototype.applyAccel = function (accel,du) {
 	    this.velY = oldVelY * -0.9*Math.cos(collisionAngle);
         intervalVelY = this.velY;
         intervalVelX = this.velX;
-	    if (collisionSpeed <= g_settings.minLandingSpeed && Math.abs(this.rotation - collisionAngle)<=g_settings.maxSafeAngle){
+	    if (collisionSpeed <= this.instance.settings.minLandingSpeed && Math.abs(this.rotation - collisionAngle)<=this.instance.settings.maxSafeAngle){
 		this.land(this.cx,this.cy);
 		intervalVelY = this.velY;
 		intervalVelX = this.velX;
 		}
-	    if (collisionSpeed > g_settings.maxSafeSpeed || Math.abs(this.rotation-collisionAngle)>g_settings.maxSafeAngle)
+	    if (collisionSpeed > this.instance.settings.maxSafeSpeed || Math.abs(this.rotation-collisionAngle)>this.instance.settings.maxSafeAngle)
 		{
 		    this.explode(this.cx,this.cy,collisionSpeed);
 		    
@@ -417,7 +397,7 @@ Ship.prototype.applyAccel = function (accel,du) {
         }
         this.cx += du * intervalVelX;
         this.cy += du * intervalVelY;
-        this.setCenter([this.cx,this.cy])
+        this.setCenter([this.cx,this.cy]);
     }
 };
 
@@ -425,7 +405,7 @@ Ship.prototype.applyAccel = function (accel,du) {
 
 
 Ship.prototype.explode = function(x,y,speed){
-    spatialManager.unregister(this);
+    this.unregister(this);
     this._isExploding = true;
     this.velX = 0;
     this.velY = 0;
@@ -442,20 +422,20 @@ Ship.prototype.explode = function(x,y,speed){
 	    var c = part.center;
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
-	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl)
-        this.parts.map(function (p) {p.reset()});
-	    var ship = new Ship({"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
+	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl);
+            this.parts.map(function (p) {p.reset()});
+	    var ship = new Ship(this.instance, {"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
 	    ship.attributesFromParts();
-	    entityManager.generateShip(ship);
+	    this.instance.entityManager.generateShip(ship);
 	    }
     this.parts = [];
     }
     
-}
+};
     
 
 Ship.prototype.land = function(prevX,prevY) {
-    this.cx = prevX
+    this.cx = prevX;
     this.cy = prevY;
     this.velY = 0;
     this.velX = 0;
@@ -465,10 +445,10 @@ Ship.prototype.land = function(prevX,prevY) {
 
 Ship.prototype.applyFriction = function (){
     this.velX *= 0.98;
-    if (Math.abs(this.velX) <= g_settings.minFrictSpeed){
+    if (Math.abs(this.velX) <= this.instance.settings.minFrictSpeed){
 	this.velX = 0;
 	}
-    }
+};
     
 
 Ship.prototype.getRadius = function () {
@@ -492,11 +472,11 @@ var NOMINAL_TORQUE_RATE = 0.001;
 
 Ship.prototype.computeTorqueMag = function (du) {
     this.torque = 0;
-    if(entityManager.getMainShip() === this){
-	if (keys[g_settings.keys.KEY_LEFT]) {
+    if(this.instance.entityManager.getMainShip() === this){
+	if (keys[this.instance.settings.keys.KEY_LEFT]) {
 	    this.torque -= NOMINAL_TORQUE_RATE;
 	}
-	if (keys[g_settings.keys.KEY_RIGHT]) {
+	if (keys[this.instance.settings.keys.KEY_RIGHT]) {
 	    this.torque += NOMINAL_TORQUE_RATE;
 	}
 	}
@@ -508,7 +488,7 @@ Ship.prototype._renderExplosion = function (ctx) {
 };
 
 Ship.prototype._renderVectorExplosion = function (ctx) {
-    ctx.save()
+    ctx.save();
     ctx.fillStyle = "white";
     var radRatio = 1-Math.abs(2*this._timeFromExplosion/this._explosionDuration - 1);
     this.currentExplosionRadius =  radRatio* this._explosionRadius;
@@ -538,7 +518,7 @@ Ship.prototype.renderHitBox = function(ctx){
 Ship.prototype.updateOrbit = function() {
     //Calculate orbit from orbital state vectors
     //See wikipedia for details
-    var terr = entityManager.getTerrain(this.cx,this.cy);
+    var terr = this.instance.entityManager.getTerrain(this.cx,this.cy);
     var f = terr.center;
     var M = terr.mass;
     var mu = consts.G*(M+this.mass);
@@ -576,9 +556,9 @@ Ship.prototype.renderOrbit = function(ctx) {
         var angl   = p[4];
         var fx = p[5];
         var fy = p[6];
-        ctx.save()
-        ctx.lineWidth = 1/entityManager.cameraZoom;
-        if(g_settings.enbleDebug){
+        ctx.save();
+        ctx.lineWidth = 1/this.instance.entityManager.cameraZoom;
+        if(this.instance.settings.enbleDebug){
             ctx.strokeStyle = "yellow"; 
             util.strokeCircle(ctx,fx,fy,200);
             ctx.strokeStyle = "red"; 
@@ -599,7 +579,7 @@ Ship.prototype.render = function (ctx) {
 	this._renderExplosion(ctx);
     } else {
         //Only render orbit when zoomed out enough
-        if(entityManager.cameraZoom < 0.3){
+        if(this.instance.entityManager.cameraZoom < 0.3){
             this.renderOrbit(ctx); 
         }
         this.renderParts(ctx);

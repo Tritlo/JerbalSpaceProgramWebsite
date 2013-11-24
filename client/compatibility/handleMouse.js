@@ -23,9 +23,21 @@ function handleMouseUp(evt) { handleMouse(evt,"up"); }
 
 //Just pass to state;
 function handleMouse(evt,type) {
-    if(stateManager){
-        stateManager.handleMouse(evt,type);
+    if(typeof(Instances) !== "undefined"){
+	var g_mouse = [evt.clientX,evt.clientY];
+	for(var i =0; i < Instances.length; ++i){
+	    var inst = Instances[i];
+	    var pos = util.findPos(inst.canvas);
+	    var w = inst.canvas.width;
+	    var h = inst.canvas.height;
+	    if (util.isBetween(g_mouse[0],pos.x, pos.x+w) && util.isBetween(g_mouse[1],pos.y,pos.y+h)){
+		inst.stateManager.handleMouse(evt,type);
+		return true;
+		}
+	    }
+	return false;
     }
+    return false;
 }
 
 // Handle "down" and "move" events the same way.

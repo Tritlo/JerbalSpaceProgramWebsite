@@ -20,7 +20,7 @@ Grid.prototype.init = function () {
 	}
     this.cellDim = [this.width/this.dims[0],this.height/this.dims[1]];
 	
-}
+};
 
 Grid.prototype.toGridCoords = function(points){
     var grid = this;
@@ -29,7 +29,7 @@ Grid.prototype.toGridCoords = function(points){
     }
     );
     return coords;
-}
+};
 
 Grid.prototype.fromGridCoord = function(iorpoint,j){
     if(j === undefined){
@@ -40,7 +40,7 @@ Grid.prototype.fromGridCoord = function(iorpoint,j){
     }
     //return [i*this.width/this.dims[0] + this.location[0] - this.width/2,j*this.height/this.dims[1]+ this.location[1] - this.height/2];
     return [i*this.width/this.dims[0] + this.location[0],j*this.height/this.dims[1]+ this.location[1]];
-}
+};
 
 Grid.prototype.fromGridCoords = function(coords){
     var grid = this;
@@ -48,7 +48,7 @@ Grid.prototype.fromGridCoords = function(coords){
         return grid.fromGridCoord(p);
     });
     return points;
-}
+};
 
 Grid.prototype.findNearestPoint = function (xorpoint,y) {
     if(y === undefined){
@@ -61,10 +61,10 @@ Grid.prototype.findNearestPoint = function (xorpoint,y) {
     var xs = [];
     var ys = [];
     for(var i = 0; i < line.length; i++){
-	xs.push(line[i][0])
+	xs.push(line[i][0]);
 	}
     for(var i = 0; i < this.points.length; i++){
-	ys.push(this.points[i][0][1])
+	ys.push(this.points[i][0][1]);
 	}
 
     var i = util.binarySearch(y,ys);
@@ -76,7 +76,7 @@ Grid.prototype.findNearestPoint = function (xorpoint,y) {
 	j =  util.square(xs[j]-x) < util.square(xs[j-1]-x) ? j : j-1;
 	}
     return [i,j];
-    }
+    };
 
 Grid.prototype.color = "#0000ff";
 
@@ -121,5 +121,5 @@ Grid.prototype.render = function (ctx) {
 		}
 	    }
 	//ctx.closePath()
-	ctx.restore()
+	ctx.restore();
 };

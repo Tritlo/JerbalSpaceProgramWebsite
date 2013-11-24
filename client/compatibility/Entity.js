@@ -32,15 +32,18 @@ function Entity() {
 
 };
 
-Entity.prototype.setup = function (descr) {
+Entity.prototype.setup = function (instance,descr) {
 
     // Apply all setup properies from the (optional) descriptor
+    
+    this.instance = instance;
     for (var property in descr) {
         this[property] = descr[property];
     }
-    if(typeof(spatialManager) !== 'undefined'){
+    
+    if(typeof(this.instance.spatialManager) !== 'undefined'){
 	// Get my (unique) spatial ID
-	this._spatialID = spatialManager.getNewSpatialID();
+	this._spatialID = this.instance.spatialManager.getNewSpatialID();
     }
     
     // I am not dead yet!
@@ -68,9 +71,17 @@ Entity.prototype.kill = function () {
     this._isDeadNow = true;
 };
 
+Entity.prototype.register = function(){
+    this.instance.spatialManager.register(this);
+};
+
+Entity.prototype.unregister = function(){
+    this.instance.spatialManager.unregister(this);
+};
+
 Entity.prototype.findHitEntity = function () {
     var pos = this.getPos();
-    return spatialManager.findEntityInRange(
+    return this.instance.spatialManager.findEntityInRange(
         pos.posX, pos.posY, this.getRadius()
     );
 };
@@ -81,7 +92,7 @@ Entity.prototype.isColliding = function () {
 };
 
 Entity.prototype.wrapPosition = function () {
-    this.cx = util.wrapRange(this.cx, 0, g_canvas.width);
+    this.cx = util.wrapRange(this.cx, 0, this.instance.canvas.width);
     //this.cy = util.wrapRange(this.cy, 0, g_canvas.height);
 };
 

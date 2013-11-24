@@ -1,6 +1,3 @@
-var g_allowMixedActions = true;
-var g_useGravity = true;
-var g_useAveVel = true;
 var g_settings = {
           "font": "VT323",
           "useGravity": true,

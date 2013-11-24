@@ -81,7 +81,7 @@ Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     }
 
 Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot){
-    if (g_settings.hitBox){
+    if (this.instance.settings.hitBox){
         return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot);
     } else {
         return this.hitWCircle(prevX,prevY,nextX,nextY,radius);
@@ -131,7 +131,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
 	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
 	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
 	var lN = util.lineNormal(x0,y0,x1,y1);
-	var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+	var collisionAngle = util.angleBetweenVectors([0,-1],lN);
     if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
         debugger; 
     }
@@ -155,7 +155,7 @@ Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
         var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
         var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
         var lN = util.lineNormal(x0,y0,x1,y1);
-        var collisionAngle = util.angleBetweenVectors([0,-1],lN)
+        var collisionAngle = util.angleBetweenVectors([0,-1],lN);
         if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
             debugger; 
         }
@@ -238,15 +238,15 @@ Terrain.prototype.renderOcean = function (ctx) {
 	ctx.save();
     ctx.fillStyle= this.oceanColor || "rgba(0,100,255,0.3)";
     if(this.seaLevel){
-        util.fillCircle(ctx,this.center[0],this.center[1], this.seaLevel)
+        util.fillCircle(ctx,this.center[0],this.center[1], this.seaLevel);
     }
 	ctx.fill();
 	ctx.restore();
 }
 
 Terrain.prototype.generateOceans = function(ctx) {
-    var maxRad = this.maxY*0.2
-    var minRad = this.minY*0.2
+    var maxRad = this.maxY*0.2;
+    var minRad = this.minY*0.2;
     var offset = 100;
     var edge = this.minY - maxRad - offset;
     this._Oceans = [];
@@ -262,14 +262,14 @@ Terrain.prototype.generateOceans = function(ctx) {
 
 Terrain.prototype.render = function (ctx) {
     if(this.oceanColor) this.renderOcean(ctx);
-    var terr = this.points
-    ctx.save()
+    var terr = this.points;
+    ctx.save();
     ctx.strokeStyle = this.edgeColor || "white";
     ctx.fillStyle = this.color || "black";
-    if(entityManager.cameraZoom < 0.5){
-        ctx.lineWidth = 1/entityManager.cameraZoom;
+    if(this.instance.entityManager.cameraZoom < 0.5){
+        ctx.lineWidth = 1/this.instance.entityManager.cameraZoom;
     }
-    ctx.beginPath()
+    ctx.beginPath();
     ctx.moveTo(terr[0][0],terr[0][1]);
 	//ctx.font="10px Arial";
     for(var i = 1; i < terr.length;i++){
@@ -279,7 +279,7 @@ Terrain.prototype.render = function (ctx) {
 	ctx.closePath();
 	ctx.stroke();
     ctx.fill();
-    if(g_settings.renderPlanetCenter)
+    if(this.instance.settings.renderPlanetCenter)
         util.strokeCircle(ctx,this.center[0],this.center[1],100)
 	//ctx.strokeText("C",this.center[0],this.center[1]);
     if(this._Oceans){

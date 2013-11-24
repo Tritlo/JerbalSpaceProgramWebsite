@@ -1,5 +1,5 @@
-function Viewer(descr){
-    this.setup(descr);
+function Viewer(instance,descr){
+    this.setup(instance,descr);
     this.init();
 };
 
@@ -11,7 +11,7 @@ Viewer.prototype.init = function(){
 
 
 Viewer.prototype.loadPart = function(part){
-    var part = new Part(part);
+    var part = new Part(this.instance,part);
     var w = part.width;
     var h = part.height;
     var r = Math.max(w,h)+1;
@@ -25,7 +25,7 @@ Viewer.prototype.loadPart = function(part){
 };
 
 Viewer.prototype.loadShip = function(ship){
-    var ship = new Ship(ship);
+    var ship = new Ship(this.instance,ship);
     var w = ship.width;
     var h = ship.height;
     var r = Math.max(w,h)+1;
@@ -52,12 +52,3 @@ Viewer.prototype.render = function(ctx){
 };
 
 Viewer.prototype.update = function(du){};
-
-viewer = new Viewer({
-    grid: {
-	"dims" : [32,32],
-        "width" : 290,
-        "height" : 290,
-        "location": [10,10]
-	}
-    });

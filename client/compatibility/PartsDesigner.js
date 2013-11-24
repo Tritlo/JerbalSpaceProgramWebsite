@@ -1,9 +1,6 @@
-function PartsDesigner(descr) {
-    this.setup(descr);
+function PartsDesigner(instance,descr) {
+    this.setup(instance,descr);
 };
-
-
-
 PartsDesigner.prototype = new State();
 
 PartsDesigner.prototype.init = function() {
@@ -13,13 +10,13 @@ PartsDesigner.prototype.init = function() {
         {
 	    "text" : "Back",
 	    "action" : function (state) {
-		stateManager.switchState("menu");
+		this.instance.stateManager.switchState("menu");
 		}
 	    }
         ],
 	"width" : 100,
 	"height" : 100,
-	"location" : [ g_canvas.width - 100, 0]
+	"location" : [ this.instance.canvas.width - 100, 0]
 	});
 
     this.menu2 = new Menu({
@@ -84,9 +81,9 @@ PartsDesigner.prototype.init = function() {
 		
 	    ],
 	    "width" : 100,
-	    "height" : g_canvas.height*2,
+	    "height" : this.instance.canvas.height*2,
 	    "itemHeight" : 25,
-		"location": [55,-g_canvas.height+85]
+		"location": [55,-this.instance.canvas.height+85]
     });
 
     
@@ -98,7 +95,7 @@ PartsDesigner.prototype.init = function() {
 	});
 
     this.newPart();
-    }
+    };
 
 PartsDesigner.prototype.newPart = function () {
     console.log("new part");
@@ -197,7 +194,7 @@ PartsDesigner.prototype.onActivation = function () {
     for(var i = 1; i < 10; i++){
 	$('#in'+i).show();
 	}
-    var canvas_pos = util.findPosOnPage(g_canvas);
+    var canvas_pos = util.findPosOnPage(this.instance.canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
     $('#in8').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x+5});
@@ -313,8 +310,8 @@ PartsDesigner.prototype.update = function (du) {
 };
 
 PartsDesigner.prototype.handleMenus = function(evt,type){
-    var pos = util.findPos(g_canvas);
-    g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+    var pos = util.findPos(this.instance.canvas);
+    var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if (this.menu.inMenu(g_mouse[0],g_mouse[1])){
         this.menu.handleMouse(evt,type);
         return true;
@@ -358,7 +355,7 @@ PartsDesigner.prototype.addAttachmentPoint = function(){
 PartsDesigner.prototype.handleDown = function(evt,type) {
         if(evt.button === 0) {
             if(this.currentPart) {
-                var flame = this.flame && this.flame.length < 3
+                var flame = (this.flame && this.flame.length < 3);
                 if (flame) {
                     this.flame.push(this.closestPoint);
                 } else {
@@ -377,16 +374,16 @@ PartsDesigner.prototype.handleDown = function(evt,type) {
                 this.currentPart.outline.pop();
             }
         }
-}
+};
 
 PartsDesigner.prototype.handleMouse = function (evt,type) {
-    var pos = util.findPos(g_canvas);
-    g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
+    var pos = util.findPos(this.instance.canvas);
+    var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if(this.handleMenus(evt,type)){
         return true;
     }
-	this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
-	this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]]
+    this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
+    this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]];
     if (type === "down") {
         this.handleDown(evt,type);
     } else if (type === "move") {

@@ -1,8 +1,9 @@
-function Part(descr) {
-    this.setup(descr);
+function Part(instance,descr) {
+    this.setup(instance,descr);
 }
 
-Part.prototype.setup = function (descr) {
+Part.prototype.setup = function (instance,descr) {
+    this.instance = instance;
     for (var property in descr) {
         this[property] = descr[property];
     }
@@ -390,9 +391,9 @@ Part.prototype.render = function (ctx) {
             ctx.lineWidth = this.lineWidth;
         }
 
-	if(typeof(entityManager) !== 'undefined'){
-	    if(entityManager.cameraZoom < 0.5){
-		ctx.lineWidth = 1/entityManager.cameraZoom;
+	if(typeof(this.instance.entityManager) !== 'undefined'){
+	    if(this.instance.entityManager.cameraZoom < 0.5){
+		ctx.lineWidth = 1/this.instance.entityManager.cameraZoom;
 	    }
 	}
 	var cRot = this.centerOfRot;

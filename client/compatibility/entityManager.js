@@ -1,6 +1,6 @@
 /*
 
-entityManager.js
+ntityManager.js
 
 A module which handles arbitrary entity-management for "Asteroids"
 
@@ -22,27 +22,40 @@ with suitable 'data' and 'methods'.
 //
 /*jslint nomen: true, white: true, plusplus: true*/
 
+function EntityManager(instance,descr){
+    this.setup(instance,descr);
+}
 
-var entityManager = {
+EntityManager.protoype = new Manager();
 
-    // "PRIVATE" DATA
+EntityManager.prototype.setup = function (instance,descr) {
+    this.instance = instance;
+    if(!(descr)){
+	descr = {
+	_ships   : [],
+	_terrain : [],
+	cameraOffset: [0,0],
+	trueOffset: [100,100],
+	mouseOffset: [0,0],
+	cameraRotation: 0,
+	cameraZoom: 1,
+	KILL_ME_NOW: -1,
+	lockCamera: false
+	};
+    };
+    for (var property in descr) {
+        this[property] = descr[property];
+    }
+};
 
-    _ships   : [],
 
-    _terrain : [],
 
-    cameraOffset: [0,0],
-    trueOffset: [100,100],
-    mouseOffset: [0,0],
-    cameraRotation: 0,
-    cameraZoom: 1,
-    lockCamera: false,
 
     // "PRIVATE" METHODS
 
-	_generateTerrain : function() {
+EntityManager.prototype._generateTerrain = function() {
     
-    var sL = g_settings.seaLevel;
+    var sL = this.instance.settings.seaLevel;
     var minangl = Math.PI/30;
     var maxangl = Math.PI/2.2;
     var terr = new Terrain({
@@ -83,9 +96,9 @@ var entityManager = {
 	});
     this._terrain.push(terr);
     this._terrain.push(joon);
-},
+};
 
-getTerrain : function (x,y) {
+EntityManager.prototype.getTerrain = function (x,y) {
     var max = Number.MIN_VALUE;
     var maxTerr;
     for(var i = 0; i < this._terrain.length; i++){
@@ -97,24 +110,25 @@ getTerrain : function (x,y) {
         }
     }
     return maxTerr;
-},
+};
 
-gravityFrom : function (terr,x,y){
+
+EntityManager.prototype.gravityFrom = function (terr,x,y){
     return util.lengthOfVector(this.gravityAt(x,y,terr));
-},
+};
 
-gravityAt : function (x,y,terr) {
+EntityManager.prototype.gravityAt = function (x,y,terr) {
     if (terr === undefined) var terr=this.getTerrain(x,y);
     var distance=Math.sqrt(util.distSq(x,y,terr.center[0],terr.center[1]));
     var force=consts.G*terr.mass/(distance*distance);
 	return util.mulVecByScalar(force/distance ,util.vecMinus(terr.center,[x,y]));
-},
+};
 
-createInitialShips: function(){
+EntityManager.prototype.createInitialShips =  function(){
     this.generateShip(ships[0]);
-},
+};
 
-_findNearestShip : function(posX, posY) {
+EntityManager.prototype._findNearestShip = function(posX, posY) {
     var closestShip = null,
         closestIndex = -1,
         closestSq = 1000 * 1000;
@@ -126,7 +140,7 @@ _findNearestShip : function(posX, posY) {
         var distSq = util.wrappedDistSq(
             shipPos.posX, shipPos.posY, 
             posX, posY,
-            g_canvas.width, g_canvas.height);
+            this.instance.canvas.width, this.instance.canvas.height);
 
         if (distSq < closestSq) {
             closestShip = thisShip;
@@ -138,125 +152,124 @@ _findNearestShip : function(posX, posY) {
         theShip : closestShip,
         theIndex: closestIndex
     };
-},
+};
 
-_forEachOf: function(aCategory, fn) {
+EntityManager.prototype._forEachOf = function(aCategory, fn) {
     for (var i = 0; i < aCategory.length; ++i) {
         fn.call(aCategory[i]);
     }
-},
+};
 
 // PUBLIC METHODS
 
 // A special return value, used by other objects,
 // to request the blessed release of death!
 //
-KILL_ME_NOW : -1,
 
 // Some things must be deferred until after initial construction
 // i.e. thing which need `this` to be defined.
 //
-deferredSetup : function () {
+EntityManager.prototype.deferredSetup = function () {
     this._categories = [this._ships,this._terrain];
-},
+};
 
-init: function() {
+EntityManager.prototype.init = function() {
     this.deferredSetup();
     this._generateTerrain();
-},
+};
 
-deInit: function() {
+EntityManager.prototype.deInit =  function() {
     this._terrain = [];
     this._ships   = [];
     this._categories = [];
-    spatialManager.unregisterAll();
+    this.instance.spatialManager.unregisterAll();
     this.resetCamera();
-},
+};
 
-generateShip : function(descr) {
+EntityManager.prototype.generateShip = function(descr) {
     	descr.cx=0;
 	descr.cy=0;
-	this._ships.push(new Ship(descr));
-},
+	this._ships.push(new Ship(this.instance,descr));
+};
 
-killNearestShip : function(xPos, yPos) {
+EntityManager.prototype.killNearestShip = function(xPos, yPos) {
     var theShip = this._findNearestShip(xPos, yPos).theShip;
     if (theShip) {
         theShip.kill();
     }
-},
+};
 
-yoinkNearestShip : function(xPos, yPos) {
+EntityManager.prototype.yoinkNearestShip = function(xPos, yPos) {
     var theShip = this._findNearestShip(xPos, yPos).theShip;
     if (theShip) {
         theShip.setPos(xPos, yPos);
     }
-},
+};
 
-resetShips: function() {
+EntityManager.prototype.resetShips = function() {
     this._forEachOf(this._ships, Ship.prototype.reset);
-},
+};
 
-haltShips: function() {
+EntityManager.prototype.haltShips = function() {
     this._forEachOf(this._ships, Ship.prototype.halt);
-},
+};
 
-clearShips: function() {
+EntityManager.prototype.clearShips = function() {
     this._ships.map(function(x){ if(x){ x.kill()}});
-},
+};
 
-resetCamera: function() {
+EntityManager.prototype.resetCamera = function() {
         this.cameraOffset = [0,0];
         this.cameraRotation = 0;
         this.cameraZoom = 1;
         this.lockCamera = false;
-    },
+};
     
-updateCamera: function () {
+EntityManager.prototype.updateCamera = function () {
     
-    if (eatKey(g_settings.keys.KEY_CAMERA_LOCK)) {
+    if (eatKey(this.instance.settings.keys.KEY_CAMERA_LOCK)) {
         this.lockCamera = !this.lockCamera;
     }
-    if (keys[g_settings.keys.KEY_CAMERA_ZOOMIN]) {
-        this.cameraZoom *= g_settings.cameraZoomRate;
+    if (keys[this.instance.settings.keys.KEY_CAMERA_ZOOMIN]) {
+        this.cameraZoom *= this.instance.settings.cameraZoomRate;
     }
-    if (keys[g_settings.keys.KEY_CAMERA_ZOOMOUT]) {
-        this.cameraZoom /= g_settings.cameraZoomRate;
+    if (keys[this.instance.settings.keys.KEY_CAMERA_ZOOMOUT]) {
+        this.cameraZoom /= this.instance.settings.cameraZoomRate;
     }
-    if (keys[g_settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
-        this.cameraRotation += g_settings.cameraRotateRate;
+    if (keys[this.instance.settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
+        this.cameraRotation += this.instance.settings.cameraRotateRate;
     }
-    if (keys[g_settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
-        this.cameraRotation -= g_settings.cameraRotateRate;
+    if (keys[this.instance.settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
+        this.cameraRotation -= this.instance.settings.cameraRotateRate;
     }
-    if (keys[g_settings.keys.KEY_CAMERA_UP]) {
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
+    if (keys[this.instance.settings.keys.KEY_CAMERA_UP]) {
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
     }										     
-    if (keys[g_settings.keys.KEY_CAMERA_DOWN]) {				     
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
+    if (keys[this.instance.settings.keys.KEY_CAMERA_DOWN]) {				     
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
     }										     
-    if (keys[g_settings.keys.KEY_CAMERA_LEFT]) {				     
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
+    if (keys[this.instance.settings.keys.KEY_CAMERA_LEFT]) {				     
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
     }										     
-    if (keys[g_settings.keys.KEY_CAMERA_RIGHT]) {				     
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(g_settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
+    if (keys[this.instance.settings.keys.KEY_CAMERA_RIGHT]) {				     
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
     }
-    if (keys[g_settings.keys.KEY_CAMERA_RESET]) {
+    if (keys[this.instance.settings.keys.KEY_CAMERA_RESET]) {
 	this.resetCamera();
     }
 
     if(this._ships.length > 0){
         var s = this.getMainShip();
     if(!this.lockCamera){    
-        this.offset = [-s.cx + g_canvas.width/2,-s.cy + g_canvas.height/2];
+        this.offset = [-s.cx + this.instance.canvas.width/2,-s.cy + this.instance.canvas.height/2];
     }
 	this.trueOffset = util.vecPlus(this.offset,this.cameraOffset);
 	this.trueOffset = util.vecPlus(this.trueOffset,util.rotateVector(util.mulVecByScalar(1/this.cameraZoom,this.mouseOffset),-this.cameraRotation));
     }
     
-},
+};
 
-update: function(du) {
+EntityManager.prototype.update = function(du) {
 
 
     for (var c = 0; c < this._categories.length; ++c) {
@@ -272,7 +285,7 @@ update: function(du) {
             if (status === this.KILL_ME_NOW) {
                 // remove the dead guy, and shuffle the others down to
                 // prevent a confusing gap from appearing in the array
-		spatialManager.unregister(aCategory[i]);
+		this.instance.spatialManager.unregister(aCategory[i]);
                 aCategory.splice(i,1);
 		
             }
@@ -282,28 +295,28 @@ update: function(du) {
         }
     }
     
-},
+};
 
-getMainShip: function() {
+EntityManager.prototype.getMainShip = function() {
     for(var i = 0; i < this._ships.length; i++){
 	if (this._ships[i].isMain){
 	    return this._ships[i];
 	    }
 	}
     return this._ships[0];
-    },
+};
     
-setUpCamera: function (ctx){
+EntityManager.prototype.setUpCamera = function (ctx){
     // NOTE: ALWAYS save and restore when using this function
     ctx.translate(g_canvas.width/2,g_canvas.height/2);
     ctx.rotate(this.cameraRotation);
     ctx.scale(this.cameraZoom,this.cameraZoom);
     ctx.translate(-g_canvas.width/2,-g_canvas.height/2);
     ctx.translate(this.trueOffset[0],this.trueOffset[1]);
-},
+};
 
 
-render: function(ctx) {
+EntityManager.prototype.render = function(ctx) {
     var debugX = 10, debugY = 100;
     ctx.save();
     this.setUpCamera(ctx);
@@ -323,9 +336,5 @@ render: function(ctx) {
         debugY += 10;
     }
     ctx.restore();
-}
-
 };
-
-// Some deferred setup which needs the object to have been created first
 
