@@ -6,7 +6,7 @@ Part.prototype.setup = function (descr) {
     for (var property in descr) {
         this[property] = descr[property];
     }
-
+    this.setFlame(this.flame);
     this.updateAttributes();
 };
 
