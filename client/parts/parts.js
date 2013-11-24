@@ -18,6 +18,7 @@ Template.parts.created = function (){
 	return Meteor.absoluteUrl(s);
     });
     var id = Session.get('currentPart');
+    webUtil.clearScripts();
     webUtil.getScriptsInOrder(partFiles, function() {
 	start("Viewer",{
 	    grid: {

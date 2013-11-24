@@ -14,5 +14,6 @@ Template.game.created = function() {
     gameFiles = gameFiles.map(function(s){
 	return Meteor.absoluteUrl(s);
     });
+   webUtil.clearScripts();
    webUtil.getScriptsInOrder(gameFiles,function() {start("JSP");});
 };

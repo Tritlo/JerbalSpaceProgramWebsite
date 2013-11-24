@@ -21,6 +21,7 @@ Template.ships.created = function (){
     });
     
     var id = Session.get('currentShip');
+    webUtil.clearScripts();
     webUtil.getScriptsInOrder(shipFiles, function() {
 	start("Viewer",{
 	    grid: {
