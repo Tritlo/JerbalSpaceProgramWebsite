@@ -5,9 +5,11 @@
 	Sorry, but your browser does not support the HTML5 canvas tag.
 	</canvas>
   </div>
-  {{#each parts}}
-    {{> part}}
-  {{/each}}
+  <div id="partsList">
+    {{#each parts}}
+      {{> part}}
+    {{/each}}
+  </div>
 </template>
 
 <template name="part">
