@@ -22,9 +22,13 @@ Simulation.prototype.cameraUpdate = function(du) {
 };
 
 Simulation.prototype.onActivation = function(){
-    this.instance.Stars.init(); 
+    this.instance.Stars = new Stars(this.instance);
+    this.instance.spatialManager.init();
     this.instance.entityManager.init();
-    this.instance.entityManager.createInitialShips();
+    this.instance.HUD = new HUD(this.instance);
+    if(!this.instance.entityManager.getMainShip()){
+	this.instance.entityManager.createInitialShips();
+	}
     var s = this.instance.entityManager.getMainShip();
     this.instance.entityManager.getTerrain(s.cx,s.cy).addLaunchpad(s);
 };

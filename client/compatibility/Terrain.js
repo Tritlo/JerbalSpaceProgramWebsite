@@ -1,14 +1,13 @@
 "use strict";
 
-
-function Terrain(descr) {
-    this.setup(descr);
+function Terrain(instance,descr) {
+    this.setup(instance,descr);
     this.points = this.genTerrain();
     if(this.color){
         var c = parseCSSColor(this.color);
         var c = [Math.floor(c[0]*0.5),Math.floor(c[1]*0.5),Math.floor(c[2]*0.5),c[3]];
         console.log(this.color);
-        this.edgeColor = this.edgeColor || "rgba("+c[0]+","+c[1]+","+c[2]+","+c[3]+")" 
+        this.edgeColor = this.edgeColor || "rgba("+c[0]+","+c[1]+","+c[2]+","+c[3]+")" ;
     }
 
     if(this.hasOceans){
@@ -22,10 +21,10 @@ Terrain.prototype.spliceByIndex = function (indFrom, indTo, yValues) {
     for(var i = 0; i < yValues.length; i++){
 	this.points[indFrom+i][1] = yValues[i];
 	}
-    }
+};
 Terrain.prototype.addLaunchpad = function (ship){
 	this.spliceByAngle([[-100,50],[-50,ship.height/2+5],[50,ship.height/2+5],[100,50]]);
-}
+};
 
 Terrain.prototype.spliceByAngle = function (values) {
     var	C=this.center;
@@ -38,7 +37,7 @@ Terrain.prototype.spliceByAngle = function (values) {
     var head = this.points.slice(0,sliceStart);
     var tail = this.points.slice(sliceEnd+1,this.points.length);
     this.points = head.concat(values,tail);
-    }
+    };
 Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
     var sliceStart = util.findIndexesOfClosestPoints(xFrom,this.points)[1];
     var sliceEnd = util.findIndexesOfClosestPoints(xTo,this.points)[0];
@@ -46,7 +45,7 @@ Terrain.prototype.spliceByXCoords = function (xFrom, xTo, values) {
     var head = this.points.slice(0,sliceStart);
     var tail = this.points.slice(sliceEnd+1,this.points.length);
     this.points = head.concat(values,tail);
-    }
+    };
 
 Terrain.prototype.heightAtX = function (x) {
     var ps = util.findClosestPoints(x,0,this.points);
@@ -179,7 +178,7 @@ Terrain.prototype.genTerrain = function () {
 	maxAng =this.maxAngle;
 	var y_init = util.randRange(yMin,yMax);
 	var currX = xMin,
-		currY = y_init;
+	    currY = y_init;
 	points[0]=[currX,currY];
 	var sameY = Math.floor(Math.random()*2),
 	up_down = 0;

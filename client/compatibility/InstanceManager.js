@@ -10,7 +10,9 @@ InstanceManager.getNewID = function(){
 };
 
 InstanceManager.addInstance = function(instance){
-    this.instances[Instance.ID] = instance;
+    console.log("adding instance with ID: "+ instance.ID);
+    console.log(instance);
+    this.instances[instance.ID] = instance;
 };
 
 InstanceManager.render = function(){
@@ -22,4 +24,21 @@ InstanceManager.update = function(dt,original_dt){
     for(var ID in this.instances)
 	this.instances[ID].update(dt,original_dt);
     };
+
+
+InstanceManager.handleMouse = function(evt,type){
+    var g_mouse = [evt.clientX,evt.clientY];
+    for(var ID in this.instances){
+	var inst = this.instances[ID];
+	var pos = util.findPos(inst.canvas);
+	var w = inst.canvas.width;
+	var h = inst.canvas.height;
+	if (util.isBetween(g_mouse[0],pos.x, pos.x+w) && util.isBetween(g_mouse[1],pos.y,pos.y+h)){
+	    return inst.handleMouse(evt,type);
+	    }
+	}
+    return false;
+};
+
+InstanceManager.init();
 

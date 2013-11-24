@@ -5,13 +5,13 @@ function ShipDesigner(instance,descr) {
 ShipDesigner.prototype = new State();
 
 ShipDesigner.prototype.init = function() {
-    this.back = new Menu({
+    this.back = new Menu(this.instance,{
 	"state" : this,
 	"items" : [
         {
 	    "text" : "Back",
 	    "action" : function (state) {
-		this.instance.stateManager.switchState("menu");
+		state.instance.stateManager.switchState("menu");
 		}
 	    },
 		{
@@ -26,7 +26,7 @@ ShipDesigner.prototype.init = function() {
 	"location" : [this.instance.canvas.width - 100, 0]
 	});
 
-    this.menu2 = new Menu({
+    this.menu2 = new Menu(this.instance,{
 	"state" : this,
 	"items" : [
         {
@@ -55,7 +55,7 @@ ShipDesigner.prototype.init = function() {
 	"location" : [ 260, 0]
 	});
 
-    this.menu = new Menu({
+    this.menu = new Menu(this.instance,{
 	    "state" : this,
 	    "items" : [
 		{
@@ -100,16 +100,16 @@ ShipDesigner.prototype.init = function() {
 	});
 
     this.loadShip();
-    }
+    };
 
 ShipDesigner.prototype.launch = function(){
     this.currentShip.assemble(this.grid);
-    var protoShip = new Ship();
+    var protoShip = new Ship(this.instance);
     this.currentShip.cx = protoShip.cx;
     this.currentShip.cy = protoShip.cy;
-    entityManager.clearShips();
-    entityManager.generateShip(this.currentShip);
-    stateManager.switchState("simulation");
+    this.instance.entityManager.clearShips();
+    this.instance.entityManager.generateShip(this.currentShip);
+    this.instance.stateManager.switchState("simulation");
 }
 
 ShipDesigner.prototype.newShip = function ()
@@ -125,7 +125,7 @@ ShipDesigner.prototype.newShip = function ()
 
 ShipDesigner.prototype.addPart = function (partInd){
     var parts = util.storageLoad("parts");
-    var part = new Part(parts[partInd]);
+    var part = new Part(this.instance, parts[partInd]);
     this.heldPart = part.toDesigner(this.grid);
     if(this.addedParts){
 		this.indexOfHeldPart = this.addedParts.length;
@@ -142,8 +142,7 @@ ShipDesigner.prototype.addPart = function (partInd){
 
 ShipDesigner.prototype.saveShip = function ()
 {
-    this.currentShip = new Ship({"parts"
-    : this.addedParts,
+    this.currentShip = new Ship(this.instance,{"parts" : this.addedParts,
     "name": $('#in5').val()
     });
 
@@ -172,7 +171,7 @@ ShipDesigner.prototype.loadShip = function ()
 {
     var ships = util.storageLoad("ships");
     var selVal = $('#in9').val() || 0;
-    var ship = new Ship(ships[selVal]);
+    var ship = new Ship(this.instance, ships[selVal]);
     var ship = ship.disassemble(this.grid);
 	this.currentShip = ship;
     var gri = this.grid;

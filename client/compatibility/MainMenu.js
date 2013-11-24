@@ -15,7 +15,7 @@ MainMenu.prototype.update =  function(du) {
     this.menu.update(du);
 };
 MainMenu.prototype.init =  function () {
-	this.menu = new Menu({
+	this.menu = new Menu( this.instance,{
 	"state" : this,
 	"title" : "JERBAL SPACE PROGRAM",
 	"items": [ {

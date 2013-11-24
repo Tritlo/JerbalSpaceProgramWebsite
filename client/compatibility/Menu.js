@@ -12,11 +12,12 @@ MenuItem.prototype.hitBox = false;
 MenuItem.prototype.selected = false;
 
 
-function Menu(descr) {
-    this.setup(descr);
+function Menu(instance,descr) {
+    this.setup(instance,descr);
 };
 
-Menu.prototype.setup = function (descr) {
+Menu.prototype.setup = function (instance,descr) {
+    this.instance = instance;
     for (var property in descr) {
         this[property] = descr[property];
     }

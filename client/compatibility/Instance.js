@@ -5,7 +5,7 @@ function Instance(descr){
 
 Instance.prototype.init = function (){
     if(this.settings === undefined){
-	this.settings = g_settings;
+        this.settings = g_settings;
     }
     this.entityManager = new EntityManager(this);
     this.spatialManager = new SpatialManager(this);
@@ -14,15 +14,22 @@ Instance.prototype.init = function (){
     this.partsDesigner = new PartsDesigner(this);
     this.shipDesigner = new ShipDesigner(this);
     this.simulation = new Simulation(this);
-    this.viewer = new Viewer(this);
+    if(this.grid)
+        this.viewer = new Viewer(this,this.grid);
 
+    this.stateManager.init();
 };
 
 Instance.prototype.start = function(){
-    this.ID = instanceManager.getNewID();
-    instanceManager.addInstance(this);
+    this.ID = InstanceManager.getNewID();
+    
+    InstanceManager.addInstance(this);
 };
 
+
+Instance.prototype.handleMouse = function(evt,type){
+    return this.stateManager.handleMouse(evt,type);
+};
 
 Instance.prototype.setup = function (descr){
     for (var property in descr) {
@@ -33,7 +40,7 @@ Instance.prototype.setup = function (descr){
 
 Instance.prototype.render = function (){
     var inst = this;
-	 var ctx = inst.ctx;
+    var ctx = inst.ctx;
     if(inst.settings.enableDebug) {
 	if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_CLEAR)) inst.settings.doClear = !inst.settings.doClear;
 	if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_BOX)) inst.settings.doBox = !inst.settings.doBox;

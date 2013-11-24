@@ -54,11 +54,10 @@ EntityManager.prototype.setup = function (instance,descr) {
     // "PRIVATE" METHODS
 
 EntityManager.prototype._generateTerrain = function() {
-    
     var sL = this.instance.settings.seaLevel;
     var minangl = Math.PI/30;
     var maxangl = Math.PI/2.2;
-    var terr = new Terrain({
+    var terr = new Terrain(this.instance,{
     "name" : "Jerbin",
 	"minX":-10000,
 	"maxX": 10000,
@@ -77,7 +76,7 @@ EntityManager.prototype._generateTerrain = function() {
     //"numOceans" : 3,
     //"hasOceans" : true
 	});
-    var joon = new Terrain({
+    var joon = new Terrain(this.instance,{
     "name" : "Joon",
 	"minX":-5000,
 	"maxX": 5000,
@@ -215,7 +214,7 @@ EntityManager.prototype.haltShips = function() {
 };
 
 EntityManager.prototype.clearShips = function() {
-    this._ships.map(function(x){ if(x){ x.kill()}});
+    this._ships.map(function(x){ if(x){ x.kill();}});
 };
 
 EntityManager.prototype.resetCamera = function() {
@@ -308,10 +307,10 @@ EntityManager.prototype.getMainShip = function() {
     
 EntityManager.prototype.setUpCamera = function (ctx){
     // NOTE: ALWAYS save and restore when using this function
-    ctx.translate(g_canvas.width/2,g_canvas.height/2);
+    ctx.translate(this.instance.canvas.width/2,this.instance.canvas.height/2);
     ctx.rotate(this.cameraRotation);
     ctx.scale(this.cameraZoom,this.cameraZoom);
-    ctx.translate(-g_canvas.width/2,-g_canvas.height/2);
+    ctx.translate(-this.instance.canvas.width/2,-this.instance.canvas.height/2);
     ctx.translate(this.trueOffset[0],this.trueOffset[1]);
 };
 
@@ -321,7 +320,7 @@ EntityManager.prototype.render = function(ctx) {
     ctx.save();
     this.setUpCamera(ctx);
     if(g_settings.graphicsLevel >= 1){
-        Stars.render(ctx);
+        this.instance.Stars.render(ctx);
         }
     for (var c = 0; c < this._categories.length; ++c) {
 

@@ -45,7 +45,7 @@ main.iter = function (frameTime) {
     this._iterCore(this._frameTimeDelta_ms);
     
     // Diagnostics, such as showing current timer values etc.
-    this._debugRender(g_ctx);
+    //this._debugRender(g_ctx);
     
     // Request the next iteration if needed
     if (!this._isGameOver) this._requestNextIteration();
@@ -138,7 +138,7 @@ main.init = function () {
     // We'll be working on a black background here,
     // so let's use a fillStyle which works against that...
     //
-    g_ctx.fillStyle = "white";
+    //g_ctx.fillStyle = "white";
     this._isGameOver = false;
 
     this._requestNextIteration();

@@ -21,7 +21,7 @@ StateManager.prototype.init = function(states) {
 		    "simulation" : this.instance.simulation,
 		    "partsDesigner" : this.instance.partsDesigner,
 		    "shipDesigner" : this.instance.shipDesigner,
-	    "viewer" : this.instance.viewer
+	            "viewer" : this.instance.viewer
 	};
         //Deactivate all other possible states
         if(typeof(this.instance.simulation) !== 'undefined'){
@@ -44,9 +44,11 @@ StateManager.prototype.init = function(states) {
         for(var i = 0; i < stateK.length; i++){
             var state = stateK[i];
             if(!state.hasBeenInitialized){
-                console.log("Initializing " + state);
-                this.states[state].init();
-                this.states[state].hasBeenInitialized = true;
+		if(this.states[state]){
+		    console.log("Initializing " + state);
+		    this.states[state].init();
+		    this.states[state].hasBeenInitialized = true;
+		    }
             }
         }
     };

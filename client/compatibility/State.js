@@ -1,10 +1,11 @@
-function State(descr) {
-    this.setup(descr);
+function State(instance, descr) {
+    this.setup(instance, descr);
     this.init();
  };
 
-State.prototype.setup = function (descr) {
+State.prototype.setup = function (instance, descr) {
     // Apply all setup properies from the (optional) descriptor
+    this.instance = instance;
     for (var property in descr) {
         this[property] = descr[property];
     }

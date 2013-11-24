@@ -1,5 +1,6 @@
-function Viewer(instance,descr){
+    function Viewer(instance,descr){
     this.setup(instance,descr);
+    console.log(instance);
     this.init();
 };
 

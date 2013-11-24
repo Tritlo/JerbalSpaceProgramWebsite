@@ -4,6 +4,6 @@
 var g_frameCounter = 1;
 
 function render() {
-    instanceManager.render();
+    InstanceManager.render();
     ++g_frameCounter;
 } 

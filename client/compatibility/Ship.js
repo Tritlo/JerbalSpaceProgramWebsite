@@ -16,8 +16,9 @@
 function Ship(descr,instance) {
     // Common inherited setup logic from Entity
     this.setup(descr,instance);
+    var inst = this.instance;
     this.parts = this.parts.map(function(x){
-        var p =  new Part(this.instance,x);
+        var p =  new Part(inst,x);
         return p;
     });
     this.rememberResets();
@@ -301,13 +302,13 @@ Ship.prototype.computeThrustMag = function (du) {
 
     if (this.instance.entityManager.getMainShip() === this){
 
-	if (this.instance.keys[this.instance.settings.keys.KEY_THRUST]) {
+	if (keys[this.instance.settings.keys.KEY_THRUST]) {
 	    this.throttle += this.throttle < 100 ? 1 : 0;
 	}
-	if (this.instance.keys[this.instance.settings.keys.KEY_RETRO]) {
+	if (keys[this.instance.settings.keys.KEY_RETRO]) {
 	    this.throttle -= this.throttle > 0 ? 1 : 0;
 	}
-	if (this.instance.eatKey(this.instance.settings.keys.KEY_KILLTHROTTLE)) {
+	if (eatKey(this.instance.settings.keys.KEY_KILLTHROTTLE)) {
 	    this.throttle = 0;
 	    }
 	}
@@ -423,7 +424,7 @@ Ship.prototype.explode = function(x,y,speed){
 	    var vecFromExpl = util.vecMinus(c,[x,y]);
 	    var disFExpl = util.lengthOfVector(vecFromExpl);
 	    var vel = util.mulVecByScalar(0.03*explRadius/disFExpl + 0.005*disFExpl,vecFromExpl);
-            this.parts.map(function (p) {p.reset()});
+            this.parts.map(function (p) {p.reset();});
 	    var ship = new Ship(this.instance, {"parts": [this.parts[i]], "cx": c[0], "cy": c[1], "isMain": false, "rotation": this.rotation, "velX": vel[0], "velY": vel[1], "thrust": this.thrust, "throttle":this.throttle });
 	    ship.attributesFromParts();
 	    this.instance.entityManager.generateShip(ship);

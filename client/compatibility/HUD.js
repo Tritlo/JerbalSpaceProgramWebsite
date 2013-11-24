@@ -1,4 +1,5 @@
 function HUD(instance,descr){
+    this.setup(instance,descr);
 }
 
 HUD.prototype.setup = function(instance,descr){

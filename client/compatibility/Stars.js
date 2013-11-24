@@ -1,6 +1,7 @@
 function Stars(instance, descr){
     this.instance = instance;
     this.init(descr);
+    console.log(this);
 }
 
 // Initialize the Starfield.
@@ -136,7 +137,7 @@ Stars.prototype._applyParallax = function(os,x,y,p){
 // Renders a random star. If not the star described,
 // destroys the universe.
 // (seriously though, just renders the star described))
-Stars._renderStar = function(ctx,x,y,p,l){
+Stars.prototype._renderStar = function(ctx,x,y,p,l){
     var s = this.instance.entityManager.getMainShip();
     
     var os = this.instance.entityManager.trueOffset;
