@@ -14,9 +14,26 @@ Template.parts.created = function (){
 	,"game/Viewer.js"
 	,"game/stateManager.js"
 	];
-		    
+    partFiles = partFiles.map(function(s){
+	return Meteor.absoluteUrl(s);
+    });
+    var id = Session.get('currentPart');
     webUtil.getScriptsInOrder(partFiles, function() {
 	start("Viewer");
+	if(id){Viewer.loadPart(Parts.findOne(id));}
     });
 };
+
+Template.parts.helpers({
+    parts: function(){
+	return Parts.find();
+	}
+    });
+
+Template.parts.events({
+    "click a": function(event){
+	var id = event.toElement.name;
+	Viewer.loadPart(Parts.findOne(id));
+	}
+});
 

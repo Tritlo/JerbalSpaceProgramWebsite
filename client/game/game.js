@@ -8,8 +8,7 @@ Template.game.created = function() {
 	  , "game/main.js" , "game/State.js", "game/settings.js"
 	  , "game/Grid.js" , "game/Part.js" , "game/Menu.js"
 	  , "game/PartsDesigner.js" , "game/ShipDesigner.js" , "game/Simulation.js"
-	  , "game/Viewer.js"
-	  , "game/stateManager.js" , "game/handleMouse.js" ,  "game/init.js"
+	  , "game/Viewer.js" , "game/stateManager.js" , "game/handleMouse.js"
 	  ,"game/JerbalSpaceProgram.js", "game/start.js"
 	];
    webUtil.getScriptsInOrder(gameFiles,function() {start("JSP");});

@@ -10,6 +10,9 @@ Router.map(function() {
     this.route('instructions', {
     });
     this.route('parts', {
-	path: '/parts'
+	path: '/parts/:_id?',
+	before: [function(){
+	    Session.set('currentPart',this.params._id);
+	}]
     });
 });
