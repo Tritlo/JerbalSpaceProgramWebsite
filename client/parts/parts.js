@@ -1,25 +1,5 @@
-Template.parts.created = function (){
-    var partFiles = [
-	 "game/globals.js"
-	,"game/main.js"
-	,"game/update.js"
-	,"game/render.js"
-	,"game/util.js"
-	,"game/start.js"
-	,"game/keys.js"
-	,"game/settings.js"
-	,"game/Grid.js"
-	,"game/Part.js"
-	,"game/State.js"
-	,"game/Viewer.js"
-	,"game/stateManager.js"
-	];
-    partFiles = partFiles.map(function(s){
-	return Meteor.absoluteUrl(s);
-    });
+Template.parts.rendered = function (){
     var id = Session.get('currentPart');
-    webUtil.clearScripts();
-    webUtil.getScriptsInOrder(partFiles, function() {
 	start("Viewer",{
 	    grid: {
 		"dims" : [32,32],
@@ -27,9 +7,8 @@ Template.parts.created = function (){
 		"height" : 290,
 		"location": [10,10]
 		}
-	}, "viewerCanvas");
+	});
 	if(id){viewer.loadPart(Parts.findOne(id));}
-    });
 };
 
 Template.parts.helpers({
