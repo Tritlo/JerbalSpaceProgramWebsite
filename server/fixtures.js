@@ -1,3 +1,10 @@
+/*var oldflame = {
+      points:[[4,15],[20,15],[12,41]],
+      center:[12,15],
+      direction:[0,1],
+      length:26
+};
+*/
 if (Parts.find().count() == 0){
   Parts.insert({
     author: "Tritlo",
@@ -100,12 +107,7 @@ if (Parts.find().count() == 0){
     type:"Other",
     outline:[[0,0],[0,1],[0,1],[8,9],[4,15],[20,15],[16,9],[24,1],[24,0]],
     attachmentPoints:[[24,0],[0,0],[12,0]],
-    flame:{
-      points:[[4,15],[20,15],[12,41]],
-      center:[12,15],
-      direction:[0,1],
-      length:26
-    },
+    flame:[[4,15],[20,15],[12,41]],
     height:15,
     width:24,
     center:[10.666666666666666,5.666666666666667],
@@ -218,27 +220,22 @@ if (Ships.find().count() == 0){
         type:"Other",
         outline:[[16,32],[16,33],[16,33],[24,41],[20,47],[36,47],[32,41],[40,33],[40,32]],
         attachmentPoints:[[40,32],[16,32],[28,32]],
-        flame:{
-          points:[[20,47],[36,47],[28,63]],
-          center:[28,47],
-	  direction:[0,1],
-	  length:16
-	},
-	height:15,
-	width:24,
-	center:[26.666666666666668,37.666666666666664],
-	gridCenterOffset:[-0.6666666666666679,-0.6666666666666643],
-	currentFuel:0,
-	hitBox:[[16,32],[40,47]],
-	centerOfRot:[27.714285714285715,24.385714285714286],
-	origOutline:[[16,32],[16,33],[16,33],[24,41],[20,47],[36,47],[32,41],[40,33],[40,32]],
-	radius:7.5,
-	attached:true,
-	renderHb:false,
-	currentMass:0.1,
-	fuelDensity:0.01,
-	types:["Other","Fuel Tank","Engine"],
-	rotation:0
+        flame:[[20,47],[36,47],[28,63]],
+		height:15,
+		width:24,
+		center:[26.666666666666668,37.666666666666664],
+		gridCenterOffset:[-0.6666666666666679,-0.6666666666666643],
+		currentFuel:0,
+		hitBox:[[16,32],[40,47]],
+		centerOfRot:[27.714285714285715,24.385714285714286],
+		origOutline:[[16,32],[16,33],[16,33],[24,41],[20,47],[36,47],[32,41],[40,33],[40,32]],
+		radius:7.5,
+		attached:true,
+		renderHb:false,
+		currentMass:0.1,
+		fuelDensity:0.01,
+		types:["Other","Fuel Tank","Engine"],
+		rotation:0
       },
       {
 	author:"Tritlo",
