@@ -1,21 +1,15 @@
-function HUD(instance,descr){
-    this.setup(instance,descr);
+function HUD(instanceID,descr){
+    this.setup(instanceID,descr);
 }
-
-HUD.prototype.setup = function(instance,descr){
-    this.instance = instance;
-    for (var property in descr) {
-        this[property] = descr[property];
-    }
-};
+HUD.prototype = new Instantiable();
 
 HUD.prototype.render = function(ctx) {
     ctx.save();
-    ctx.strokeStyle = this.instance.settings.hudColor;
-    ctx.fillStyle = this.instance.settings.hudColor;
+    ctx.strokeStyle = this.getInstance().settings.hudColor;
+    ctx.fillStyle = this.getInstance().settings.hudColor;
     ctx.textAlign ="center";
-    ctx.font = "10pt " +this.instance.settings.font;
-    var ship = this.instance.entityManager.getMainShip();
+    ctx.font = "10pt " +this.getInstance().settings.font;
+    var ship = this.getInstance().entityManager.getMainShip();
     this.renderLowerHud(ctx,ship);
     this.renderUpperHud(ctx,ship);
     ctx.restore();
@@ -28,8 +22,8 @@ HUD.prototype.renderLowerHud = function(ctx,ship){
     var speed = Math.sqrt(vX*vX + vY*vY);
     var dirV = [vX/speed, vY/speed];
     var cRad = 40;
-    var cHeight = 50*this.instance.settings.hudSize;
-    var translation = [this.instance.canvas.width/2, this.instance.canvas.height - cHeight];
+    var cHeight = 50*this.getInstance().settings.hudSize;
+    var translation = [this.getInstance().canvas.width/2, this.getInstance().canvas.height - cHeight];
     //Below
     var orb = ship.orbit;
     if(orb){
@@ -37,7 +31,7 @@ HUD.prototype.renderLowerHud = function(ctx,ship){
         var dirOfOrbVel = util.angleOfVector(shipToOrbc) + Math.PI;
     }
     ctx.translate(translation[0],translation[1]);
-    ctx.scale(this.instance.settings.hudSize, this.instance.settings.hudSize);
+    ctx.scale(this.getInstance().settings.hudSize, this.getInstance().settings.hudSize);
     this.renderGyroscope(ctx,cRad,speed,dirV,ship.rotation,ship.angularVel,dirOfOrbVel);
     this.renderSpeed(ctx,cRad,speed);
     this.renderThrottle(ctx,cRad,ship.throttle);
@@ -46,12 +40,12 @@ HUD.prototype.renderLowerHud = function(ctx,ship){
 
 HUD.prototype.renderUpperHud = function(ctx,ship){
     ctx.save();
-    var uHeight = 10*this.instance.settings.hudSize;
-    ctx.translate(this.instance.canvas.width/2,uHeight);
-    ctx.scale(this.instance.settings.hudSize, this.instance.settings.hudSize);
+    var uHeight = 10*this.getInstance().settings.hudSize;
+    ctx.translate(this.getInstance().canvas.width/2,uHeight);
+    ctx.scale(this.getInstance().settings.hudSize, this.getInstance().settings.hudSize);
     this.renderAltitude(ctx,ship,0);
     this.renderFuel(ctx,ship,10);
-    if (this.instance.settings.hudExtra.length > 0) {
+    if (this.getInstance().settings.hudExtra.length > 0) {
 	this.renderExtra(ctx,20);
 	}
     ctx.restore();
@@ -64,14 +58,14 @@ HUD.prototype.renderFuel = function(ctx,ship,yoffset) {
 };
 
 HUD.prototype.renderExtra = function(ctx,yoffset){
-    ctx.fillText("Extra: " + this.instance.settings.hudExtra, 0,yoffset);
+    ctx.fillText("Extra: " + this.getInstance().settings.hudExtra, 0,yoffset);
     ctx.stroke();
     };
     
     
 
 HUD.prototype.renderAltitude = function(ctx,ship,yoffset) {
-    ctx.fillText("Alt: " + (this.instance.settings.pixelToMeterConstant*ship.getAltitude()).toFixed(0) + " m", 0,yoffset);
+    ctx.fillText("Alt: " + (this.getInstance().settings.pixelToMeterConstant*ship.getAltitude()).toFixed(0) + " m", 0,yoffset);
     ctx.stroke();
     };
 
@@ -104,7 +98,7 @@ HUD.prototype.renderGyroscope = function(ctx,cRad,speed,dirV,rotation,rotVel,dir
 
 HUD.prototype.renderSpeed = function(ctx,cRad,speed){
     //TODO: Make speed accurate according to altitude change
-    ctx.fillText("Speed: " + (this.instance.settings.pixelToMeterConstant*speed*60).toFixed(2) + " m/s" , 0, - cRad - 10);
+    ctx.fillText("Speed: " + (this.getInstance().settings.pixelToMeterConstant*speed*60).toFixed(2) + " m/s" , 0, - cRad - 10);
     };
 
 HUD.prototype.renderThrottle = function(ctx,cRad,throttle) {

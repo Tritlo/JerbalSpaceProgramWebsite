@@ -1,10 +1,10 @@
-function StateManager(descr,instance){
-    this.setup(descr,instance);
+function StateManager(instanceID,descr){
+    this.setup(instanceID,descr);
 }
 
 StateManager.prototype = new Manager();
-StateManager.prototype.setup = function (instance,descr) {
-    this.instance = instance;
+StateManager.prototype.setup = function (instanceID,descr) {
+    this.instanceID = instanceID;
     if(!(descr)){
 	descr = {
 	    "currentState" : undefined
@@ -17,28 +17,28 @@ StateManager.prototype.setup = function (instance,descr) {
 
 StateManager.prototype.init = function(states) {
 	this.states =  {
-		    "menu" : this.instance.mainMenu,
-		    "simulation" : this.instance.simulation,
-		    "partsDesigner" : this.instance.partsDesigner,
-		    "shipDesigner" : this.instance.shipDesigner,
-	            "viewer" : this.instance.viewer
+		    "menu" : this.getInstance().mainMenu,
+		    "simulation" : this.getInstance().simulation,
+		    "partsDesigner" : this.getInstance().partsDesigner,
+		    "shipDesigner" : this.getInstance().shipDesigner,
+	            "viewer" : this.getInstance().viewer
 	};
         //Deactivate all other possible states
-        if(typeof(this.instance.simulation) !== 'undefined'){
-            this.instance.simulation.onDeactivation();
+        if(typeof(this.getInstance().simulation) !== 'undefined'){
+            this.getInstance().simulation.onDeactivation();
         }
-        if(typeof(this.instance.partsDesigner) !== 'undefined'){
-            this.instance.partsDesigner.onDeactivation();
+        if(typeof(this.getInstance().partsDesigner) !== 'undefined'){
+            this.getInstance().partsDesigner.onDeactivation();
         }
 	
-        if(typeof(this.instance.shipDesigner) !== 'undefined'){
-            this.instance.shipDesigner.onDeactivation();
+        if(typeof(this.getInstance().shipDesigner) !== 'undefined'){
+            this.getInstance().shipDesigner.onDeactivation();
         }
-        if(typeof(this.instance.mainMenu) !== 'undefined'){
-            this.instance.mainMenu.onDeactivation();
+        if(typeof(this.getInstance().mainMenu) !== 'undefined'){
+            this.getInstance().mainMenu.onDeactivation();
         }
-        if(typeof(this.instance.viewer) !== 'undefined'){
-            this.instance.viewer.onDeactivation();
+        if(typeof(this.getInstance().viewer) !== 'undefined'){
+            this.getInstance().viewer.onDeactivation();
         }
         var stateK = Object.keys(this.states);
         for(var i = 0; i < stateK.length; i++){

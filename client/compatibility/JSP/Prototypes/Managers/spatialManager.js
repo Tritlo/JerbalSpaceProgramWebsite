@@ -16,20 +16,20 @@ e.g. general collision detection.
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 */
 
-function SpatialManager(instance,descr){
-    this.setup(instance,descr);
+function SpatialManager(instanceID,descr){
+    this.setup(instanceID,descr);
 }
 
 SpatialManager.prototype = new Manager();
 
-SpatialManager.prototype.setup = function (instance,descr) {
-    this.instance = instance;
+SpatialManager.prototype.setup = function (instanceID,descr) {
     if(!(descr)){
 	descr = {
 	    _nextSpatialID : 1,
 	    _entities : []
 	};
     };
+    this.instanceID = instanceID;
     for (var property in descr) {
         this[property] = descr[property];
     }
@@ -88,19 +88,19 @@ SpatialManager.prototype.findEntityInRange = function(posX, posY, radius) {
 SpatialManager.prototype.render = function(ctx) {
     ctx.save();
     ctx.strokeStyle = "red";
-    this.instance.entityManager.setUpCamera(ctx);
+    this.getInstance().entityManager.setUpCamera(ctx);
     
     for (var ID in this._entities) {
         var e = this._entities[ID];
 	if (e) {
 	    var pos = e.getPos();
-        if (this.instance.settings.hitBox){
+        if (this.getInstance().settings.hitBox){
             ctx.save();
 	        e.renderHitBox(ctx);
             ctx.stroke();
             ctx.restore();
         } else {
-            util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius()*this.instance.entityManager.cameraZoom);
+            util.strokeCircle(ctx, pos.posX, pos.posY, e.getRadius()*this.getInstance().entityManager.cameraZoom);
         }
 	    }
     }

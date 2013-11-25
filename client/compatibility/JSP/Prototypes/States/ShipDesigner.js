@@ -1,17 +1,17 @@
-function ShipDesigner(instance,descr) {
-    this.setup(instance,descr);
+function ShipDesigner(instanceID,descr) {
+    this.setup(instanceID,descr);
 };
 
 ShipDesigner.prototype = new State();
 
 ShipDesigner.prototype.init = function() {
-    this.back = new Menu(this.instance,{
+    this.back = new Menu(this.instanceID,{
 	"state" : this,
 	"items" : [
         {
 	    "text" : "Back",
 	    "action" : function (state) {
-		state.instance.stateManager.switchState("menu");
+		state.getInstance().stateManager.switchState("menu");
 		}
 	    },
 		{
@@ -23,10 +23,10 @@ ShipDesigner.prototype.init = function() {
         ],
 	"width" : 100,
 	"height" : 100,
-	"location" : [this.instance.canvas.width - 100, 0]
+	"location" : [this.getInstance().canvas.width - 100, 0]
 	});
 
-    this.menu2 = new Menu(this.instance,{
+    this.menu2 = new Menu(this.instanceID,{
 	"state" : this,
 	"items" : [
         {
@@ -55,7 +55,7 @@ ShipDesigner.prototype.init = function() {
 	"location" : [ 260, 0]
 	});
 
-    this.menu = new Menu(this.instance,{
+    this.menu = new Menu(this.instanceID,{
 	    "state" : this,
 	    "items" : [
 		{
@@ -86,9 +86,9 @@ ShipDesigner.prototype.init = function() {
 		}
 	    ],
 	    "width" : 100,
-	    "height" : this.instance.canvas.height*2,
+	    "height" : this.getInstance().canvas.height*2,
 	    "itemHeight" : 25,
-		"location": [55,-this.instance.canvas.height+70]
+		"location": [55,-this.getInstance().canvas.height+70]
     });
 
     
@@ -103,12 +103,12 @@ ShipDesigner.prototype.init = function() {
 
 ShipDesigner.prototype.launch = function(){
     this.currentShip.assemble(this.grid);
-    var protoShip = new Ship(this.instance);
+    var protoShip = new Ship(this.instanceID);
     this.currentShip.cx = protoShip.cx;
     this.currentShip.cy = protoShip.cy;
-    this.instance.entityManager.clearShips();
-    this.instance.entityManager.generateShip(this.currentShip);
-    this.instance.stateManager.switchState("simulation");
+    this.getInstance().entityManager.clearShips();
+    this.getInstance().entityManager.generateShip(this.currentShip);
+    this.getInstance().stateManager.switchState("simulation");
 }
 
 ShipDesigner.prototype.newShip = function ()
@@ -124,7 +124,7 @@ ShipDesigner.prototype.newShip = function ()
 
 ShipDesigner.prototype.addPart = function (partInd){
     var parts = util.storageLoad("parts");
-    var part = new Part(this.instance, parts[partInd]);
+    var part = new Part(this.instanceID, parts[partInd]);
     this.heldPart = part.toDesigner(this.grid);
     if(this.addedParts){
 		this.indexOfHeldPart = this.addedParts.length;
@@ -141,7 +141,7 @@ ShipDesigner.prototype.addPart = function (partInd){
 
 ShipDesigner.prototype.saveShip = function ()
 {
-    this.currentShip = new Ship(this.instance,
+    this.currentShip = new Ship(this.instanceID,
 				{"parts" : this.addedParts,
 				 "name": $('#in5').val()}
 			       );
@@ -157,10 +157,10 @@ ShipDesigner.prototype.saveShip = function ()
             ships = [this.currentShip];
             }
         util.storageSave("ships",ships);
-        this.currentShip.disassemble(this.grid,this.instance);
-        this.instance.ships = util.storageLoad("ships");
-	var inst = this.instance;
-	this.instance.ships.map(function(s) {
+        this.currentShip.disassemble(this.grid,this.instanceID);
+        this.getInstance().ships = util.storageLoad("ships");
+	var inst = this.instanceID;
+	this.getInstance().ships.map(function(s) {
 	    return new Ship(inst,s);
 	});
         $("#in9").empty();
@@ -176,8 +176,8 @@ ShipDesigner.prototype.loadShip = function ()
 {
     var ships = util.storageLoad("ships");
     var selVal = $('#in9').val() || 0;
-    var ship = new Ship(this.instance, ships[selVal]);
-    var ship = ship.disassemble(this.grid,this.instance);
+    var ship = new Ship(this.instanceID, ships[selVal]);
+    var ship = ship.disassemble(this.grid,this.instanceID);
     this.currentShip = ship;
     var gri = this.grid;
     this.addedParts = ship.parts;
@@ -190,7 +190,7 @@ ShipDesigner.prototype.onActivation = function ()
     $('#in9').show();
     $('#in5').show();
     $('#in7').show();
-    var canvas_pos = util.findPosOnPage(this.instance.canvas);
+    var canvas_pos = util.findPosOnPage(this.getInstance().canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
     $('#in5').offset({top:canvas_pos.y + offsetFromMenu +100, left: canvas_pos.x+5});
@@ -249,7 +249,7 @@ ShipDesigner.prototype.update = function (du) {
 };
 
 ShipDesigner.prototype.handleMenus = function(evt,type){
-    var pos = util.findPos(this.instance.canvas);
+    var pos = util.findPos(this.getInstance().canvas);
     var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if (this.menu.inMenu(g_mouse[0],g_mouse[1])){
         this.menu.handleMouse(evt,type);
@@ -272,7 +272,7 @@ ShipDesigner.prototype.handleDown = function(evt,type) {
         if(evt.button === 0) {
             if(this.addedParts)
             {
-                var pos = util.findPos(this.instance.canvas);
+                var pos = util.findPos(this.getInstance().canvas);
                 var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
 				for(var i = 0; i < this.addedParts.length; i++){
 				   var p = this.addedParts[i];
@@ -298,13 +298,14 @@ ShipDesigner.prototype.handleDown = function(evt,type) {
 }
 
 ShipDesigner.prototype.handleMouse = function (evt,type) {
-    var pos = util.findPos(this.instance.canvas);
+    var pos = util.findPos(this.getInstance().canvas);
     var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if(this.handleMenus(evt,type)){
         return true;
     }
-	this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
-	this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]];
+    this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
+    this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]];
+    console.log(this.closestPoint);
     if (type === "down") {
         this.handleDown(evt,type);
     } else if (type === "move") {
@@ -323,5 +324,3 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
         }
     } 
 };
-
-var shipDesigner = new ShipDesigner();

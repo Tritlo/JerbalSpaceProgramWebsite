@@ -7,19 +7,19 @@ Instance.prototype.loadShips = function(){
     // =========
     // LOAD DEFAULTS
     // =========
-    var inst = this;
+    var inst = this.ID;
     g_defaultShips = g_defaultShips.map(function (str) {
 	var s = new Ship(inst,$.parseJSON(str));
-	console.log(s);
-	s.disconnect();
-	return s;
+        console.log(s);
+        s.disconnect();
+        return s;
     });
 
     //Load default parts;
     g_defaultParts = g_defaultParts.map(function (str) {
 	var p = new Part(inst,$.parseJSON(str));
-	p.instance = undefined;
-	return p;
+        p.instanceID = undefined;
+        return p;
     });
 
     if(util.storageLoad('parts') === undefined){
@@ -36,27 +36,29 @@ Instance.prototype.loadShips = function(){
 };
 
 Instance.prototype.init = function (){
+    this.ID = InstanceManager.getNewID();
+    InstanceManager.addInstance(this);
+    
     if(this.settings === undefined){
         this.settings = g_settings;
     }
-    this.entityManager = new EntityManager(this);
-    this.spatialManager = new SpatialManager(this);
-    this.stateManager = new StateManager(this);
-    this.mainMenu = new MainMenu(this);
-    this.partsDesigner = new PartsDesigner(this);
-    this.shipDesigner = new ShipDesigner(this);
-    this.simulation = new Simulation(this);
+    
+    this.entityManager = new EntityManager(this.ID);
+    this.spatialManager = new SpatialManager(this.ID);
+    this.stateManager = new StateManager(this.ID);
+    this.mainMenu = new MainMenu(this.ID);
+    this.partsDesigner = new PartsDesigner(this.ID);
+    this.shipDesigner = new ShipDesigner(this.ID);
+    this.simulation = new Simulation(this.ID);
     if(this.grid){
-        this.viewer = new Viewer(this,{grid: this.grid});
+        this.viewer = new Viewer(this.ID,{grid: this.grid});
     }
     this.loadShips();
     this.stateManager.init();
 };
 
 Instance.prototype.start = function(){
-    this.ID = InstanceManager.getNewID();
-    
-    InstanceManager.addInstance(this);
+    InstanceManager.startInstance(this.ID);
 };
 
 

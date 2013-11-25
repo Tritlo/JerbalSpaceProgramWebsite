@@ -1,26 +1,26 @@
-function PartsDesigner(instance,descr) {
-    this.setup(instance,descr);
+function PartsDesigner(instanceID,descr) {
+    this.setup(instanceID,descr);
 };
 
 PartsDesigner.prototype = new State();
 
 PartsDesigner.prototype.init = function() {
-    this.back = new Menu(this.instance,{
+    this.back = new Menu(this.instanceID,{
 	"state" : this,
 	"items" : [
         {
 	    "text" : "Back",
 	    "action" : function (state) {
-		state.instance.stateManager.switchState("menu");
+		state.getInstance().stateManager.switchState("menu");
 		}
 	    }
         ],
 	"width" : 100,
 	"height" : 100,
-	"location" : [ this.instance.canvas.width - 100, 0]
+	"location" : [ this.getInstance().canvas.width - 100, 0]
 	});
 
-    this.menu2 = new Menu(this.instance,{
+    this.menu2 = new Menu(this.instanceID,{
 	"state" : this,
 	"items" : [
         {
@@ -43,7 +43,7 @@ PartsDesigner.prototype.init = function() {
 	"location" : [ 260, 0]
 	});
 
-    this.menu = new Menu(this.instance,{
+    this.menu = new Menu(this.instanceID,{
 	    "state" : this,
 	    "items" : [
 		{
@@ -82,9 +82,9 @@ PartsDesigner.prototype.init = function() {
 		
 	    ],
 	    "width" : 100,
-	    "height" : this.instance.canvas.height*2,
+	    "height" : this.getInstance().canvas.height*2,
 	    "itemHeight" : 25,
-		"location": [55,-this.instance.canvas.height+85]
+		"location": [55,-this.getInstance().canvas.height+85]
     });
 
     
@@ -111,12 +111,12 @@ PartsDesigner.prototype.newPart = function () {
     $('#in6').val("#00ff00");
     $('#in8').val("#000000");
     this.flame = undefined;
-    this.currentPart = new Part(this.instance,{
+    this.currentPart = new Part(this.instanceID,{
         "stroke" : "lime",
         "lineWidth" : 4,
 	    "currentThrust" : 0.2
     });
-    }
+};
 
 PartsDesigner.prototype.setFlame = function () {
     if(this.editing){
@@ -129,7 +129,7 @@ PartsDesigner.prototype.setFlame = function () {
     this.currentPart.currentThrust = this.currentPart.thrust;
     this.flameSet = false;
     this.flame = [];
-    }
+};
 
 PartsDesigner.prototype.addAttachmentPointMode = function () {
     if(this.editing){
@@ -171,7 +171,7 @@ PartsDesigner.prototype.savePart = function () {
 
 PartsDesigner.prototype.loadPart = function () {
     var parts = util.storageLoad("parts");
-    var part = new Part(this.instance,parts[$('#in9').val()]);
+    var part = new Part(this.instanceID,parts[$('#in9').val()]);
     this.currentPart = part.toDesigner(this.grid);
     if (this.currentPart){
         $('#in8').val(this.currentPart.fill);
@@ -195,7 +195,7 @@ PartsDesigner.prototype.onActivation = function () {
     for(var i = 1; i < 10; i++){
 	$('#in'+i).show();
 	}
-    var canvas_pos = util.findPosOnPage(this.instance.canvas);
+    var canvas_pos = util.findPosOnPage(this.getInstance().canvas);
     var offsetFromMenu = 150;
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
     $('#in8').offset({top:canvas_pos.y + offsetFromMenu+150, left: canvas_pos.x+5});
@@ -224,7 +224,7 @@ PartsDesigner.prototype.onActivation = function () {
         $('#in8').val("#000000");
     }
     $('#in7').val("Type");
-    var pseudoPart = new Part(this.instance);
+    var pseudoPart = new Part(this.instanceID);
     $.each(pseudoPart.types, function (key,value) {
 	$("#in7").append('<option value="'+value+'">'+value+'</option>');});
     var parts = util.storageLoad("parts");
@@ -311,7 +311,7 @@ PartsDesigner.prototype.update = function (du) {
 };
 
 PartsDesigner.prototype.handleMenus = function(evt,type){
-    var pos = util.findPos(this.instance.canvas);
+    var pos = util.findPos(this.getInstance().canvas);
     var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if (this.menu.inMenu(g_mouse[0],g_mouse[1])){
         this.menu.handleMouse(evt,type);
@@ -378,7 +378,7 @@ PartsDesigner.prototype.handleDown = function(evt,type) {
 };
 
 PartsDesigner.prototype.handleMouse = function (evt,type) {
-    var pos = util.findPos(this.instance.canvas);
+    var pos = util.findPos(this.getInstance().canvas);
     var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
     if(this.handleMenus(evt,type)){
         return true;
