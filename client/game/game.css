@@ -12,7 +12,7 @@ select {
   color: black;
   }
 
-*::-webkit-input-placeholder {
+*:-webkit-input-placeholder {
     color: green;
 }
 

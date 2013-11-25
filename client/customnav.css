@@ -68,16 +68,69 @@
 	border-color: #262626;
 }
 .dropdown-menu button {
-	background-color: #00ff00;
+	background-color: lime;
 	border-color: #00ff00;
 	color: #262626;
 }
 .dropdown-menu button:hover {
-	background-color: #00ff00;
+	background-color: black;
 	border-color: #00ff00;
-	color: #262626;	color: #262626;
+	color: lime;
+}
+.dropdown-menu button:active {
+	background-color: black;
+	border-color: #00ff00;
+	color: lime;
+}
+
+.dropdown-menu button:focus {
+	background-color: black;
+	border-color: #00ff00;
+	color: lime;
 }
 
 .dropdown-menu a {
 	color: #00ff00;
+}
+.dropdown-menu .form-control:focus {
+	border-color: #000000;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(0, 128, 0, 0.6) 0px 0px 8px 0px;
+}
+
+.dropdown-menu input {
+	background: #262626;
+	color: lime;
+	border-color: black;
+}
+.alert-danger {
+color: lime;
+background-color: #262626;
+border-color: black;
+}
+
+#login-username::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: green;
+}
+#login-username:-moz-placeholder, textarea:-moz-placeholder {
+  color: green;
+}
+#login-password::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: green;
+}
+#login-password:-moz-placeholder, textarea:-moz-placeholder {
+  color: green;
+}
+
+#login-old-password::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: green;
+}
+#login-old-password:-moz-placeholder, textarea:-moz-placeholder {
+  color: green;
+}
+
+#login-password-again::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: green;
+}
+#login-password-again:-moz-placeholder, textarea:-moz-placeholder {
+  color: green;
 }
