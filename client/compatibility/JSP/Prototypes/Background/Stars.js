@@ -1,8 +1,10 @@
-function Stars(instance, descr){
-    this.instance = instance;
+function Stars(instanceID, descr){
+    this.instanceID = instanceID;
     this.init(descr);
     console.log(this);
 }
+
+Stars.prototype = new Instantiable();
 
 // Initialize the Starfield.
 Stars.prototype.init = function(properties){
@@ -21,24 +23,24 @@ Stars.prototype.init = function(properties){
     this._rad = 0;
     // Are we too zoomed out to afford rendering the stars?
     this._tooHeavy = false;
-    this._blockSize = {x: this.instance.canvas.width, y: this.instance.canvas.height};
-    if(this.instance.settings.graphicsLevel === 2){
+    this._blockSize = {x: this.getInstance().canvas.width, y: this.getInstance().canvas.height};
+    if(this.getInstance().settings.graphicsLevel === 2){
         this._STpBL =  {min: 30, max: 80};
-    } else if(this.instance.settings.graphicsLevel === 1){
+    } else if(this.getInstance().settings.graphicsLevel === 1){
         this._STpBL =  {min: 10, max: 30};
-    } else if(this.instance.settings.graphicsLevel === 0){
+    } else if(this.getInstance().settings.graphicsLevel === 0){
         this._STpBL =  {min: 1, max: 5};
     }
 };
 
 // Generate any Stars I might render
 Stars.prototype.update = function(du){
-    this._tooHeavy = this.instance.entityManager.cameraZoom < 0.05;
+    this._tooHeavy = this.getInstance().entityManager.cameraZoom < 0.05;
     if(this._tooHeavy) return;
-    var os = this.instance.entityManager.trueOffset;
+    var os = this.getInstance().entityManager.trueOffset;
     //console.log("update: " + os);
     var bl = this._posToBlock(os[0],os[1]);
-    this._rad=Math.floor(this._maxPar/(this.instance.entityManager.cameraZoom*Math.sqrt(2)))+1;
+    this._rad=Math.floor(this._maxPar/(this.getInstance().entityManager.cameraZoom*Math.sqrt(2)))+1;
     //this._rad=2;
     for(var i = bl[0]-this._rad-1; i <= bl[0]+this._rad+1; i++){
         for(var j = bl[1]-this._rad-1; j <= bl[1]+this._rad+1; j++){
@@ -99,7 +101,7 @@ Stars.prototype._maybeGenerateBlock= function(i,j){
 // center, based on zoom.
 Stars.prototype.render = function(ctx){
     if(this._tooHeavy) return;
-    var os = this.instance.entityManager.trueOffset;
+    var os = this.getInstance().entityManager.trueOffset;
     //console.log("render: " + os);
     var bl = this._posToBlock(os[0],os[1]);
     //util.fillCircle(ctx,-os[0],-os[1],10);
@@ -113,7 +115,7 @@ Stars.prototype.render = function(ctx){
 
 // How to the stars elongate when going fast
 Stars.prototype._starTween = function(x,y){
-    if(this.instance.entityManager.lockCamera) return {x:0,y:0};
+    if(this.getInstance().entityManager.lockCamera) return {x:0,y:0};
     var speed = Math.sqrt(x*x + y*y);
     var angle = Math.atan2(y,x);
     var newSpeed = Math.atan((Math.max(speed-15,0))/600)*650;
@@ -124,8 +126,8 @@ Stars.prototype._starTween = function(x,y){
 // based on it's Parallax level. Creates the 3D effect in
 // the starfield. Requires rendering more blocks.
 Stars.prototype._applyParallax = function(os,x,y,p){
-    var ox = -os[0] + this.instance.canvas.width/2;
-    var oy = -os[1] + this.instance.canvas.width/2;
+    var ox = -os[0] + this.getInstance().canvas.width/2;
+    var oy = -os[1] + this.getInstance().canvas.width/2;
     var dx = x-ox;
     var dy = y-oy;
     dx = dx/p;
@@ -138,9 +140,9 @@ Stars.prototype._applyParallax = function(os,x,y,p){
 // destroys the universe.
 // (seriously though, just renders the star described))
 Stars.prototype._renderStar = function(ctx,x,y,p,l){
-    var s = this.instance.entityManager.getMainShip();
+    var s = this.getInstance().entityManager.getMainShip();
     
-    var os = this.instance.entityManager.trueOffset;
+    var os = this.getInstance().entityManager.trueOffset;
     var pos = this._applyParallax(os,x,y,p);//entityManager.cameraZoom < 0.6?{x:x,y:y}:this._applyParallax(os,x,y,p);
     var x0 = pos.x;
     var y0 = pos.y;
@@ -164,7 +166,7 @@ Stars.prototype._renderBlock = function(ctx,i,j){
     //console.log(i,j,this._blocks[i][j]);
     if(!(this._blocks[i] && this._blocks[i][j])) return;
     //console.log(i,j);
-    var level = this._getBlockLevel(this.instance.entityManager.cameraZoom);
+    var level = this._getBlockLevel(this.getInstance().entityManager.cameraZoom);
     for(var l = 0; l <= level; l++){
         var block = this._blocks[i][j][l];
         for(var k = 0; k < block.length;k++){

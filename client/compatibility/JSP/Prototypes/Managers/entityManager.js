@@ -26,10 +26,9 @@ function EntityManager(instance,descr){
     this.setup(instance,descr);
 }
 
-EntityManager.protoype = new Manager();
+EntityManager.prototype = new Manager();
 
-EntityManager.prototype.setup = function (instance,descr) {
-    this.instance = instance;
+EntityManager.prototype.setup = function (instanceID,descr) {
     if(!(descr)){
 	descr = {
 	_ships   : [],
@@ -46,18 +45,18 @@ EntityManager.prototype.setup = function (instance,descr) {
     for (var property in descr) {
         this[property] = descr[property];
     }
+    this.instanceID = instanceID;
 };
 
 
 
-
-    // "PRIVATE" METHODS
+// "PRIVATE" METHODS
 
 EntityManager.prototype._generateTerrain = function() {
-    var sL = this.instance.settings.seaLevel;
+    var sL = this.getInstance().settings.seaLevel;
     var minangl = Math.PI/30;
     var maxangl = Math.PI/2.2;
-    var terr = new Terrain(this.instance,{
+    var terr = new Terrain(this.instanceID,{
     "name" : "Jerbin",
 	"minX":-10000,
 	"maxX": 10000,
@@ -76,7 +75,7 @@ EntityManager.prototype._generateTerrain = function() {
     //"numOceans" : 3,
     //"hasOceans" : true
 	});
-    var joon = new Terrain(this.instance,{
+    var joon = new Terrain(this.instanceID,{
     "name" : "Joon",
 	"minX":-5000,
 	"maxX": 5000,
@@ -124,7 +123,7 @@ EntityManager.prototype.gravityAt = function (x,y,terr) {
 };
 
 EntityManager.prototype.createInitialShips =  function(){
-    this.generateShip(this.instance.ships[0]);
+    this.generateShip(this.getInstance().ships[0]);
 };
 
 EntityManager.prototype._findNearestShip = function(posX, posY) {
@@ -139,7 +138,7 @@ EntityManager.prototype._findNearestShip = function(posX, posY) {
         var distSq = util.wrappedDistSq(
             shipPos.posX, shipPos.posY, 
             posX, posY,
-            this.instance.canvas.width, this.instance.canvas.height);
+            this.getInstance().canvas.width, this.getInstance().canvas.height);
 
         if (distSq < closestSq) {
             closestShip = thisShip;
@@ -181,14 +180,14 @@ EntityManager.prototype.deInit =  function() {
     this._terrain = [];
     this._ships   = [];
     this._categories = [];
-    this.instance.spatialManager.unregisterAll();
+    this.getInstance().spatialManager.unregisterAll();
     this.resetCamera();
 };
 
 EntityManager.prototype.generateShip = function(descr) {
     	descr.cx=0;
 	descr.cy=0;
-        var inst = this.instance;
+        var inst = this.instanceID;
 	this._ships.push(new Ship(inst,descr));
 };
 
@@ -227,45 +226,45 @@ EntityManager.prototype.resetCamera = function() {
     
 EntityManager.prototype.updateCamera = function () {
     
-    if (eatKey(this.instance.settings.keys.KEY_CAMERA_LOCK)) {
+    if (eatKey(this.getInstance().settings.keys.KEY_CAMERA_LOCK)) {
         this.lockCamera = !this.lockCamera;
     }
-    if (keys[this.instance.settings.keys.KEY_CAMERA_ZOOMIN]) {
-        this.cameraZoom *= this.instance.settings.cameraZoomRate;
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_ZOOMIN]) {
+        this.cameraZoom *= this.getInstance().settings.cameraZoomRate;
     }
-    if (keys[this.instance.settings.keys.KEY_CAMERA_ZOOMOUT]) {
-        this.cameraZoom /= this.instance.settings.cameraZoomRate;
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_ZOOMOUT]) {
+        this.cameraZoom /= this.getInstance().settings.cameraZoomRate;
     }
-    if (keys[this.instance.settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
-        this.cameraRotation += this.instance.settings.cameraRotateRate;
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_ROTATE_CLOCKWISE]) {
+        this.cameraRotation += this.getInstance().settings.cameraRotateRate;
     }
-    if (keys[this.instance.settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
-        this.cameraRotation -= this.instance.settings.cameraRotateRate;
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_ROTATE_COUNTERCLOCKWISE]) {
+        this.cameraRotation -= this.getInstance().settings.cameraRotateRate;
     }
-    if (keys[this.instance.settings.keys.KEY_CAMERA_UP]) {
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_UP]) {
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.getInstance().settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,1], -this.cameraRotation)));
     }										     
-    if (keys[this.instance.settings.keys.KEY_CAMERA_DOWN]) {				     
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_DOWN]) {				     
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.getInstance().settings.cameraMoveRate/this.cameraZoom,util.rotateVector([0,-1], -this.cameraRotation)));
     }										     
-    if (keys[this.instance.settings.keys.KEY_CAMERA_LEFT]) {				     
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_LEFT]) {				     
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.getInstance().settings.cameraMoveRate/this.cameraZoom,util.rotateVector([1,0], -this.cameraRotation)));
     }										     
-    if (keys[this.instance.settings.keys.KEY_CAMERA_RIGHT]) {				     
-        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.instance.settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_RIGHT]) {				     
+        this.cameraOffset = util.vecPlus(this.cameraOffset,util.mulVecByScalar(this.getInstance().settings.cameraMoveRate/this.cameraZoom,util.rotateVector([-1,0], -this.cameraRotation)));
     }
-    if (keys[this.instance.settings.keys.KEY_CAMERA_RESET]) {
+    if (keys[this.getInstance().settings.keys.KEY_CAMERA_RESET]) {
 	this.resetCamera();
     }
     
-    if (eatKey(this.instance.settings.keys.KEY_RENDER_ORBIT)) {
-	this.instance.settings.renderOrbit = !this.instance.settings.renderOrbit;
+    if (eatKey(this.getInstance().settings.keys.KEY_RENDER_ORBIT)) {
+	this.getInstance().settings.renderOrbit = !this.getInstance().settings.renderOrbit;
     }
 
     if(this._ships.length > 0){
         var s = this.getMainShip();
     if(!this.lockCamera){    
-        this.offset = [-s.cx + this.instance.canvas.width/2,-s.cy + this.instance.canvas.height/2];
+        this.offset = [-s.cx + this.getInstance().canvas.width/2,-s.cy + this.getInstance().canvas.height/2];
     }
 	this.trueOffset = util.vecPlus(this.offset,this.cameraOffset);
 	this.trueOffset = util.vecPlus(this.trueOffset,util.rotateVector(util.mulVecByScalar(1/this.cameraZoom,this.mouseOffset),-this.cameraRotation));
@@ -289,7 +288,7 @@ EntityManager.prototype.update = function(du) {
             if (status === this.KILL_ME_NOW) {
                 // remove the dead guy, and shuffle the others down to
                 // prevent a confusing gap from appearing in the array
-		this.instance.spatialManager.unregister(aCategory[i]);
+		this.getInstance().spatialManager.unregister(aCategory[i]);
                 aCategory.splice(i,1);
 		
             }
@@ -312,10 +311,10 @@ EntityManager.prototype.getMainShip = function() {
     
 EntityManager.prototype.setUpCamera = function (ctx){
     // NOTE: ALWAYS save and restore when using this function
-    ctx.translate(this.instance.canvas.width/2,this.instance.canvas.height/2);
+    ctx.translate(this.getInstance().canvas.width/2,this.getInstance().canvas.height/2);
     ctx.rotate(this.cameraRotation);
     ctx.scale(this.cameraZoom,this.cameraZoom);
-    ctx.translate(-this.instance.canvas.width/2,-this.instance.canvas.height/2);
+    ctx.translate(-this.getInstance().canvas.width/2,-this.getInstance().canvas.height/2);
     ctx.translate(this.trueOffset[0],this.trueOffset[1]);
 };
 
@@ -324,8 +323,8 @@ EntityManager.prototype.render = function(ctx) {
     var debugX = 10, debugY = 100;
     ctx.save();
     this.setUpCamera(ctx);
-    if(g_settings.graphicsLevel >= 1){
-        this.instance.Stars.render(ctx);
+    if(this.getInstance().settings.graphicsLevel >= 1){
+        this.getInstance().Stars.render(ctx);
         }
     for (var c = 0; c < this._categories.length; ++c) {
 

@@ -1,12 +1,13 @@
 function Part(instance,descr) {
     this.setup(instance,descr);
 }
+Part.prototype = new Instantiable();
 
-Part.prototype.setup = function (instance,descr) {
+Part.prototype.setup = function (instanceID,descr) {
     for (var property in descr) {
         this[property] = descr[property];
     }
-    this.instance = instance;
+    this.instanceID = instanceID;
     if(this.flame){this.setFlame(this.flame);}
     this.updateAttributes();
 };
@@ -391,9 +392,9 @@ Part.prototype.render = function (ctx) {
             ctx.lineWidth = this.lineWidth;
         }
 
-	if(typeof(this.instance.entityManager) !== 'undefined'){
-	    if(this.instance.entityManager.cameraZoom < 0.5){
-		ctx.lineWidth = 1/this.instance.entityManager.cameraZoom;
+	if(typeof(this.getInstance().entityManager) !== 'undefined'){
+	    if(this.getInstance().entityManager.cameraZoom < 0.5){
+		ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
 	    }
 	}
 	var cRot = this.centerOfRot;

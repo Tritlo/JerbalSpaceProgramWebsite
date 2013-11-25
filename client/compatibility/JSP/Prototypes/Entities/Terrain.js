@@ -80,7 +80,7 @@ Terrain.prototype.addCrater = function (x,y, radius,explRadius,speed) {
     }
 
 Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot){
-    if (this.instance.settings.hitBox){
+    if (this.getInstance().settings.hitBox){
         return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot);
     } else {
         return this.hitWCircle(prevX,prevY,nextX,nextY,radius);
@@ -265,8 +265,8 @@ Terrain.prototype.render = function (ctx) {
     ctx.save();
     ctx.strokeStyle = this.edgeColor || "white";
     ctx.fillStyle = this.color || "black";
-    if(this.instance.entityManager.cameraZoom < 0.5){
-        ctx.lineWidth = 1/this.instance.entityManager.cameraZoom;
+    if(this.getInstance().entityManager.cameraZoom < 0.5){
+        ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
     }
     ctx.beginPath();
     ctx.moveTo(terr[0][0],terr[0][1]);
@@ -278,7 +278,7 @@ Terrain.prototype.render = function (ctx) {
 	ctx.closePath();
 	ctx.stroke();
     ctx.fill();
-    if(this.instance.settings.renderPlanetCenter)
+    if(this.getInstance().settings.renderPlanetCenter)
         util.strokeCircle(ctx,this.center[0],this.center[1],100)
 	//ctx.strokeText("C",this.center[0],this.center[1]);
     if(this._Oceans){

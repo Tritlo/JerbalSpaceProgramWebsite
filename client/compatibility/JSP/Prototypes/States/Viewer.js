@@ -1,6 +1,5 @@
-    function Viewer(instance,descr){
-    this.setup(instance,descr);
-    console.log(descr);
+function Viewer(instanceID,descr){
+    this.setup(instanceID,descr);
     this.init();
 };
 
@@ -12,7 +11,7 @@ Viewer.prototype.init = function(){
 
 
 Viewer.prototype.loadPart = function(part){
-    var part = new Part(this.instance,part);
+    var part = new Part(this.instanceID,part);
     var w = part.width;
     var h = part.height;
     var r = Math.max(w,h)+1;
@@ -26,13 +25,13 @@ Viewer.prototype.loadPart = function(part){
 };
 
 Viewer.prototype.loadShip = function(ship){
-    var ship = new Ship(this.instance,ship);
+    var ship = new Ship(this.instanceID,ship);
     var w = ship.width;
     var h = ship.height;
     var r = Math.max(w,h)+1;
     this.grid.dims = [r,r];
     this.grid = new Grid(this.grid);
-    this.ship = ship.disassemble(this.grid,this.instance);
+    this.ship = ship.disassemble(this.grid,this.instanceID);
     this.parts = ship.parts;
 };
 

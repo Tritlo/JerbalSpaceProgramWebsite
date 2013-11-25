@@ -2,14 +2,7 @@ function State(instance, descr) {
     this.setup(instance, descr);
     this.init();
  };
-
-State.prototype.setup = function (instance, descr) {
-    // Apply all setup properies from the (optional) descriptor
-    for (var property in descr) {
-        this[property] = descr[property];
-    }
-    this.instance = instance;
-};
+State.prototype = new Instantiable();
 
 //Called when state is initialized
 State.prototype.init = function () {

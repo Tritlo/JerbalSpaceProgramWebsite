@@ -1,8 +1,8 @@
 function MenuItem(descr,instance) {
     this.setup(descr,instance);
 };
-MenuItem.prototype.setup = function (descr,instance) {
-    this.instance = instance;
+MenuItem.prototype.setup = function (descr,instanceID) {
+    this.instanceID = instanceID;
     for (var property in descr) {
         this[property] = descr[property];
     }
@@ -16,8 +16,10 @@ function Menu(instance,descr) {
     this.setup(instance,descr);
 };
 
-Menu.prototype.setup = function (instance,descr) {
-    this.instance = instance;
+Menu.prototype = new Instantiable();
+
+Menu.prototype.setup = function (instanceID,descr) {
+    this.instanceID = instanceID;
     for (var property in descr) {
         this[property] = descr[property];
     }
@@ -44,10 +46,10 @@ Menu.prototype.init = function (ctx) {
     for(var i = 0; i < this.items.length; i++){
         this.items[i] = new MenuItem(this.items[i]);
         this.items[i].location = [this.location[0],this.location[1] + offsetFromTitle + i*(this.itemHeight + this.margin_bottom)];
-        var wiOText = ctx.measureText(this.items[i].text).width
+        var wiOText = ctx.measureText(this.items[i].text).width;
         this.items[i].width = wiOText < this.width ? wiOText : this.width;
         var loc = this.items[i].location;
-        var w = this.items[i].width
+        var w = this.items[i].width;
         var h = this.itemHeight;
         this.items[i].hitBox = [[loc[0]-w/2,loc[1]-h/2],[loc[0]+w/2,loc[1]+h/2]];
     }
@@ -56,6 +58,7 @@ Menu.prototype.init = function (ctx) {
     this.hitBox = [[this.location[0] - this.width/2, this.location[1]], [this.location[0]+this.width/2, this.location[1]+this.height]];
     this.initialized = true;
 };
+
 
 Menu.prototype.initialized = false;
 
@@ -104,7 +107,7 @@ Menu.prototype.onSelected = function (item) {
 };
 
 Menu.prototype.handleMouse = function (evt, type) {
-	var pos = util.findPos(this.instance.canvas);
+	var pos = util.findPos(this.getInstance().canvas);
 	var g_mouse = [evt.clientX - pos.x,evt.clientY - pos.y];
         if (this.inMenu(g_mouse[0],g_mouse[1])){
             if (type === "down"){

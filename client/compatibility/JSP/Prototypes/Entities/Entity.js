@@ -32,18 +32,19 @@ function Entity() {
 
 };
 
-Entity.prototype.setup = function (instance,descr) {
+Entity.prototype = new Instantiable();
+
+Entity.prototype.setup = function (instanceID,descr) {
 
     // Apply all setup properies from the (optional) descriptor
     for (var property in descr) {
         this[property] = descr[property];
     }
-    this.instance = instance;
+    this.instanceID = instanceID;
 
-    console.log(this.instance);
-    if(typeof(this.instance.spatialManager) !== 'undefined'){
+    if(typeof(this.getInstance().spatialManager) !== 'undefined'){
 	// Get my (unique) spatial ID
-	this._spatialID = this.instance.spatialManager.getNewSpatialID();
+	this._spatialID = this.getInstance().spatialManager.getNewSpatialID();
     }
     
     // I am not dead yet!
@@ -72,30 +73,29 @@ Entity.prototype.kill = function () {
 };
 
 Entity.prototype.register = function(){
-    this.instance.spatialManager.register(this);
+    this.getInstance().spatialManager.register(this);
 };
 
 Entity.prototype.unregister = function(){
-    if(typeof(this.instance.spatialManager) !== 'undefined'){
-	this.instance.spatialManager.unregister(this);
+    if(typeof(this.getInstance().spatialManager) !== 'undefined'){
+	this.getInstance().spatialManager.unregister(this);
 	}
 };
 
 Entity.prototype.findHitEntity = function () {
     var pos = this.getPos();
-    return this.instance.spatialManager.findEntityInRange(
-        pos.posX, pos.posY, this.getRadius()
+    return this.getInstance().spatialManager.findEntityInRange(
+	pos.posX, pos.posY, this.getRadius()
     );
 };
 
-// This is just little "convenience wrapper"
+    // This is just little "convenience wrapper"
 Entity.prototype.isColliding = function () {
     return this.findHitEntity();
 };
 
 Entity.prototype.wrapPosition = function () {
-    this.cx = util.wrapRange(this.cx, 0, this.instance.canvas.width);
-    //this.cy = util.wrapRange(this.cy, 0, g_canvas.height);
+	this.cx = util.wrapRange(this.cx, 0, this.getInstance().canvas.width);
 };
 
 Entity.prototype.renderHitBox = function(ctx){
