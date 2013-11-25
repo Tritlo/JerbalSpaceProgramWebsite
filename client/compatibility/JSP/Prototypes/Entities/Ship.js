@@ -619,13 +619,12 @@ Ship.prototype.render = function (ctx) {
 
 Ship.prototype.setOrbit = function(radius,terr){
     if(terr === undefined)
-	var terr = this.getInstance().entityManager.getTerrain(this.cx,this.cy);
+	    var terr = this.getInstance().entityManager.getTerrain(this.cx,this.cy);
     this.setCenter(util.vecPlus(terr.center,[0,radius]));
-    var v = Math.sqrt(consts.G*terr.mass/radius);
+    var v = Math.sqrt(consts.G*(terr.mass+this.mass)/radius);
     this.velY = 0; this.velX = -v;
     this.rotation = -Math.PI/2;
-    this.angularVel = 1/(radius*Math.sqrt(radius/(consts.G*terr.mass)));
-
+    this.angularVel = v/radius;
 };
 
 Ship.prototype.renderHitDebug = function (ctx){
