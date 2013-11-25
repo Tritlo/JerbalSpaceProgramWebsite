@@ -12,7 +12,12 @@ InstanceManager.getNewID = function(){
 
 InstanceManager.clear = function(){
     this._nextInstanceID = 0;
-    this.instances = [];
+    for(var ID in this.runningInstances){
+	this.stopInstance(ID);
+    }
+    for(var ID in this.instances){
+	this.removeInstance(ID);
+    }
 };
 
 InstanceManager.startInstance = function(instanceID){

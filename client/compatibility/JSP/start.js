@@ -28,10 +28,8 @@ function start(which,options,canvasId){
     var canvas = document.getElementById(canvasId);
     InstanceManager.clear();
     var instanceID = starts[which](options,canvas);
-    if(!main.initialized) main.init();
-    else {
-        main.initialized = true;
-        main.init();
+    if(!main.initialized){
+	main.init();
     }
     return instanceID;
 }

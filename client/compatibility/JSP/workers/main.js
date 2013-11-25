@@ -119,6 +119,8 @@ main._debugRender = function (ctx) {
     ctx.fillText('FrameSync ON', 50, y+40);
 };
 
+main.initialized = false;
+
 main.init = function () {
     
     // Grabbing focus is good, but it sometimes screws up jsfiddle,
@@ -131,6 +133,6 @@ main.init = function () {
     //
     //g_ctx.fillStyle = "white";
     this._isGameOver = false;
-
+    this.initialized = true;
     this._requestNextIteration();
 };
