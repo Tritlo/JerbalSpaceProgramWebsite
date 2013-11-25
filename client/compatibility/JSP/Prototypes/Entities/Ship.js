@@ -350,7 +350,8 @@ Ship.prototype.applyAccel = function (accel,du) {
     // u = original velocity
     var oldVelX = this.velX;
     var oldVelY = this.velY;
-    
+    var prevX = this.cx;
+    var prevY = this.cy;
     // v = u + at
     this.velX += accelX * du;
     this.velY += accelY * du; 
@@ -394,7 +395,7 @@ Ship.prototype.applyAccel = function (accel,du) {
         intervalVelY = this.velY;
         intervalVelX = this.velX;
 	    if (collisionSpeed <= this.getInstance().settings.minLandingSpeed && Math.abs(collisionAngle)<=this.getInstance().settings.maxSafeAngle){
-		this.land(this.cx,this.cy);
+		this.land(prevX,prevY);
 		intervalVelY = this.velY;
 		intervalVelX = this.velX;
 		}
