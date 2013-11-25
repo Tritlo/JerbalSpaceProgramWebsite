@@ -1,7 +1,6 @@
 function MenuItem(descr) {
     this.setup(descr);
 };
-
 MenuItem.prototype.setup = function (descr) {
     for (var property in descr) {
         this[property] = descr[property];
