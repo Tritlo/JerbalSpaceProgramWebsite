@@ -558,8 +558,10 @@ Ship.prototype.updateOrbit = function() {
 
     var angl = util.angleOfVector(eccVec);
     cen = util.rotatePointAroundPoint(cen,angl,f[0],f[1]);
-    this.orbit = [cen[0], cen[1],a,b,angl,f[0],f[1]];
-}
+    var peri = util.vecPlus(cen,util.mulVecByScalar(a,util.normalizeVector(eccVec)));
+    var apo = util.vecPlus(cen,util.mulVecByScalar(-a,util.normalizeVector(eccVec)));
+    this.orbit = [cen[0], cen[1],a,b,angl,f[0],f[1],peri,apo];
+};
 
 
 Ship.prototype.renderOrbit = function(ctx) {
@@ -573,15 +575,22 @@ Ship.prototype.renderOrbit = function(ctx) {
         var angl   = p[4];
         var fx = p[5];
         var fy = p[6];
+	var peri = p[7];
+	var apo = p[8];
         ctx.save();
-        ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
+        ctx.lineWidth = 2/this.getInstance().entityManager.cameraZoom;
         if(this.getInstance().settings.enableDebug){
             ctx.strokeStyle = "yellow"; 
             util.strokeCircle(ctx,fx,fy,200);
             ctx.strokeStyle = "red"; 
             util.strokeCircle(ctx,cx,cy,200);
         }
+	ctx.strokeStyle = "red";
+	util.strokeCircle(ctx,peri[0],peri[1],25);
+	ctx.strokeStyle = "yellow"; 
+	util.strokeCircle(ctx,apo[0],apo[1],25);
         ctx.strokeStyle = "dodgerblue"; 
+        ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
         var angl = util.cartesianToPolar([cx,cy],[fx,fy])[1];
         util.strokeEllipseByCenter(ctx,cx,cy,majAx*2,minAx*2,angl,[cx,cy]);
         ctx.restore();
@@ -601,9 +610,21 @@ Ship.prototype.render = function (ctx) {
         }
         if(this.getInstance().settings.enableDebug){
             this.renderHitDebug(ctx);
+            this.renderOrbit(ctx); 
         }
         this.renderParts(ctx);
     }
+};
+
+Ship.prototype.setOrbit = function(radius,terr){
+    if(terr === undefined)
+	var terr = this.getInstance().entityManager.getTerrain(this.cx,this.cy);
+    this.setCenter(util.vecPlus(terr.center,[0,radius]));
+    var v = Math.sqrt(consts.G*terr.mass/radius);
+    this.velY = 0; this.velX = -v;
+    this.rotation = -Math.PI/2;
+    this.angularVel = 1/(radius*Math.sqrt(radius/(consts.G*terr.mass)));
+
 };
 
 Ship.prototype.renderHitDebug = function (ctx){
@@ -611,16 +632,16 @@ Ship.prototype.renderHitDebug = function (ctx){
     var ps = util.findSurfaceBelow(this.center,terr.points,terr.center);
     var ln = util.mulVecByScalar(50,util.lineNormal(ps[0][0],ps[0][1],ps[1][0],ps[1][1]));
     var lnMinus = util.mulVecByScalar(-50,util.lineNormal(ps[0][0],ps[0][1],ps[1][0],ps[1][1]));
-    var cen = util.mulVecByScalar(0.5,util.vecPlus(ps[0],ps[1]))
+    var cen = util.mulVecByScalar(0.5,util.vecPlus(ps[0],ps[1]));
     var endPlus = util.vecPlus(ln,cen);
     var endMinus = util.vecPlus(lnMinus,cen);
     ctx.save();
     ctx.fillStyle = "white";
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 2/this.getInstance().entityManager.cameraZoom;
     ctx.strokeStyle = "yellow";
-    util.strokeCircle(ctx,ps[0][0],ps[0][1],20) 
+    util.strokeCircle(ctx,ps[0][0],ps[0][1],20);
     ctx.strokeStyle = "red";
-    util.strokeCircle(ctx,ps[1][0],ps[1][1],20) 
+    util.strokeCircle(ctx,ps[1][0],ps[1][1],20);
 
     ctx.beginPath();
     ctx.strokeStyle = "red";

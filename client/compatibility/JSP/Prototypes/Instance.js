@@ -180,8 +180,11 @@ Instance.prototype.processDiagnostics = function(){
         if (eatKey(this.settings.debugKeys.KEY_SPATIAL)) this.settings.renderSpatialDebug = !this.settings.renderSpatialDebug;
 
         if (eatKey(this.settings.debugKeys.KEY_HALT)){
-            console.log("halting ships");
             this.entityManager.haltShips();
+        }
+	
+        if (eatKey(this.settings.debugKeys.KEY_ORBIT_SHIP)){
+            this.entityManager.getMainShip().setOrbit(7000);
         }
 
         if (eatKey(this.settings.debugKeys.KEY_RESET)) this.entityManager.resetShips();

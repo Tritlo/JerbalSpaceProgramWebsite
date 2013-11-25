@@ -275,7 +275,8 @@ Terrain.prototype.render = function (ctx) {
     if(this.getInstance().entityManager.cameraZoom < 0.5){
         ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
     }
-    if((this.getInstance().settings.enableDebug)) ctx.lineWidth = 3;
+    if((this.getInstance().settings.enableDebug))
+	ctx.lineWidth = 2/this.getInstance().entityManager.cameraZoom;
     ctx.beginPath();
     ctx.moveTo(terr[0][0],terr[0][1]);
 	//ctx.font="10px Arial";

@@ -56,6 +56,7 @@ var g_settings = {
               "KEY_SPATIAL": keyCode('X'),
               "KEY_MIXED": keyCode('M'),
               "KEY_HALT" : keyCode('V'),
+              "KEY_ORBIT_SHIP" : keyCode('Z'),
               //"KEY_RESET" : keyCode('R'),
               //"KEY_0" : keyCode('0'),
               //"KEY_1" : keyCode('1'),
