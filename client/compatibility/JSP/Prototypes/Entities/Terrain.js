@@ -138,14 +138,11 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
     }
 }
 
-Terrain.prototype.angleToLine = function(pos, line,rotation,cRot){
+Terrain.prototype.angleToLine = function(pos, line,rotation){
     var x0 = line[0], x1 = line[2], y0 = line[1], y1 = line[3];
     var lN = util.lineNormal(x0,y0,x1,y1);
-    var posRelToPlan = util.vecMinus(pos,this.center);
-    var sgn = util.sign(posRelToPlan[1]);
-    var angleOLine = util.angleOfVector(lN) +Math.PI/2;// + sgn*Math.PI/2;
-    var rotCompToPlanet = rotation + Math.PI/2 + sgn*Math.PI;
-    return angleOLine// - rotCompToPlanet;
+    var angleOLine = util.angleOfVector(lN) + Math.PI/2;
+    return angleOLine - rotation;
 };
 
 Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius,rotation,cRot) {
@@ -153,8 +150,6 @@ Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius,rotati
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
     var lN = util.lineNormal(x0,y0,x1,y1);
-    var angleOLine = util.angleOfVector(lN) +Math.PI/2;
-    this.getInstance().settings.hudExtra = " " + angleOLine;
     //If I'm not between the lines height points, don't consider it.
     if (! (util.isBetween(nextY,Math.min(y0,y1)-radius,Math.max(y0,y1)+radius))){
 	    return [false];
@@ -272,7 +267,7 @@ Terrain.prototype.generateOceans = function(ctx) {
 
 
 Terrain.prototype.render = function (ctx) {
-    if(this.oceanColor) this.renderOcean(ctx);
+    if(this.oceanColor && !(this.getInstance().settings.enableDebug)) this.renderOcean(ctx);
     var terr = this.points;
     ctx.save();
     ctx.strokeStyle = this.edgeColor || "white";
@@ -280,6 +275,7 @@ Terrain.prototype.render = function (ctx) {
     if(this.getInstance().entityManager.cameraZoom < 0.5){
         ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
     }
+    if((this.getInstance().settings.enableDebug)) ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(terr[0][0],terr[0][1]);
 	//ctx.font="10px Arial";
@@ -289,15 +285,17 @@ Terrain.prototype.render = function (ctx) {
 	}
 	ctx.closePath();
 	ctx.stroke();
-    ctx.fill();
-    if(this.getInstance().settings.renderPlanetCenter)
+    if(!(this.getInstance().settings.enableDebug)){
+        ctx.fill();
+        if(this._Oceans){
+            ctx.fillStyle = this.waterColor;
+            this._Oceans.map(function(x) {
+                util.fillCircle(ctx,x[0][0],x[0][1],x[1]);
+                ;});
+        }
+    } else {
         util.strokeCircle(ctx,this.center[0],this.center[1],100)
-	//ctx.strokeText("C",this.center[0],this.center[1]);
-    if(this._Oceans){
-        ctx.fillStyle = this.waterColor;
-        this._Oceans.map(function(x) {
-            util.fillCircle(ctx,x[0][0],x[0][1],x[1]);
-            ;});
     }
+
     ctx.restore();
 };

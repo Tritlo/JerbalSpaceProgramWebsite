@@ -409,7 +409,7 @@ Part.prototype.render = function (ctx) {
         }
         ctx.closePath();
         ctx.stroke();
-        if(this.fill) {
+        if(this.fill && !(this.getInstance().settings.enableDebug)) {
             ctx.fill();
             }
         ctx.restore();
