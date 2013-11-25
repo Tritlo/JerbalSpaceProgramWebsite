@@ -3,6 +3,19 @@ function Instance(descr){
     this.init();
 }
 
+Instance.prototype.isUpdatePaused = false;
+Instance.prototype.isUpdateOdd = false;
+Instance.prototype.canvas = undefined;
+Instance.prototype.settings = undefined;
+Instance.prototype.entityManager = undefined;
+Instance.prototype.spatialManager = undefined;
+Instance.prototype.stateManager = undefined;
+Instance.prototype.mainMenu = undefined;
+Instance.prototype.partsDesigner = undefined;
+Instance.prototype.shipDesigner = undefined;
+Instance.prototype.simulation = undefined;
+Instance.prototype.main = undefined;
+
 Instance.prototype.loadShips = function(){
     // =========
     // LOAD DEFAULTS
@@ -38,7 +51,6 @@ Instance.prototype.loadShips = function(){
 Instance.prototype.init = function (){
     this.ID = InstanceManager.getNewID();
     InstanceManager.addInstance(this);
-    
     if(this.settings === undefined){
         this.settings = g_settings;
     }
@@ -79,6 +91,9 @@ Instance.prototype.render = function (){
     if(inst.settings.enableDebug) {
 	if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_CLEAR)) inst.settings.doClear = !inst.settings.doClear;
 	if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_BOX)) inst.settings.doBox = !inst.settings.doBox;
+    if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_TIMER)){
+        inst.settings.doTimerShow = !inst.settings.doTimerShow;
+    }
 	if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_UNDO_BOX)) inst.settings.undoBox = !inst.settings.undoBox;
 	if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_FLIPFLOP)) inst.settings.doFlipFlop = !inst.settings.doFlipFlop;
 	if (eatKey(inst.settings.debugKeys.KEY_TOGGLE_RENDER)) inst.settings.doRender = !inst.settings.doRender;
@@ -147,15 +162,55 @@ Instance.prototype.shouldSkipUpdate = function (){
     return this.isUpdatePaused && !eatKey(this.settings.keys.KEY_STEP);    
 };
 
-Instance.prototype.isUpdatePaused = false;
-Instance.prototype.isUpdateOdd = false;
-Instance.prototype.canvas = undefined;
-Instance.prototype.settings = undefined;
-Instance.prototype.entityManager = undefined;
-Instance.prototype.spatialManager = undefined;
-Instance.prototype.stateManager = undefined;
-Instance.prototype.mainMenu = undefined;
-Instance.prototype.partsDesigner = undefined;
-Instance.prototype.shipDesigner = undefined;
-Instance.prototype.simulation = undefined;
-Instance.prototype.main = undefined;
+
+Instance.prototype.processDiagnostics = function(){
+    // GAME-SPECIFIC DIAGNOSTICS
+
+    if (eatKey(this.settings.keys.KEY_TOGGLE_DEBUG))
+        this.settings.enableDebug = ! this.settings.enableDebug;
+    
+    if(this.settings.enableDebug) {
+        if (eatKey(this.settings.debugKeys.KEY_MIXED))
+            this.settings.allowMixedActions = !this.settings.allowMixedActions;
+
+        if (eatKey(this.settings.debugKeys.KEY_GRAVITY)) this.settings.useGravity = !this.settings.useGravity;
+
+        if (eatKey(this.settings.debugKeys.KEY_AVE_VEL)) this.settings.useAveVel = !this.settings.useAveVel;
+
+        if (eatKey(this.settings.debugKeys.KEY_SPATIAL)) this.settings.renderSpatialDebug = !this.settings.renderSpatialDebug;
+
+        if (eatKey(this.settings.debugKeys.KEY_HALT)) entityManager.haltShips();
+
+        if (eatKey(this.settings.debugKeys.KEY_RESET)) entityManager.resetShips();
+
+        if (eatKey(this.settings.debugKeys.KEY_0)) entityManager.toggleRocks();
+
+        if (eatKey(this.settings.debugKeys.KEY_SPEEDUP)){
+            this.settings.timeMultiplier/=2;
+        }
+        if (eatKey(this.settings.debugKeys.KEY_SLOWDOWN)) {
+            if (this.settings.timeMultiplier < 1){
+                this.settings.timeMultiplier*=2;
+            }
+                console.log(this.settings.timeMultiplier);
+        }
+        
+        /*
+        if (eatKey(inst.settings.debugKeys.KEY_1)) entityManager.generateShip({
+            cx : inst.mouseX,
+            cy : inst.mouseY,
+            
+            sprite : inst.sprites.ship});
+
+        if (eatKey(inst.settings.debugKeys.KEY_2)) entityManager.generateShip({
+            cx : inst.mouseX,
+            cy : inst.mouseY,
+            
+            sprite : inst.sprites.ship2
+            });
+
+        //if (eatKey(g_settings.debugKeys.KEY_K)) entityManager.killNearestShip(
+        //    g_mouseX, g_mouseY);
+        */
+    }
+};

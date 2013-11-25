@@ -20,6 +20,7 @@ var g_settings = {
           "pixelToMeterConstant": 0.08125,
           "doClear" : true,
           "doBox" : false,
+          "doTimerShow" : false,
           "undoBox" : false,
           "doFlipFlop" : false,
           "doRender" : true,
@@ -65,6 +66,7 @@ var g_settings = {
               "KEY_TOGGLE_UNDO_BOX" : keyCode('U'),
               "KEY_TOGGLE_FLIPFLOP" : keyCode('F'),
               "KEY_TOGGLE_RENDER"   : keyCode('R'),
+              "KEY_TOGGLE_TIMER"   : keyCode('T'),
               "KEY_SPEEDUP" : keyCode('4'),
               "KEY_SLOWDOWN" : keyCode('3')
 

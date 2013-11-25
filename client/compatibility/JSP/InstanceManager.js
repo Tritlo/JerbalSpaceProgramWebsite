@@ -10,6 +10,25 @@ InstanceManager.getNewID = function(){
     return this._nextInstanceID++;
 };
 
+InstanceManager.processDiagnostics = function(frameTime_ms, frameTimeDelta_ms, prevUpdateDu){
+    for(var ID in this.runningInstances){
+        var inst = this.getInstance(ID);
+        inst.processDiagnostics();
+        if (inst.settings.doTimerShow){
+            var y = 350;
+            ctx = inst.ctx;
+            ctx.save()
+            ctx.fillStyle = "white";
+            ctx.fillText('FT ' + frameTime_ms, 50, y+10);
+            ctx.fillText('FD ' + frameTimeDelta_ms, 50, y+20);
+            ctx.fillText('UU ' + inst.prevUpdateDu, 50, y+30); 
+            ctx.fillText('FrameSync ON', 50, y+40);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+};
+
 InstanceManager.clear = function(){
     this._nextInstanceID = 0;
     for(var ID in this.runningInstances){

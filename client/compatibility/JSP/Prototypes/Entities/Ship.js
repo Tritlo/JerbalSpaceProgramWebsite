@@ -563,7 +563,6 @@ Ship.prototype.updateOrbit = function() {
 
 Ship.prototype.renderOrbit = function(ctx) {
     //Render the orbit
-    console.log(this.orbit);
     if(this.orbit && this.getInstance().settings.renderOrbit){
         var p = this.orbit;
         var cx     = p[0];
