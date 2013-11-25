@@ -2,6 +2,7 @@ function State(instanceID, descr) {
     this.setup(instanceID, descr);
     this.init();
  };
+
 State.prototype = new Instantiable();
 
 //Called when state is initialized

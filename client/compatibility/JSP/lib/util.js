@@ -185,7 +185,7 @@ getEqOfLine: function (x0,y0,x1,y1) {
 lineNormal: function(x0,y0,x1,y1){
     if(x0 !== x1){
         var coeffs = util.getEqOfLine(x0,y0,x1,y1);
-        return [coeffs[0],coeffs[1]];
+        return util.normalizeVector([coeffs[0],coeffs[1]]);
     } else {
         return [1,0]
     }

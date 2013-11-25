@@ -3,6 +3,7 @@ function Simulation(instanceID,descr) {
 };
 
 Simulation.prototype = new State();
+
 Simulation.prototype.render = function (ctx) {
     this.getInstance().entityManager.render(ctx);
     this.getInstance().HUD.render(ctx);
@@ -49,8 +50,7 @@ Simulation.prototype.handleMouse = function (evt,type) {
 	}
     } else if (type === "up") {
 	this.g_mouseDown = false;
-	    //entityManager.cameraOffset = util.vecPlus(entityManager.cameraOffset,entityManager.mouseOffset);
-	this.getInstance().entityManager.cameraOffset = util.vecPlus(this.getInstance().entityManager.cameraOffset,util.rotateVector(util.mulVecByScalar(1/this.getInstance().entityManager.cameraZoom,this.getInstance().entityManager.mouseOffset),-entityManager.cameraRotation));
-	    this.getInstance().entityManager.mouseOffset = [0,0];
+	//this.getInstance().entityManager.cameraOffset = util.vecPlus(this.getInstance().entityManager.cameraOffset,util.rotateVector(util.mulVecByScalar(1/this.getInstance().entityManager.cameraZoom,this.getInstance().entityManager.mouseOffset),-this.getInstance().entityManager.cameraRotation));
+
     }
  };

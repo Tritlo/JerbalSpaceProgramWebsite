@@ -83,7 +83,7 @@ Terrain.prototype.hit = function (prevX,prevY,nextX,nextY,radius,width,height,ro
     if (this.getInstance().settings.hitBox){
         return this.hitWBox(prevX,prevY,nextX,nextY,radius,width,height,rotation,cRot);
     } else {
-        return this.hitWCircle(prevX,prevY,nextX,nextY,radius);
+        return this.hitWCircle(prevX,prevY,nextX,nextY,radius,rotation,cRot);
     }
 }
 
@@ -104,7 +104,7 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
         }
     }
 
-    var circ = this.hitWCircle(prevAvg[0],prevAvg[1],hbAvg[0],hbAvg[1],radius); 
+    var circ = this.hitWCircle(prevAvg[0],prevAvg[1],hbAvg[0],hbAvg[1],radius,rotation,cRot); 
     circ[3] = [nextX,this.heightAtX(nextX)];
     if (hits.length === 0){
             return circ;
@@ -129,8 +129,8 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
     var nextSign = util.sign(util.sideOfLine(x0,y0,x1,y1,nextX,nextY));
 	var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
 	var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
-	var lN = util.lineNormal(x0,y0,x1,y1);
-	var collisionAngle = util.angleBetweenVectors([0,-1],lN);
+    var collisionAngle = this.angleToLine([nextX,nextY],
+            [x0,y0,x1,y1],rotation,cRot);
     if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
         debugger; 
     }
@@ -138,11 +138,23 @@ Terrain.prototype.hitWBox = function (prevX,prevY,nextX,nextY, radius,width,heig
     }
 }
 
+Terrain.prototype.angleToLine = function(pos, line,rotation,cRot){
+    var x0 = line[0], x1 = line[2], y0 = line[1], y1 = line[3];
+    var lN = util.lineNormal(x0,y0,x1,y1);
+    var posRelToPlan = util.vecMinus(pos,this.center);
+    var sgn = util.sign(posRelToPlan[1]);
+    var angleOLine = util.angleOfVector(lN) +Math.PI/2;// + sgn*Math.PI/2;
+    var rotCompToPlanet = rotation + Math.PI/2 + sgn*Math.PI;
+    return angleOLine// - rotCompToPlanet;
+};
 
-Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
+Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius,rotation,cRot) {
     var points = util.findSurfaceBelow([nextX,nextY],this.points,this.center);
     var x0 = points[0][0]; var y0 = points[0][1];
     var x1 = points[1][0]; var y1 = points[1][1];
+    var lN = util.lineNormal(x0,y0,x1,y1);
+    var angleOLine = util.angleOfVector(lN) +Math.PI/2;
+    this.getInstance().settings.hudExtra = " " + angleOLine;
     //If I'm not between the lines height points, don't consider it.
     if (! (util.isBetween(nextY,Math.min(y0,y1)-radius,Math.max(y0,y1)+radius))){
 	    return [false];
@@ -153,8 +165,8 @@ Terrain.prototype.hitWCircle = function (prevX,prevY, nextX,nextY, radius) {
     if ((nextDist <= radius) ||  (prevSign != nextSign)){
         var prevDist = util.distFromLine(x0,y0,x1,y1,prevX,prevY);
         var collisionSpeed = Math.abs(prevSign* prevDist- nextSign*nextDist);
-        var lN = util.lineNormal(x0,y0,x1,y1);
-        var collisionAngle = util.angleBetweenVectors([0,-1],lN);
+        var collisionAngle = this.angleToLine([nextX,nextY],
+                [x0,y0,x1,y1],rotation,cRot);
         if(isNaN(collisionAngle) || isNaN(collisionSpeed)){
             debugger; 
         }

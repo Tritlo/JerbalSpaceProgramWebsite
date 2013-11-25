@@ -173,15 +173,18 @@ Instance.prototype.processDiagnostics = function(){
         if (eatKey(this.settings.debugKeys.KEY_MIXED))
             this.settings.allowMixedActions = !this.settings.allowMixedActions;
 
-        if (eatKey(this.settings.debugKeys.KEY_GRAVITY)) this.settings.useGravity = !this.settings.useGravity;
+        /*if (eatKey(this.settings.debugKeys.KEY_GRAVITY)) this.settings.useGravity = !this.settings.useGravity;
 
         if (eatKey(this.settings.debugKeys.KEY_AVE_VEL)) this.settings.useAveVel = !this.settings.useAveVel;
-
+        */
         if (eatKey(this.settings.debugKeys.KEY_SPATIAL)) this.settings.renderSpatialDebug = !this.settings.renderSpatialDebug;
 
-        if (eatKey(this.settings.debugKeys.KEY_HALT)) entityManager.haltShips();
+        if (eatKey(this.settings.debugKeys.KEY_HALT)){
+            console.log("halting ships");
+            this.entityManager.haltShips();
+        }
 
-        if (eatKey(this.settings.debugKeys.KEY_RESET)) entityManager.resetShips();
+        if (eatKey(this.settings.debugKeys.KEY_RESET)) this.entityManager.resetShips();
 
         if (eatKey(this.settings.debugKeys.KEY_0)) entityManager.toggleRocks();
 

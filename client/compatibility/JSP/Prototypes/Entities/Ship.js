@@ -393,7 +393,8 @@ Ship.prototype.applyAccel = function (accel,du) {
 	    this.velY = oldVelY * -0.9*Math.cos(collisionAngle);
         intervalVelY = this.velY;
         intervalVelX = this.velX;
-	    if (collisionSpeed <= this.getInstance().settings.minLandingSpeed && Math.abs(this.rotation - collisionAngle)<=this.getInstance().settings.maxSafeAngle){
+        this.getInstance().settings.hudExtra = " " + collisionAngle;
+	    if (collisionSpeed <= this.getInstance().settings.minLandingSpeed && Math.abs(collisionAngle)<=this.getInstance().settings.maxSafeAngle){
 		this.land(this.cx,this.cy);
 		intervalVelY = this.velY;
 		intervalVelX = this.velX;
@@ -481,6 +482,7 @@ Ship.prototype.reset = function () {
 Ship.prototype.halt = function () {
     this.velX = 0;
     this.velY = 0;
+    this.angularVel = 0;
 };
 
 
@@ -574,8 +576,7 @@ Ship.prototype.renderOrbit = function(ctx) {
         var fy = p[6];
         ctx.save();
         ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
-	console.log(this.getInstance().entityManager.cameraZoom);
-        if(this.getInstance().settings.enbleDebug){
+        if(this.getInstance().settings.enableDebug){
             ctx.strokeStyle = "yellow"; 
             util.strokeCircle(ctx,fx,fy,200);
             ctx.strokeStyle = "red"; 
@@ -599,8 +600,35 @@ Ship.prototype.render = function (ctx) {
         if(this.getInstance().entityManager.cameraZoom < 0.3){
             this.renderOrbit(ctx); 
         }
+        if(this.getInstance().settings.enableDebug){
+            this.renderTerrDebug(ctx);
+        }
         this.renderParts(ctx);
     }
-	
-    
+};
+
+Ship.prototype.renderTerrDebug = function (ctx){
+    var terr = this.getInstance().entityManager.getTerrain(this.cx,this.cy);
+    var ps = util.findSurfaceBelow(this.center,terr.points,terr.center);
+    var ln = util.lineNormal(ps[0][0],ps[0][1],ps[1][0],ps[1][1]);
+    ctx.save();
+    ctx.strokeStyle = "yellow";
+    util.strokeCircle(ctx,ps[0][0],ps[0][1],20) 
+    ctx.strokeStyle = "red";
+    util.strokeCircle(ctx,ps[1][0],ps[1][1],20) 
+    var cen = util.mulVecByScalar(0.5,util.vecPlus(ps[0],ps[1]))
+    var end = util.vecPlus(ln,cen);
+    ctx.beginPath();
+    ctx.moveTo(cen[0],cen[1]);
+    ctx.strokeStyle = "blue";
+    ctx.lineTo(-end[0],-end[1]);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cen[0],cen[1]);
+    ctx.strokeStyle = "red";
+    ctx.lineTo(this.cx,this.cy);
+    ctx.stroke();
+    ctx.restore();
+
+
 };
