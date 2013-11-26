@@ -21,7 +21,6 @@ Viewer.prototype.loadPart = function(part){
     part.updateCenter([part.center[0]+shiftW,part.center[1]+shiftH]);
     this.grid = new Grid(this.grid);
     this.parts = [part.toDesigner(this.grid)];
-    console.log(this.parts);
 };
 
 Viewer.prototype.loadShip = function(ship){

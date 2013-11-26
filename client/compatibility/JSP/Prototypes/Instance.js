@@ -15,37 +15,45 @@ Instance.prototype.partsDesigner = undefined;
 Instance.prototype.shipDesigner = undefined;
 Instance.prototype.simulation = undefined;
 Instance.prototype.main = undefined;
+Instance.prototype.enableQuit = true;
+Instance.prototype.ship = undefined;
 
 Instance.prototype.loadShips = function(){
     // =========
     // LOAD DEFAULTS
     // =========
     var inst = this.ID;
-    g_defaultShips = g_defaultShips.map(function (str) {
-	var s = new Ship(inst,$.parseJSON(str));
-        console.log(s);
-        s.disconnect();
-        return s;
-    });
+    if(this.ship){
+	this.ships=[new Ship(inst,this.ship)];
+	console.log("ship loaded");
+    } else {
+	g_defaultShips = g_defaultShips.map(function (str) {
+	    var s = new Ship(inst,$.parseJSON(str));
+	    console.log(s);
+	    s.disconnect();
+	    return s;
+	});
 
-    //Load default parts;
-    g_defaultParts = g_defaultParts.map(function (str) {
-	var p = new Part(inst,$.parseJSON(str));
-        p.instanceID = undefined;
-        return p;
-    });
+	//Load default parts;
+	g_defaultParts = g_defaultParts.map(function (str) {
+	    var p = new Part(inst,$.parseJSON(str));
+	    p.instanceID = undefined;
+	    return p;
+	});
 
-    if(util.storageLoad('parts') === undefined){
-	util.storageSave('parts',g_defaultParts);
+	if(util.storageLoad('parts') === undefined){
+	    util.storageSave('parts',g_defaultParts);
+	}
+
+	if(util.storageLoad('ships') === undefined){
+	    util.storageSave('ships',g_defaultShips);
+	}
+
+	this.ships = util.storageLoad('ships') || [{}];
+	this.ships = this.ships.map(function(s) {
+	    return new Ship(inst,s);
+	});
     }
-
-    if(util.storageLoad('ships') === undefined){
-	util.storageSave('ships',g_defaultShips);
-    }
-    this.ships = util.storageLoad('ships') || [{}];
-    this.ships.map(function(s) {
-	return new Ship(inst,s);
-    });
 };
 
 Instance.prototype.init = function (){

@@ -113,7 +113,7 @@ ShipDesigner.prototype.launch = function(){
 
 ShipDesigner.prototype.newShip = function ()
 {
-    this.currentShip = new Ship(
+    this.currentShip = new Ship(this.instanceID,
             {
                 "cx" : 200,
                 "cy" : 200
@@ -160,15 +160,16 @@ ShipDesigner.prototype.saveShip = function ()
         this.currentShip.disassemble(this.grid,this.instanceID);
         this.getInstance().ships = util.storageLoad("ships");
 	var inst = this.instanceID;
-	this.getInstance().ships.map(function(s) {
+	this.getInstance().ships = this.getInstance().ships.map(function(s) {
 	    return new Ship(inst,s);
 	});
         $("#in9").empty();
-        if(inst.ships)
-        {
-            $.each(inst.ships, function (key,value) {
-                $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
-        }
+	var ships = util.storageLoad("ships");
+	if(ships)
+	{
+	    $.each(ships, function (key,value) {
+	    $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
+	}
     }
 }
 
@@ -295,7 +296,7 @@ ShipDesigner.prototype.handleDown = function(evt,type) {
                 this.editing = false;
             }
         }
-}
+};
 
 ShipDesigner.prototype.handleMouse = function (evt,type) {
     var pos = util.findPos(this.getInstance().canvas);
@@ -305,7 +306,6 @@ ShipDesigner.prototype.handleMouse = function (evt,type) {
     }
     this.closest = this.grid.findNearestPoint(g_mouse[0],g_mouse[1]);
     this.closestPoint = this.grid.points[this.closest[0]][this.closest[1]];
-    console.log(this.closestPoint);
     if (type === "down") {
         this.handleDown(evt,type);
     } else if (type === "move") {

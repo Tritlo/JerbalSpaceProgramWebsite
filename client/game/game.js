@@ -1,3 +1,3 @@
 Template.game.rendered = function() {
-    start("JSP");
+    start("JSP",{canvasID: "JSPCanvas", clear: true});
 };

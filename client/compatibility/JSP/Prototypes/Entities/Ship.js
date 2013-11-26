@@ -579,7 +579,7 @@ Ship.prototype.renderOrbit = function(ctx) {
 	var peri = p[7];
 	var apo = p[8];
         ctx.save();
-        ctx.lineWidth = 2/this.getInstance().entityManager.cameraZoom;
+        ctx.lineWidth = 1.5/this.getInstance().entityManager.cameraZoom;
         if(this.getInstance().settings.enableDebug){
             ctx.strokeStyle = "yellow"; 
             util.strokeCircle(ctx,fx,fy,200);
@@ -587,9 +587,9 @@ Ship.prototype.renderOrbit = function(ctx) {
             util.strokeCircle(ctx,cx,cy,200);
         }
 	ctx.strokeStyle = "red";
-	util.strokeCircle(ctx,peri[0],peri[1],25);
+	util.strokeCircle(ctx,peri[0],peri[1],50);
 	ctx.strokeStyle = "yellow"; 
-	util.strokeCircle(ctx,apo[0],apo[1],25);
+	util.strokeCircle(ctx,apo[0],apo[1],50);
         ctx.strokeStyle = "dodgerblue"; 
         ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
         var angl = util.cartesianToPolar([cx,cy],[fx,fy])[1];

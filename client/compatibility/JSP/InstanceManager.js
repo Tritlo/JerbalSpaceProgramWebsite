@@ -2,8 +2,8 @@ var InstanceManager = {};
 
 InstanceManager.init = function() {
     this._nextInstanceID = 0;
-    this.instances = [];
-    this.runningInstances = [];
+    this.instances = {};
+    this.runningInstances = {};
 };
 
 InstanceManager.getNewID = function(){
@@ -44,7 +44,7 @@ InstanceManager.startInstance = function(instanceID){
 };
 
 InstanceManager.stopInstance = function(instanceID){
-    this.runningInstances[instanceID] = undefined;
+    delete this.runningInstances[instanceID];
 };
 
 InstanceManager.isRunning = function(instanceID){
@@ -54,12 +54,11 @@ InstanceManager.isRunning = function(instanceID){
 InstanceManager.removeInstance = function(instanceID){
     if(this.isRunning(instanceID))
 	this.stopInstance(instanceID);
-    this.instances[instanceID] = undefined;
+    delete this.instances[instanceID];
 };
 
 InstanceManager.addInstance = function(instance){
     console.log("adding instance with ID: "+ instance.ID);
-    console.log(instance);
     this.instances[instance.ID] = instance;
 };
 
@@ -96,7 +95,7 @@ InstanceManager.quit = function(){
     for(var ID in this.runningInstances){
 	    var inst = this.instances[ID];
 	    var reqQ = keys[inst.settings.keys.KEY_QUIT];
-	    if (reqQ) {
+	    if (reqQ && inst.enableQuit) {
 		inst.stateManager.switchState('menu');
 	    }
 	}
