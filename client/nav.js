@@ -1,6 +1,12 @@
 Template.nav.helpers({
-    activePage: function (routeName){
+    activePage: function (routeNames){
 	ctx = Router.current();
-	return (ctx && (ctx.route.name === routeName)) ? 'active' : '';
-    }
-});
+	var routeNames = routeNames.split(',');
+	for(var i = 0; i < routeNames.length; i++){
+
+	    if(ctx && (ctx.route.name === routeNames[i])){
+		return "active";
+	    }
+	}
+	return '';
+    }});
