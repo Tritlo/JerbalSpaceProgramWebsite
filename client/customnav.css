@@ -92,6 +92,18 @@
 .dropdown-menu a {
 	color: #00ff00;
 }
+.dropdown-menu > li > a {
+	color: #00bf00;
+}
+.dropdown-menu > li > a:hover {
+	color: lime;
+	background-color: black;
+}
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+color: lime;
+background-color: #262626;
+}
 .dropdown-menu .form-control:focus {
 	border-color: #000000;
 	-webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset, rgba(0, 128, 0, 0.6) 0px 0px 8px 0px;
