@@ -1,0 +1,44 @@
+#!/bin/sh
+# Nodejitsu Meteor Deploy Script v0.3
+# v0.2, Gadi Cohen, GPLed.
+# Updated to v0.3 by Matthias Pall Gissurarson
+
+# Change this if you don't like it
+
+OUTPUT_DIR=~/tmp/demeteorized
+
+# -- Don't modify below this line --
+
+CODE_LINES=`find . -type f \( ! -regex '.*/\..*' \) | xargs wc -l | grep total`
+
+APP_NAME=JerbalSpaceProgram
+SUBDOMAIN=jerbalspaceprogram
+
+rm -rf $OUTPUT_DIR
+demeteorizer -o $OUTPUT_DIR
+cd $OUTPUT_DIR
+npm install
+npm shrinkwrap
+
+# confirmed to work with output of demeteorizer 0.3.1
+head -n -2 package.json > package2.json
+cat >> package2.json << __END__
+  },
+  "subdomain": "$SUBDOMAIN",
+  "scripts": {
+    "start": "node programs/server/boot.js programs/server/program.json "
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
+__END__
+mv package2.json package.json
+
+# Actual deploy to Nodejitsu
+jitsu deploy
+
+#Cleanup
+rm -rf $OUTPUT_DIR
+
+echo Deployed $CODE_LINES lines of code.
