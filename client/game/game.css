@@ -21,6 +21,7 @@ select {
 }
 
 #canvas {
-    margin: 0 auto;
-    width: 1200px;
+    position: fixed;
+    left: 50%;
+    margin-left: -600px;
 }

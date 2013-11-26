@@ -1,16 +1,17 @@
 <template name="nav">
-    <nav class="navbar navbar-default navbar-fixed navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed navbar-fixed-top" purpose="navigation">
       <div class="navbar-header">
-	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-	    <span class="sr-only">Toggle navigation</span>
-	    <span class="icon-bar"></span>
-	    <span class="icon-bar"></span>
-	    <span class="icon-bar"></span>
-	</button>
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/" style="padding-right: 20px">Jerbal Space Program</a>
       </div>
 	<div class="navbar-collapse collapse">
-	    <ul class="nav navbar-nav navbar-left nav-pills">
-	      <li class="{{activePage 'home'}}"> <a class="navbar-brand" href="{{pathFor 'home'}}"> Jerbal Space Program  </a> </li>
+	    <ul class="nav navbar-nav navbar-left">
+	      <li class="{{activePage 'home'}}"> <a class="navbar-brand" href="{{pathFor 'home'}}">Local Play </a> </li>
 	      <li class="{{activePage 'instructions'}}" ><a href="{{pathFor 'instructions'}}">Instructions</a></li>
 	      <li class="{{activePage 'info'}}" ><a href="{{pathFor 'info'}}">Info</a></li>
  			<li class="dropdown {{activePage 'browseParts,designParts'}}">
