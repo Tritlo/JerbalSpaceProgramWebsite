@@ -1,0 +1,21 @@
+#browseParts {
+    width: 700px;
+    margin:0 auto;
+    }
+#viewerLeft {
+    float: left;
+    width: 350px;
+   } 
+#viewerRight {
+    float: right;
+    width: 350px;
+   } 
+#partsList {
+    width: 700px;
+    text-align: center;
+    margin: 0 auto;
+    }
+
+#partsList a {
+    color: lime;
+}

@@ -1,0 +1,7 @@
+/* CSS declarations go here */
+body { background: black;
+       color: lime;
+       padding-top: 70px;
+       font-family: VT323, monospace;
+       font-size: 16px;
+     }

@@ -1,0 +1,26 @@
+input {
+  border: 1px solid #00ff00;
+  background: black;
+  width: 100px;
+  color: lime;
+  }
+
+select {
+  border: 1px solid #00ff00;
+  background: #00a300;
+  width: 100px;
+  color: black;
+  }
+
+*:-webkit-input-placeholder {
+    color: green;
+}
+
+*:-moz-placeholder {
+    color: green;
+}
+
+#canvas {
+    margin: 0 auto;
+    width: 1200px;
+}

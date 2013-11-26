@@ -1,0 +1,21 @@
+<template name="browseParts">
+  <div id="browseParts">
+	<canvas id="viewerLeft" width="300" height="300"
+	    style="border: 1px solid black;">
+	Sorry, but your browser does not support the HTML5 canvas tag.
+	</canvas>
+	<canvas id="viewerRight" width="300" height="300"
+	    style="border: 1px solid black;">
+	Sorry, but your browser does not support the HTML5 canvas tag.
+	</canvas>
+  </div>
+  <div id="partsList">
+    {{#each parts}}
+      {{> part}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="part">
+  <p><a href="{{pathFor 'browseParts'}}" class="browse" name="{{_id}}">{{name}} by {{author}}</a></p>
+</template>

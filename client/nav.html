@@ -1,0 +1,36 @@
+<template name="nav">
+    <nav class="navbar navbar-default navbar-fixed navbar-fixed-top">
+      <div class="navbar-header">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+	    <span class="sr-only">Toggle navigation</span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	    <span class="icon-bar"></span>
+	</button>
+      </div>
+	<div class="navbar-collapse collapse">
+	    <ul class="nav navbar-nav navbar-left nav-pills">
+	      <li class="{{activePage 'home'}}"> <a class="navbar-brand" href="{{pathFor 'home'}}"> Jerbal Space Program  </a> </li>
+	      <li class="{{activePage 'instructions'}}" ><a href="{{pathFor 'instructions'}}">Instructions</a></li>
+	      <li class="{{activePage 'info'}}" ><a href="{{pathFor 'info'}}">Info</a></li>
+ 			<li class="dropdown {{activePage 'browseParts,designParts'}}">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Parts<b class="caret"></b></a>
+			<ul class="dropdown-menu">
+				<li class="{{activePage 'browseParts'}}"        ><a href="{{pathFor 'browseParts'}}">Browse</a></li>
+				<li class="{{activePage 'designParts'}}"        ><a href="{{pathFor 'designParts'}}">Design</a></li>
+			</ul>
+			</li>
+ 			<li class="dropdown {{activePage 'browseShips,designShips'}}">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Ships<b class="caret"></b></a>
+			<ul class="dropdown-menu">
+			    <li class="{{activePage 'browseShips'}}"        ><a href="{{pathFor 'browseShips'}}">Browse</a></li>
+			    <li class="{{activePage 'designShips'}}"        ><a href="{{pathFor 'designeShips'}}">Design</a></li>
+			</ul>
+			</li>
+	    </ul>
+	    <ul class="nav navbar-nav navbar-right">
+	      {{ loginButtons }}
+	    </ul>
+	</div>
+    </nav>
+</template>
