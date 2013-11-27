@@ -54,7 +54,8 @@ Ship.prototype.rememberResets = function () {
     this.reset_rotation = this.rotation;
 };
 
-// Initial, inheritable, default values
+// Initial, inheritable, default valuesS
+Ship.prototype.isPaused = false;
 Ship.prototype.rotation = 0;
 Ship.prototype.cx = 0;
 Ship.prototype.cy = -1000;
@@ -210,7 +211,7 @@ Ship.prototype._updateExplosion = function (du) {
     
     
 Ship.prototype.update = function (du) {
-
+    if(this.isPaused) return;
     this.timeAlive += du;
     // Handle warping
     if (this._isWarping) {
@@ -639,10 +640,10 @@ Ship.prototype.setState = function(state){
     if(state.center)
 	this.setCenter(state.center);
     if(state.rotation)
-	this.setRotation(state.rotation);
+	    this.setRotation(state.rotation);
     if(state.vel) {
-	this.velX = state.vel[0];
-	this.velY = state.vel[1];
+        this.velX = state.vel[0];
+        this.velY = state.vel[1];
     }
     for(var key in state){
 	this[key] = state[key];

@@ -306,7 +306,7 @@ EntityManager.prototype.update = function(du) {
         var ship = this.getMainShip();
         var state = {
 	    vel: [ship.velX,ship.velY],
-	    rotVel: ship.angularVel,
+	    angularVel: ship.angularVel,
 	    thrust: ship.thrust,
 	    throttle: ship.throttle,
 	    fuel: ship.fuel,

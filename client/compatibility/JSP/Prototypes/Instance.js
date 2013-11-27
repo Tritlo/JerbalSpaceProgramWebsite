@@ -190,6 +190,7 @@ Instance.prototype.update = function (dt, original_dt){
 Instance.prototype.shouldSkipUpdate = function (){
     if (eatKey(this.settings.keys.KEY_PAUSE)) {
         this.isUpdatePaused = !this.isUpdatePaused;
+        this.entityManager.getMainShip().isPaused = !this.entityManager.getMainShip().isPaused;
     }
     return this.isUpdatePaused && !eatKey(this.settings.keys.KEY_STEP);    
 };
