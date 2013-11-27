@@ -1,7 +1,7 @@
 var isUpdating = false;
 var currentPlayers = {};
 var lastUpdated = 0;
-var timeout = 10000;
+var timeout = 30000;
 function updatePlayerState(state){
     var now = Date.now();
     if(this.isUpdating || (now - lastUpdated) <= 2000){
