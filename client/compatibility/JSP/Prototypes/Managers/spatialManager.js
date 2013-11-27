@@ -68,9 +68,14 @@ SpatialManager.prototype.unregisterAll = function (){
 SpatialManager.prototype.unregister = function(entity) {
     var spatialID = entity.getSpatialID();
 
-    this._entities[spatialID] = undefined;
+    delete this._entities[spatialID];
 
-}
+};
+
+SpatialManager.prototype.isRegistered = function(entity){
+    var spatialID = entity.getSpatialID();
+    return (spatialID in this._entities);
+};
 
 SpatialManager.prototype.findEntityInRange = function(posX, posY, radius) {
     for ( var ID in this._entities) {

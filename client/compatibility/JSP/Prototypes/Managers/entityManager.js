@@ -123,7 +123,10 @@ EntityManager.prototype.gravityAt = function (x,y,terr) {
 };
 
 EntityManager.prototype.createInitialShips =  function(){
-    this.generateShip(this.getInstance().ships[0]);
+    var ship = this.getInstance().ships[0];
+    ship.cx = 0;
+    ship.cy = 0;
+    this.generateShip(ship);
 };
 
 EntityManager.prototype._findNearestShip = function(posX, posY) {
@@ -185,8 +188,8 @@ EntityManager.prototype.deInit =  function() {
 };
 
 EntityManager.prototype.generateShip = function(descr) {
-    	descr.cx=0;
-	descr.cy=0;
+    	//descr.cx=0;
+	//descr.cy=0;
         var inst = this.instanceID;
 	this._ships.push(new Ship(inst,descr));
 };
@@ -296,6 +299,30 @@ EntityManager.prototype.update = function(du) {
                 ++i;
             }
         }
+	this.updateOtherPlayersShips(du);
+    }
+
+    if (this.getInstance().multi){
+        var ship = this.getMainShip();
+        var state = {
+	    vel: [ship.velX,ship.velY],
+	    rotVel: ship.angularVel,
+	    thrust: ship.thrust,
+	    throttle: ship.throttle,
+	    shipId: ship._id,
+	    center: ship.center,
+	    rotation: ship.rotation
+		    };
+	updatePlayerState(state);
+	this.getInstance().currentPlayers = currentPlayers;
+	
+	var oPs = this.getInstance().currentPlayers;
+	if(oPs){
+	    for(var player in oPs){
+		var state = oPs[player];
+		this.setOtherPlayerShip(player,state);
+		}
+	    }
     }
     
 };
@@ -338,6 +365,82 @@ EntityManager.prototype.render = function(ctx) {
         }
         debugY += 10;
     }
+    if(this.getInstance().settings.enableDebug){
+	var oPs = this.getInstance().currentPlayers;
+	if(oPs){
+	    for(var player in oPs){
+		var state = oPs[player];
+		ctx.save();
+		ctx.fillStyle = "red";
+		ctx.textAlign ="center";
+		var fs = 14;
+		if(this.cameraZoom < 1) fs = (14/this.cameraZoom);
+		ctx.font = fs + "px " +this.getInstance().settings.font;
+		ctx.fillText(player,state.center[0],state.center[1]-64);
+		ctx.restore();
+		}
+	    }
+    }
+    this.renderOtherPlayersShips(ctx);
     ctx.restore();
+};
+
+EntityManager.prototype.otherPlayersShips = undefined;
+
+EntityManager.prototype.setOtherPlayerShip = function(player,state){
+    if(!(this.otherPlayersShips)) this.otherPlayersShips = {};
+    if(player in this.otherPlayersShips){
+	//var now = Date.now();
+	var lastSet = this.otherPlayersShips[player].lastSet;
+	if((state.time - lastSet) >= 1000){
+	    this.otherPlayersShips[player].lastSet = state.time;
+	    this.otherPlayersShips[player].setState(state);
+	    }
+    } else {
+	console.log(player + " joined the game!");
+	var inst = this.instanceID;
+	var shipType = this.getInstance().loadShip(state.shipId);
+	var ship = new Ship(inst,shipType);
+	ship.unregister();
+	ship.isMain = false;
+	ship.isOtherPlayer = true;
+	ship.player = player;
+	ship.setState(state);
+	ship.lastSet = Date.now();
+	this.otherPlayersShips[player] = ship;
+    }
+};
+
+EntityManager.prototype.updateOtherPlayersShips = function(du){
+    var oPs = this.getInstance().currentPlayers;
+    if(this.otherPlayersShips){
+	for(var ID in this.otherPlayersShips){
+	    if( !(ID in oPs )){
+		console.log(ID + " left the game!");
+		delete this.otherPlayersShips[ID];
+	    } else{
+		var status = this.otherPlayersShips[ID].update(du);
+		if (status === this.KILL_ME_NOW) {
+		    delete this.otherPlayersShips[ID];
+		}
+	    }
+	}
+    }
+};
+
+EntityManager.prototype.renderOtherPlayersShips = function(ctx){
+    if(this.otherPlayersShips){
+	for(var ID in this.otherPlayersShips){
+	    var ship = this.otherPlayersShips[ID];
+	    ctx.save();
+	    ctx.fillStyle = this.getInstance().settings.hudColor;
+	    ctx.strokeStyle = this.getInstance().settings.hudColor;
+	    ctx.textAlign ="center";
+	    ctx.font = (10/this.cameraZoom) + "px " +this.getInstance().settings.font;
+	    ctx.fillText(ship.player,ship.center[0],ship.center[1]-64);
+	    ctx.restore();
+	    ship.render(ctx);
+	}
+    }
 };
 

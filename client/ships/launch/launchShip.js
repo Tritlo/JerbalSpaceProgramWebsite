@@ -4,9 +4,9 @@ Template.launchShip.rendered = function (){
 
         if(ship){
 	    shipLauncher = start("ShipLauncher",{
-		instanceOptions: {ship: ship},
-		canvasID: "shipLauncher",
-		clear: true
+            instanceOptions: {ship: ship, multi: true},
+            canvasID: "shipLauncher",
+            clear: true
 	    });
 	}
     

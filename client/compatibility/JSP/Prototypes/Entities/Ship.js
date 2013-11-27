@@ -60,7 +60,7 @@ Ship.prototype.cx = 0;
 Ship.prototype.cy = -1000;
 Ship.prototype.velX = 0;
 Ship.prototype.velY = 0;
-Ship.prototype.launchVel = 2;
+//Ship.prototype.launchVel = 2;
 Ship.prototype.numSubSteps = 1;
 Ship.prototype._explosionFrame = 0;
 Ship.prototype._explosionDuration = 0;
@@ -82,6 +82,7 @@ Ship.prototype.sizeGrid;
 Ship.prototype.isMain = true;
 Ship.prototype.timeAlive = 0;
 Ship.prototype.immuneTime = 100;
+Ship.prototype.isOtherPlayer = false;
 
 
 Ship.prototype.attributesFromParts = function () {
@@ -239,8 +240,10 @@ Ship.prototype.update = function (du) {
             hitEnt.explode(hitEnt.cx,hitEnt.cy,hitEnt.getSpeed());
         }
         
-    }    
-    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime) this.register(this);
+    }
+    if ( !(hitEnt) && !(this._isExploding) && this.timeAlive >= this.immuneTime && !(this.isOtherPlayer)){
+	this.register(this);
+    }
     
 
     //Orbit only changes when the orbiting body changes
@@ -279,6 +282,11 @@ Ship.prototype.computeForces = function (du) {
     return [accelX,accelY,accelRot];
 };
 
+Ship.prototype.setRotation = function(newRot){
+    this.rotation = newRot;
+    this.parts.map(function (x){ x.updateRot(newRot)});
+};
+
 Ship.prototype.applyRotation = function(angularAccel,du) {
     var oldAngVel = this.angularVel;
     this.angularVel += angularAccel*du;
@@ -298,8 +306,7 @@ Ship.prototype.applyRotation = function(angularAccel,du) {
     if(terrainHit[0]) break;
     }
     if (!(terrainHit[0])){
-        this.rotation = newRot;
-	    this.parts.map(function (x){ x.updateRot(newRot)});
+	this.setRotation(newRot);
     }
 };
 
@@ -519,13 +526,13 @@ Ship.prototype._renderVectorExplosion = function (ctx) {
 Ship.prototype.renderCenter = function(ctx){
 ctx.strokeStyle = "white";
 util.strokeCircle(ctx,this.cx,this.cy,5);
-}
+};
 
 Ship.prototype.renderParts = function(ctx){
     ctx.save();
     this.parts.map(function (x) {x.render(ctx)});
     ctx.restore();
-}
+};
 
 Ship.prototype.renderHitBox = function(ctx){
     ctx.save();
@@ -567,7 +574,7 @@ Ship.prototype.updateOrbit = function() {
 
 Ship.prototype.renderOrbit = function(ctx) {
     //Render the orbit
-    if(this.orbit && this.getInstance().settings.renderOrbit){
+    if(this.orbit && this.getInstance().settings.renderOrbit && !this.isOtherPlayer){
         var p = this.orbit;
         var cx     = p[0];
         var cy     = p[1];
@@ -623,8 +630,24 @@ Ship.prototype.setOrbit = function(radius,terr){
     this.setCenter(util.vecPlus(terr.center,[0,radius]));
     var v = Math.sqrt(consts.G*(terr.mass+this.mass)/radius);
     this.velY = 0; this.velX = -v;
-    this.rotation = -Math.PI/2;
+    this.setRotation(Math.PI);
     this.angularVel = v/radius;
+};
+
+Ship.prototype.setState = function(state){
+    //Special care for some items
+    if(state.center)
+	this.setCenter(state.center);
+    if(state.rotation)
+	this.setRotation(state.rotation);
+    if(state.vel) {
+	this.velX = state.vel[0];
+	this.velY = state.vel[1];
+    }
+    for(var key in state){
+	this[key] = state[key];
+    }
+	
 };
 
 Ship.prototype.renderHitDebug = function (ctx){

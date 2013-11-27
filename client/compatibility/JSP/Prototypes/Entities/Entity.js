@@ -80,13 +80,20 @@ Entity.prototype.unregister = function(){
     if(typeof(this.getInstance().spatialManager) !== 'undefined'){
 	this.getInstance().spatialManager.unregister(this);
 	}
+    else{
+	console.log("Warning, no instance manager!");
+    }
 };
 
 Entity.prototype.findHitEntity = function () {
-    var pos = this.getPos();
-    return this.getInstance().spatialManager.findEntityInRange(
-	pos.posX, pos.posY, this.getRadius()
-    );
+    if(this.getInstance().spatialManager.isRegistered(this)){
+	var pos = this.getPos();
+	return this.getInstance().spatialManager.findEntityInRange(
+	    pos.posX, pos.posY, this.getRadius()
+	);
+    } else {
+	return undefined;
+    }
 };
 
     // This is just little "convenience wrapper"
