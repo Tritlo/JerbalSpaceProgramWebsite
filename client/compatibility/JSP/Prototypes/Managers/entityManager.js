@@ -309,6 +309,7 @@ EntityManager.prototype.update = function(du) {
 	    rotVel: ship.angularVel,
 	    thrust: ship.thrust,
 	    throttle: ship.throttle,
+	    fuel: ship.fuel,
 	    shipId: ship._id,
 	    center: ship.center,
 	    rotation: ship.rotation
