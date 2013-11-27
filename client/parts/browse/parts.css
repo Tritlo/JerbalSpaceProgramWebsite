@@ -6,14 +6,20 @@
     float: left;
     width: 350px;
    } 
-#viewerRight {
-    float: right;
-    width: 350px;
+#viewerRight { 
+   width: 150px;
+	float: right;
+
    } 
+#right {
+	float: right;
+	width: 350px;
+}
 #partsList {
-    width: 700px;
+    width: 200px;
+float: right;
+position: relative;
     text-align: center;
-    margin: 0 auto;
     }
 
 #partsList a {

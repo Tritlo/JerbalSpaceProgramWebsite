@@ -4,7 +4,8 @@
     "basePackages": {
       "bootstrap-3": {},
       "iron-router": {},
-      "accounts-ui-bootstrap-3": {}
+      "accounts-ui-bootstrap-3": {},
+      "malihu-custom-scrollbar": {}
     },
     "packages": {
       "bootstrap-3": {
@@ -21,6 +22,11 @@
         "git": "https://github.com/mangasocial/meteor-accounts-ui-bootstrap-3.git",
         "tag": "v0.2.4",
         "commit": "cdbd20eb065310c0cc302bbd5f22e5b2121c769a"
+      },
+      "malihu-custom-scrollbar": {
+        "git": "https://github.com/mangasocial/meteor-malihu-custom-scrollbar.git",
+        "tag": "v0.1.1",
+        "commit": "23161e093162dbe182a0865b52e2618968eb3844"
       }
     }
   }

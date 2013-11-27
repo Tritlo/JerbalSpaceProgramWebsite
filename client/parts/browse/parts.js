@@ -1,3 +1,11 @@
+/* 
+// Fae thetta ekki til ad virka..
+    (function($){
+        $(window).load(function(){
+            $("#partsList").mCustomScrollbar();
+        });
+    })(jQuery);
+*/
 Template.browseParts.rendered = function (){
         var id = Session.get('currentPart');
 	smallViewer = start("Viewer",{
@@ -9,7 +17,7 @@ Template.browseParts.rendered = function (){
 		    "location": [10,10]
 		}
 	    },
-	    canvasID : "viewerLeft",
+	    canvasID : "viewerRight",
 	    clear: true
 	    });
 	bigViewer = start("Viewer",{
@@ -21,13 +29,14 @@ Template.browseParts.rendered = function (){
 		    "location": [10,10]
 		}
 	    },
-	    canvasID : "viewerRight",
+	    canvasID : "viewerLeft",
 	    clear: false
 	    });
 	      
 	if(id){
 	    var inst = InstanceManager.getInstance(bigViewer).viewer.loadPart(Parts.findOne(id));
 	}
+
 };
 
 Template.browseParts.helpers({
@@ -48,4 +57,6 @@ Template.browseParts.events({
 	InstanceManager.getInstance(smallViewer).viewer.loadPart(Parts.findOne(id));
 	}
 });
+
+
 
