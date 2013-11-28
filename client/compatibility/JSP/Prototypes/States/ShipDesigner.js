@@ -110,7 +110,9 @@ ShipDesigner.prototype.launch = function(){
     this.currentShip.cx = protoShip.cx;
     this.currentShip.cy = protoShip.cy;
     this.getInstance().entityManager.clearShips();
-    this.getInstance().entityManager.generateShip(this.currentShip);
+    this.getInstance().ships.unshift(this.currentShip);
+    //this.getInstance().entityManager.generateShip(this.currentShip);
+    this.getInstance().entityManager.createInitialShips();
     this.getInstance().stateManager.switchState("simulation");
 }
 
@@ -147,6 +149,8 @@ ShipDesigner.prototype.addPart = function (part){
 
 ShipDesigner.prototype.saveShip = function ()
 {
+    
+    console.log(ships);
     this.currentShip = new Ship(this.instanceID,
 				{"parts" : this.addedParts,
 				 "name": $('#in5').val()}
@@ -165,7 +169,7 @@ ShipDesigner.prototype.saveShip = function ()
 		    break;
 		    }
 	    }
-	    ships[i] = this.currentPart;
+	    ships[i] = this.currentShip;
         } else {
             ships = [this.currentShip];
             }
@@ -197,6 +201,7 @@ ShipDesigner.prototype.loadShip = function (ship)
     }
     var ship = ship.disassemble(this.grid,this.instanceID);
     this.currentShip = ship;
+    $('#in5').val(this.currentShip.name);
     var gri = this.grid;
     this.addedParts = ship.parts;
     console.log(this.currentShip);
@@ -213,8 +218,8 @@ ShipDesigner.prototype.onActivation = function ()
     $('#in9').offset({top:canvas_pos.y + offsetFromMenu    , left: canvas_pos.x+5});
     $('#in5').offset({top:canvas_pos.y + offsetFromMenu +100, left: canvas_pos.x+5});
     $('#in7').offset({top:canvas_pos.y + offsetFromMenu +50, left: canvas_pos.x+5});
-	$('#in5').val("");
-	$('#in5').attr("placeholder","Ship Name");
+    $('#in5').val("");
+    $('#in5').attr("placeholder","Ship Name");
     var ships = util.storageLoad("ships");
     if(ships)
     {
@@ -227,7 +232,7 @@ ShipDesigner.prototype.onActivation = function ()
 	    $("#in7").append('<option value="'+key+'">'+value.name+'</option>');
 	});
     }
-}
+};
 
 ShipDesigner.prototype.onDeactivation = function()
 {
@@ -236,7 +241,7 @@ ShipDesigner.prototype.onDeactivation = function()
 	$('#in7').hide();
 	$('#in9').empty();
 	$('#in7').empty();
-}
+};
 
 //RENDER
 //=====

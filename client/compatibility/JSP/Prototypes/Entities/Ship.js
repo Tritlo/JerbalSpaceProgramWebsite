@@ -74,6 +74,7 @@ Ship.prototype.throttle = 0;
 Ship.prototype.thrust = 0;
 Ship.prototype.fuel = 0;
 Ship.prototype.efficiency = 1;
+Ship.prototype.maxFuel = 0;
 Ship.prototype.maxThrust = 0.2;
 Ship.prototype.mass = 1;
 Ship.prototype.angularVel = 0;
@@ -107,6 +108,7 @@ Ship.prototype.attributesFromParts = function () {
             this.fuel+=this.parts[i].fuel;
             this.maxThrust+=this.parts[i].thrust;
         }
+	this.maxFuel = this.fuel;
         var maxx = Math.max.apply(null, this.parts.map(function (p){ return p.hitBox[0][0];}));
         var minx = Math.min.apply(null, this.parts.map(function (p){ return p.hitBox[1][0]}));
         var maxy = Math.max.apply(null, this.parts.map(function (p){return p.hitBox[1][1]}));
@@ -197,7 +199,7 @@ Ship.prototype._updateVectorExplosion = function (du){
 	return this.getInstance().entityManager.KILL_ME_NOW;
 	}
     
-}
+};
 
 Ship.prototype._updateExplosion = function (du) {
     this._timeFromExplosion += du;

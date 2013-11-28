@@ -26,7 +26,8 @@ Router.map(function() {
 		this.render("mustBeLoggedIn");
 		this.stop();
 	    }
-	    Session.set('currentPart',this.params._id);
+	    if(this.params._id)
+		Session.set('currentPart',this.params._id);
 	}]
     });
     
@@ -56,7 +57,9 @@ Router.map(function() {
 		this.render("mustBeLoggedIn");
 		this.stop();
 	    }
-	    Session.set('currentShip',this.params._id);
+	    if(this.params._id)
+		Session.set('currentShip',this.params._id);
+	    
 	}]
     });
     
