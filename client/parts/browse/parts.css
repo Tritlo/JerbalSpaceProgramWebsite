@@ -1,21 +1,24 @@
 #browseParts {
-    width: 700px;
+    width: 800px;
     margin:0 auto;
     }
-#viewerLeft {
+#bigViewer {
     float: left;
-    width: 350px;
+    width: 510px;
    } 
-#viewerRight {
-    float: right;
-    width: 350px;
-   } 
-#partsList {
-    width: 700px;
+.partsList {
+    width: 200px;
     text-align: center;
     margin: 0 auto;
+    float:right;
     }
 
-#partsList a {
+#parts {
+    height: 500px;
+}
+
+.partsList a {
     color: lime;
 }
+
+

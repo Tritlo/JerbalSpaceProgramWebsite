@@ -12,9 +12,10 @@ Router.map(function() {
     this.route('instructions', {});
     
     this.route('browseParts', {
-	path: '/parts/browse/:_id?',
+	path: '/parts/browse/:page?/:_id?',
 	before: [function(){
 	    Session.set('currentPart',this.params._id);
+	    Session.set('currentPage',this.params.page);
 	}]
     });
     

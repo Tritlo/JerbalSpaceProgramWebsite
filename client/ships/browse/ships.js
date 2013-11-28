@@ -10,11 +10,16 @@ Template.browseShips.rendered = function (){
 		    }
 		},
 	    canvasID: "shipViewer",
-	    clear: true
+	    clear: false
 	});
 	if(id){
 	    InstanceManager.getInstance(shipViewer).viewer.loadShip(Ships.findOne(id));
 	    }
+};
+
+//Clear templates instance manager when template is destroyed.
+Template.browseShips.destroyed = function(){
+    InstanceManager.clear();
 };
 
 Template.browseShips.helpers({
@@ -22,6 +27,7 @@ Template.browseShips.helpers({
 	return Ships.find();
 	}
     });
+
 
 Template.browseShips.events({
     "click .browse": function(event){

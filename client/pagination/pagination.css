@@ -1,0 +1,15 @@
+.pager li a {
+    background-color: lime;
+    color: black;
+    border: 1px solid lime;
+    }
+.pager li a:active {
+    background-color: black;
+    color: lime;
+    border: 1px solid lime;
+    }
+.pager li a:hover {
+    background-color: black;
+    color: lime;
+    border: 1px solid lime;
+    }
