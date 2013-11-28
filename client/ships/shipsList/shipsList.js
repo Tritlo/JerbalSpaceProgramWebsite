@@ -7,9 +7,9 @@ Template.shipsList.helpers({
 });
 
 
-Template.partsList.created = function(){
+Template.shipsList.created = function(){
     var page = parseInt(Session.get('currentPage'));
-    var totalParts = Meteor.call("shipsCount", function(error,result){ Session.set("paginationTotal",result);} );
+    var totalShips = Meteor.call("shipsCount", function(error,result){ Session.set("paginationTotal",result);} );
     Session.set("paginationLimit",3);
     Session.set("paginationOf","Ship");
 }
