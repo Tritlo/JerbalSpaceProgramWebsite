@@ -53,16 +53,9 @@ Router.map(function() {
 	path: '/ships/launch/:_id?',
 	before: [function(){
 	    if(this.params._id) Session.set('currentShip',this.params._id);
-	    else{
-		var id = Session.get('currentShip');
-		if(!id){
-		    this.render("mustSelectShip");
-		    this.stop();
-		}
-	    }
-	    if(!(Ships.findOne(id))){
-		    this.render("mustSelectShip");
-		    this.stop();
+	    if(!(Session.get('currentShip') || !(Ships.findOne(Session.get('currentShip'))))){
+		this.render("mustSelectShip");
+		this.stop();
 	    }
 	    
 	}]
