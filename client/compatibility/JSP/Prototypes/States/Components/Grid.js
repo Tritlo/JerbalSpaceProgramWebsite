@@ -1,14 +1,9 @@
-function Grid(descr) {
-    this.setup(descr);
+function Grid(instanceID,descr) {
+    this.setup(instanceID,descr);
     this.init();
 };
 
-Grid.prototype.setup = function (descr) {
-    // Apply all setup properies from the (optional) descriptor
-    for (var property in descr) {
-        this[property] = descr[property];
-    }
-};
+Grid.prototype = new Instantiable();
 
 Grid.prototype.init = function () {
     this.points = [];
@@ -86,6 +81,11 @@ Grid.prototype.render = function (ctx) {
 	//ctx.beginPath()
         var n = this.points[0].length;
         var m = this.points.length;
+	if(typeof(this.getInstance().entityManager) !== 'undefined'){
+	    if(this.getInstance().entityManager.cameraZoom < 0.5){
+		ctx.lineWidth = 1/this.getInstance().entityManager.cameraZoom;
+	    }
+	}
 	for(var i = 1; i < n-1; i++){
 	    if (i % (n/4) === 0){
 		ctx.lineWidth *= 2;

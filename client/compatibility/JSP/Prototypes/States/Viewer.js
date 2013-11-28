@@ -6,7 +6,7 @@ function Viewer(instanceID,descr){
 Viewer.prototype = new State();
 
 Viewer.prototype.init = function(){
-    this.grid = new Grid(this.grid);
+    this.grid = new Grid(this.instanceID,this.grid);
 };
 
 
@@ -18,8 +18,9 @@ Viewer.prototype.loadPart = function(part){
     var shiftH = Math.floor((r-1-h)/2);
     var shiftW = Math.floor((r-1-w)/2);
     this.grid.dims = [r,r];
+    this.getInstance().entityManager.cameraZoom = 525/this.grid.width;
     part.updateCenter([part.center[0]+shiftW,part.center[1]+shiftH]);
-    this.grid = new Grid(this.grid);
+    this.grid = new Grid(this.instanceID,this.grid);
     this.parts = [part.toDesigner(this.grid)];
 };
 
@@ -29,7 +30,8 @@ Viewer.prototype.loadShip = function(ship){
     var h = ship.height;
     var r = Math.max(w,h)+1;
     this.grid.dims = [r,r];
-    this.grid = new Grid(this.grid);
+    this.getInstance().entityManager.cameraZoom = 525/this.grid.width;
+    this.grid = new Grid(this.instanceID,this.grid);
     this.ship = ship.disassemble(this.grid,this.instanceID);
     this.parts = ship.parts;
 };

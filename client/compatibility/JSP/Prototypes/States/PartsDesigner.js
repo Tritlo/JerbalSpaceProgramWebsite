@@ -1,27 +1,37 @@
 function PartsDesigner(instanceID,descr) {
     this.setup(instanceID,descr);
+    this.local = this.getInstance().local;
 };
 
 PartsDesigner.prototype = new State();
 
 PartsDesigner.prototype.init = function() {
-    if(this.getInstance().local){
-	this.back = new Menu(this.instanceID,{
-	    "state" : this,
-	    "items" : [
-	    {
-		"text" : "Back",
-		"action" : function (state) {
-		    state.getInstance().stateManager.switchState("menu");
-		    }
+    if(this.local){
+	var backItems = [{
+	    "text" : "Back",
+	    "action" : function (state) {
+		state.getInstance().stateManager.switchState("menu");
 		}
-	    ],
-	    "width" : 100,
-	    "height" : 100,
-	    "location" : [ this.getInstance().canvas.width - 100, 0]
-	    });
+	    }
+	];
+    } else {
+	var backItems = [{
+	    "text" : "Share",
+	    "action" : function (state) {
+		state.sharePart();
+		}
+	    }
+	];
     }
-
+    
+    this.back = new Menu(this.instanceID,{
+	"state" : this,
+	"items" : backItems,
+	"width" : 100,
+	"height" : 100,
+	"location" : [ this.getInstance().canvas.width - 100, 0]
+	});
+    
     this.menu2 = new Menu(this.instanceID,{
 	"state" : this,
 	"items" : [
@@ -45,9 +55,8 @@ PartsDesigner.prototype.init = function() {
 	"location" : [ 260, 0]
 	});
 
-    this.menu = new Menu(this.instanceID,{
-	    "state" : this,
-	    "items" : [
+    var menuItems =
+	     [
 		{
 		"text": "New Part",
 		"action" : function (state){
@@ -64,33 +73,34 @@ PartsDesigner.prototype.init = function() {
 		"text": "Load Part",
 		"action" : function (state){
 		    state.loadPart();
-		    },
+		    }
 		},
 		{
-		"text": "Clear Storage",
+		"text": "Clear Local Storage",
 		"action" : function (state){
 		    util.storageSave("parts",undefined);
 		    $("#in9").empty();
 		    console.log("parts storage cleared");
-		    },
+		    }
 		},
 		{
 		"text": "Set Flame",
 		"action" : function (state){
 		    state.setFlame();
-		    },
-		},
-		
-		
-	    ],
+		    }
+		}
+	    ];
+	    
+    this.menu = new Menu(this.instanceID,{
+	    "state" : this,
+	    "items" : menuItems,
 	    "width" : 100,
 	    "height" : this.getInstance().canvas.height*2,
 	    "itemHeight" : 25,
 		"location": [55,-this.getInstance().canvas.height+85]
     });
 
-    
-    this.grid = new Grid({
+    this.grid = new Grid(this.instanceID,{
 	    "dims" : [64,64],
         "width" : 525,
         "height" : 525,
@@ -118,6 +128,26 @@ PartsDesigner.prototype.newPart = function () {
         "lineWidth" : 4,
 	    "currentThrust" : 0.2
     });
+};
+
+PartsDesigner.prototype.sharePart = function(){
+    this.currentPart.finalize(this.grid);
+    this.currentPart.author = "";
+    var uname = Meteor.user().username;
+    var uid = Meteor.user()._id; 
+    var aid = this.currentPart.authorID;
+    if(this.currentPart._id && aid && uid === aid){
+	    Parts.update(this.currentPart._id,{$set: this.currentPart});
+	    Parts.update(this.currentPart._id,{$inc: {version: 1}});
+    } else {
+	    this.currentPart.version = 1;
+	    this.currentPart.author = uname;
+	    this.currentPart.authorID = uid;
+	    var id = Parts.insert(this.currentPart);
+	    this.currentPart._id = id;
+    }
+    this.currentPart.toDesigner(this.grid);
+    
 };
 
 PartsDesigner.prototype.setFlame = function () {
@@ -150,7 +180,14 @@ PartsDesigner.prototype.savePart = function () {
         this.currentPart.finalize(this.grid);
         var parts = util.storageLoad("parts");
         if (parts){
-            parts.push(this.currentPart);
+	    var name = this.currentPart.name;
+	    var author = this.currentPart.author;
+	    for(var i = 0; i < parts.length; i++){
+		if(parts[i].name === name && author === parts[i].author) {
+		    break;
+		    }
+	    }
+	    parts[i] = this.currentPart;
         } else {
             parts = [this.currentPart];
             }
@@ -159,7 +196,7 @@ PartsDesigner.prototype.savePart = function () {
         this.flame = undefined;
         if(this.currentPart.flame){
             this.currentPart.currentThrust = this.currentPart.thrust;
-            this.flame = this.currentPart.flame.points
+            this.flame = this.currentPart.flame.points;
         }
         var parts = util.storageLoad("parts");
         $("#in9").empty();
@@ -169,7 +206,7 @@ PartsDesigner.prototype.savePart = function () {
                 $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
         }
     }
-    }
+},
 
 PartsDesigner.prototype.loadPart = function () {
     var parts = util.storageLoad("parts");
@@ -187,7 +224,7 @@ PartsDesigner.prototype.loadPart = function () {
         this.flame = undefined;
         if(this.currentPart.flame){
             this.currentPart.currentThrust = this.currentPart.thrust;
-            this.flame = this.currentPart.flame.points
+            this.flame = this.currentPart.flame.points;
         }
 	} else this.newPart();
     
