@@ -10,6 +10,6 @@ Template.shipsList.helpers({
 Template.shipsList.created = function(){
     var page = parseInt(Session.get('currentPage'));
     var totalShips = Meteor.call("shipsCount", function(error,result){ Session.set("paginationTotal",result);} );
-    Session.set("paginationLimit",3);
+    Session.set("paginationLimit",2);
     Session.set("paginationOf","Ship");
 }

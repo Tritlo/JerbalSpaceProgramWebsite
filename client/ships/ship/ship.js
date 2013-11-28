@@ -28,8 +28,8 @@ Template.ship.rendered = function(){
 	    instanceOptions : {
 		grid: {
 		    "dims" : [32,32],
-		    "width" : 100,
-		    "height" : 100,
+		    "width" : 180,
+		    "height" : 180,
 		    "location": [10,10]
 		}
 	    },
