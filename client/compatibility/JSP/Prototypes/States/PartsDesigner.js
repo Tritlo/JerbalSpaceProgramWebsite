@@ -5,20 +5,22 @@ function PartsDesigner(instanceID,descr) {
 PartsDesigner.prototype = new State();
 
 PartsDesigner.prototype.init = function() {
-    this.back = new Menu(this.instanceID,{
-	"state" : this,
-	"items" : [
-        {
-	    "text" : "Back",
-	    "action" : function (state) {
-		state.getInstance().stateManager.switchState("menu");
+    if(this.getInstance().local){
+	this.back = new Menu(this.instanceID,{
+	    "state" : this,
+	    "items" : [
+	    {
+		"text" : "Back",
+		"action" : function (state) {
+		    state.getInstance().stateManager.switchState("menu");
+		    }
 		}
-	    }
-        ],
-	"width" : 100,
-	"height" : 100,
-	"location" : [ this.getInstance().canvas.width - 100, 0]
-	});
+	    ],
+	    "width" : 100,
+	    "height" : 100,
+	    "location" : [ this.getInstance().canvas.width - 100, 0]
+	    });
+    }
 
     this.menu2 = new Menu(this.instanceID,{
 	"state" : this,
@@ -251,7 +253,7 @@ PartsDesigner.prototype.onDeactivation = function() {
 PartsDesigner.prototype.render = function(ctx) {
     this.menu.render(ctx);
     this.menu2.render(ctx);
-    this.back.render(ctx);
+    if(this.back) this.back.render(ctx);
     this.grid.render(ctx);
     if (this.closest) {
         var i = this.closest[0];
@@ -317,7 +319,7 @@ PartsDesigner.prototype.handleMenus = function(evt,type){
         this.menu.handleMouse(evt,type);
         return true;
 	}
-    else if (this.back.inMenu(g_mouse[0],g_mouse[1])){
+    else if (this.back && this.back.inMenu(g_mouse[0],g_mouse[1])){
         this.back.handleMouse(evt,type);
         return true;
 	    }

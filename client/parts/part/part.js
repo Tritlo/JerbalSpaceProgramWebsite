@@ -10,7 +10,7 @@ Template.part.events({
     "mouseleave" : function(event){
 	var id = Session.get("currentPart");
         var mainInstance = Session.get("mainInstance");
-        if(id){
+        if(id && Parts.findOne(id)){
             InstanceManager.getInstance(mainInstance).viewer.loadPart(Parts.findOne(id));
         }
     },

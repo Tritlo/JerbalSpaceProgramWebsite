@@ -13,10 +13,19 @@ Template.browseShips.rendered = function (){
 	    clear: false
 	    });
         Session.set("mainInstance",bigViewer);
-	if(id){
+	if(id && Ships.findOne(id)){
 	    var inst = InstanceManager.getInstance(bigViewer).viewer.loadShip(Ships.findOne(id));
 	}
 };
+
+Template.browseShips.events({
+    "click a": function(evt){
+	evt.preventDefault();
+	var id = Session.get('currentShip');
+	if(id){Router.go('launchShip',{_id:id});}
+    }
+    
+});
 
 Template.browseShips.destroyed = function(){
     InstanceManager.clear();

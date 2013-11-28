@@ -103,7 +103,7 @@ InstanceManager.quit = function(){
     for(var ID in this.runningInstances){
 	    var inst = this.instances[ID];
 	    var reqQ = keys[inst.settings.keys.KEY_QUIT];
-	    if (reqQ && inst.enableQuit) {
+	    if (reqQ && inst.local) {
 		inst.stateManager.switchState('menu');
 	    }
 	}

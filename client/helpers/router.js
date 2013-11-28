@@ -50,9 +50,21 @@ Router.map(function() {
     });
     
     this.route('launchShip', {
-	path: '/ships/launch/:_id',
+	path: '/ships/launch/:_id?',
 	before: [function(){
-	    Session.set('currentShip',this.params._id);
-	}],
+	    if(this.params._id) Session.set('currentShip',this.params._id);
+	    else{
+		var id = Session.get('currentShip');
+		if(!id){
+		    this.render("mustSelectShip");
+		    this.stop();
+		}
+	    }
+	    if(!(Ships.findOne(id))){
+		    this.render("mustSelectShip");
+		    this.stop();
+	    }
+	    
+	}]
     });
 });

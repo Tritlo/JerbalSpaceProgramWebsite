@@ -13,7 +13,7 @@ Template.browseParts.rendered = function (){
 	    clear: false
 	    });
         Session.set("mainInstance",bigViewer);
-	if(id){
+	if(id && Parts.findOne(id)){
 	    var inst = InstanceManager.getInstance(bigViewer).viewer.loadPart(Parts.findOne(id));
 	}
 };

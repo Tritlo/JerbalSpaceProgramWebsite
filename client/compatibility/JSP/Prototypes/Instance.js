@@ -17,6 +17,7 @@ Instance.prototype.simulation = undefined;
 Instance.prototype.main = undefined;
 Instance.prototype.enableQuit = true;
 Instance.prototype.ship = undefined;
+Instance.prototype.local = false;
 Instance.prototype.currentPlayers = undefined;
 Instance.prototype.multi = false;
 Instance.prototype.loadedShips = undefined;

@@ -5,26 +5,28 @@ function ShipDesigner(instanceID,descr) {
 ShipDesigner.prototype = new State();
 
 ShipDesigner.prototype.init = function() {
-    this.back = new Menu(this.instanceID,{
-	"state" : this,
-	"items" : [
-        {
-	    "text" : "Back",
-	    "action" : function (state) {
-		state.getInstance().stateManager.switchState("menu");
-		}
-	    },
-		{
-		"text" : "Launch",
-		"action" : function(state) {
-		    state.launch();
-		}
+    if(this.getInstance().local){
+	this.back = new Menu(this.instanceID,{
+	    "state" : this,
+	    "items" : [
+	    {
+		"text" : "Back",
+		"action" : function (state) {
+		    state.getInstance().stateManager.switchState("menu");
+		    }
 		},
-        ],
-	"width" : 100,
-	"height" : 100,
-	"location" : [this.getInstance().canvas.width - 100, 0]
-	});
+		    {
+		    "text" : "Launch",
+		    "action" : function(state) {
+			state.launch();
+		    }
+		    },
+	    ],
+	    "width" : 100,
+	    "height" : 100,
+	    "location" : [this.getInstance().canvas.width - 100, 0]
+	    });
+    }
 
     this.menu2 = new Menu(this.instanceID,{
 	"state" : this,
@@ -119,23 +121,26 @@ ShipDesigner.prototype.newShip = function ()
                 "cy" : 200
             });
     this.addedParts = this.currentShip.parts;
-}
+};
 
 
-ShipDesigner.prototype.addPart = function (partInd){
-    var parts = util.storageLoad("parts");
-    var part = new Part(this.instanceID, parts[partInd]);
+ShipDesigner.prototype.addPart = function (part){
+    if(!(part._id)){
+	var partInd = part;
+	var parts = util.storageLoad("parts");
+	var part = new Part(this.instanceID, parts[partInd]);
+    }
     this.heldPart = part.toDesigner(this.grid);
     if(this.addedParts){
-		this.indexOfHeldPart = this.addedParts.length;
-        this.addedParts.push(this.heldPart);
+	this.indexOfHeldPart = this.addedParts.length;
+	this.addedParts.push(this.heldPart);
     } else {
-        this.addedParts = [this.heldPart];
-		this.indexOfHeldPart = 0;
+	this.addedParts = [this.heldPart];
+	this.indexOfHeldPart = 0;
     }
-	this.currentShip.parts = this.addedParts
+    this.currentShip.parts = this.addedParts;
     console.log(part);
-}
+};
 
 
 
@@ -228,7 +233,7 @@ ShipDesigner.prototype.onDeactivation = function()
 ShipDesigner.prototype.render = function(ctx) {
     this.menu.render(ctx);
     this.menu2.render(ctx);
-    this.back.render(ctx);
+    if(this.back) this.back.render(ctx);
     this.grid.render(ctx);
     if(this.addedParts){
         this.addedParts.map(function (part) {
@@ -256,7 +261,7 @@ ShipDesigner.prototype.handleMenus = function(evt,type){
         this.menu.handleMouse(evt,type);
         return true;
 	}
-    else if (this.back.inMenu(g_mouse[0],g_mouse[1])){
+    else if (this.back && this.back.inMenu(g_mouse[0],g_mouse[1])){
         this.back.handleMouse(evt,type);
         return true;
 	    }

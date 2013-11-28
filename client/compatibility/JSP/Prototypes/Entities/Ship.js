@@ -207,11 +207,15 @@ Ship.prototype._updateExplosion = function (du) {
     else {
 	return this._updateVectorExplosion(du);
     }
-}
+};
+
+Ship.prototype.shouldSkipUpdate = function(){
+    return this.isPaused && (this.isMain && eatKey(this.getInstance().settings.keys.KEY_STEP));
+};
     
     
 Ship.prototype.update = function (du) {
-    if(this.isPaused) return;
+    if(this.shouldSkipUpdate()) return;
     this.timeAlive += du;
     // Handle warping
     if (this._isWarping) {

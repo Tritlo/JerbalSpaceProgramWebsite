@@ -14,7 +14,6 @@ Simulation.prototype.update = function (du){
     this.getInstance().entityManager.update(du);
 
     // Prevent perpetual firing!
-    eatKey(this.getInstance().settings.keys.KEY_FIRE);
     };
 
 Simulation.prototype.cameraUpdate = function(du) {
