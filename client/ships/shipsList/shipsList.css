@@ -1,0 +1,14 @@
+.shipsList {
+    width: 200px;
+    text-align: center;
+    margin: 0 auto;
+    float:right;
+    }
+
+#ships {
+    height: 500px;
+}
+
+.shipsList a {
+    color: lime;
+}

@@ -1,0 +1,12 @@
+<template name="shipsList">
+<div class="shipsList">
+    <div id="ships">
+      {{#each ships}}
+        {{> ship}}
+      {{/each}}
+    </div>
+    <div id="pagination">
+      {{> pagination}}
+    </div>
+</div>
+</template>
