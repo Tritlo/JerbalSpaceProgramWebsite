@@ -1,9 +1,12 @@
 <template name="browseParts">
   <div id="browseParts">
+        <div id="viewPart">
 	<canvas id="bigViewer" width="500" height="500"
 	    style="border: 1px solid black;">
 	Sorry, but your browser does not support the HTML5 canvas tag.
 	</canvas>
+  	<p> <a href="{{pathFor 'designPart'}}" id="edit">Edit</a></p>
+	</div>
     {{> partsList}}
   </div>
 </template>

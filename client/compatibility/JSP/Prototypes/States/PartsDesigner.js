@@ -208,9 +208,13 @@ PartsDesigner.prototype.savePart = function () {
     }
 },
 
-PartsDesigner.prototype.loadPart = function () {
-    var parts = util.storageLoad("parts");
-    var part = new Part(this.instanceID,parts[$('#in9').val()]);
+PartsDesigner.prototype.loadPart = function (part) {
+    if(!(part)){
+	var parts = util.storageLoad("parts");
+	var part = new Part(this.instanceID,parts[$('#in9').val()]);
+    } else {
+	var part = new Part(this.instanceID, part);
+    }
     this.currentPart = part.toDesigner(this.grid);
     if (this.currentPart){
         $('#in8').val(this.currentPart.fill);

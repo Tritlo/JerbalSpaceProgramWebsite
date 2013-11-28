@@ -1,5 +1,4 @@
 Template.designShip.rendered = function(){
-        var id = Session.get('currentShip');
 	shipDesigner = start("ShipDesigner",{
 	    /*instanceOptions : {
 		grid: {
@@ -13,4 +12,9 @@ Template.designShip.rendered = function(){
 	    clear: true
 	    });
         Session.set("mainInstance",shipDesigner);
+        var id = Session.get('currentShip');
+        console.log(id);
+	if(id && Ships.findOne(id)){
+	   InstanceManager.getInstance(shipDesigner).partsDesigner.loadShip(Ships.findOne(id));
+	}
 };

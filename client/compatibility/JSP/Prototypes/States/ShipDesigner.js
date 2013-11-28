@@ -186,11 +186,15 @@ ShipDesigner.prototype.saveShip = function ()
     }
 }
 
-ShipDesigner.prototype.loadShip = function ()
+ShipDesigner.prototype.loadShip = function (ship)
 {
-    var ships = util.storageLoad("ships");
-    var selVal = $('#in9').val() || 0;
-    var ship = new Ship(this.instanceID, ships[selVal]);
+    if(!(ship)){
+	var ships = util.storageLoad("ships");
+	var selVal = $('#in9').val() || 0;
+	var ship = new Ship(this.instanceID, ships[selVal]);
+    } else {
+	var ship = new Ship(this.instanceID, ship);
+    }
     var ship = ship.disassemble(this.grid,this.instanceID);
     this.currentShip = ship;
     var gri = this.grid;

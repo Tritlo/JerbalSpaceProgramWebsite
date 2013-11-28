@@ -1,5 +1,4 @@
 Template.designPart.rendered = function(){
-        var id = Session.get('currentPart');
 	partsDesigner = start("PartDesigner",{
 	    /*instanceOptions : {
 		grid: {
@@ -12,7 +11,9 @@ Template.designPart.rendered = function(){
 	    canvasID : "PartDesigner",
 	    clear: true
 	    });
+        var id = Session.get('currentPart');
         Session.set("mainInstance",partsDesigner);
-
-
+	if(id && Parts.findOne(id)){
+	   InstanceManager.getInstance(partsDesigner).partsDesigner.loadPart(Parts.findOne(id));
+	}
 };

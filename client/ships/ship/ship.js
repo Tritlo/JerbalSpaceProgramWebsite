@@ -43,5 +43,6 @@ Template.ship.rendered = function(){
 	}
 };
 Template.ship.destroyed = function(){
-    
-}
+    var instID = "ship-" + this.data._id;
+    InstanceManager.removeInstance(instID);
+};

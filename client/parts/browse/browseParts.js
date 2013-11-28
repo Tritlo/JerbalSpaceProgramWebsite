@@ -18,6 +18,15 @@ Template.browseParts.rendered = function (){
 	}
 };
 
+Template.browseParts.events({
+    "click a": function(evt){
+	evt.preventDefault();
+	var id = Session.get('currentPart');
+	if(id){Router.go('designPart',{_id:id});}
+    }
+    
+});
+
 Template.browseParts.destroyed = function(){
     InstanceManager.clear();
 };
