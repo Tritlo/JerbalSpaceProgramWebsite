@@ -81,7 +81,7 @@ Instance.prototype.loadShips = function(){
 };
 
 Instance.prototype.init = function (){
-    this.ID = InstanceManager.getNewID();
+    this.ID = InstanceManager.getNewID(this.canvasID);
     InstanceManager.addInstance(this);
     if(this.settings === undefined){
         this.settings = g_settings;
@@ -114,6 +114,7 @@ Instance.prototype.setup = function (descr){
     for (var property in descr) {
         this[property] = descr[property];
     }
+    this.canvas = document.getElementById(this.canvasID);
     this.ctx = this.canvas.getContext("2d");
 };
 

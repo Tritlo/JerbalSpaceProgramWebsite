@@ -1,13 +1,21 @@
 var InstanceManager = {};
 
 InstanceManager.init = function() {
-    this._nextInstanceID = 0;
     this.instances = {};
     this.runningInstances = {};
 };
 
-InstanceManager.getNewID = function(){
-    return this._nextInstanceID++;
+InstanceManager.getNewID = function(canvasID){
+    if(canvasID in this.instances){
+        for(var i = 1; ; i++){
+            var newID = canvasID +""+i;
+            if(!(newID in this.instances)){
+                return newID;
+            }
+        }
+
+    }
+    else{ return canvasID}
 };
 
 InstanceManager.processDiagnostics = function(frameTime_ms, frameTimeDelta_ms, prevUpdateDu){

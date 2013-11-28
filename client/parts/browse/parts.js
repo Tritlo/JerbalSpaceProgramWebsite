@@ -91,3 +91,6 @@ Template.part.rendered = function(){
 	    var inst = InstanceManager.getInstance(partViewer).viewer.loadPart(this.data);
 	}
 };
+Template.part.destroyed = function(){
+    
+}
