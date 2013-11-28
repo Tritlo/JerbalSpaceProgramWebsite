@@ -45,7 +45,7 @@ StateManager.prototype.init = function(states) {
             var state = stateK[i];
             if(!state.hasBeenInitialized){
 		if(this.states[state]){
-		    console.log("Initializing " + state);
+		    //console.log("Initializing " + state);
 		    this.states[state].init();
 		    this.states[state].hasBeenInitialized = true;
 		    }
