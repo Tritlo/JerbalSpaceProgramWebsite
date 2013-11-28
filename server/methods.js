@@ -7,4 +7,5 @@ Meteor.methods({
 	},
 	myPartsCount: function(){
 		return Parts.find( { author: Meteor.user() } ).count();
-    });
+	}    
+});

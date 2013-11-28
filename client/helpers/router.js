@@ -30,6 +30,17 @@ Router.map(function() {
 	}]
     });
     
+    this.route('myParts', {
+	path: '/parts/myParts/:_id?',
+	before: [function(){
+	    if(!Meteor.user()){
+		this.render("mustBeLoggedIn");
+		this.stop();
+	    }
+	    Session.set('currentPart',this.params._id);
+	}]
+    });
+
     this.route('browseShips', {
 	path: '/ships/browse/:page?/:_id?',
 	before: [function(){
