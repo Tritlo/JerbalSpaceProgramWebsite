@@ -17,6 +17,30 @@ Instance.prototype.simulation = undefined;
 Instance.prototype.main = undefined;
 Instance.prototype.enableQuit = true;
 Instance.prototype.ship = undefined;
+Instance.prototype.currentPlayers = undefined;
+Instance.prototype.multi = false;
+Instance.prototype.loadedShips = undefined;
+
+Instance.prototype.loadShip = function(id){
+    return loadedShips[id];
+    if(this.loadedShips && id in this.loadedShips){
+	return;
+    }
+    var inst = this.ID;
+    console.log("loading ship" + id);
+    var ship = new Ship(inst,loadedShips[id]);
+    ship.unregister();
+    ship.isMain = false;
+    if(this.loadedShips){} else {
+	this.loadedShips = {};
+    }
+    this.loadedShips[id] = ship;
+};
+
+Instance.prototype.getShip = function(id){
+    this.loadShip(id);
+    return this.loadedShips[id];
+};
 
 Instance.prototype.loadShips = function(){
     // =========
@@ -166,6 +190,7 @@ Instance.prototype.update = function (dt, original_dt){
 Instance.prototype.shouldSkipUpdate = function (){
     if (eatKey(this.settings.keys.KEY_PAUSE)) {
         this.isUpdatePaused = !this.isUpdatePaused;
+        this.entityManager.getMainShip().isPaused = !this.entityManager.getMainShip().isPaused;
     }
     return this.isUpdatePaused && !eatKey(this.settings.keys.KEY_STEP);    
 };
