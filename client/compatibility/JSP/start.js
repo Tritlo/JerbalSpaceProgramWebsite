@@ -14,7 +14,7 @@ starts = {
 	view.start();
 	return view.ID;
     },
-    "PartsDesigner": function(options,canvas) {
+    "PartDesigner": function(options,canvas) {
 	options.enableQuit = false;
 	//options.canvasID = canvas;
 	var view = new Instance(options);

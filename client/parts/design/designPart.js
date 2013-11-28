@@ -1,6 +1,6 @@
 Template.designPart.rendered = function(){
         var id = Session.get('currentPart');
-	partsDesigner = start("PartsDesigner",{
+	partsDesigner = start("PartDesigner",{
 	    /*instanceOptions : {
 		grid: {
 		    "dims" : [32,32],
@@ -9,7 +9,7 @@ Template.designPart.rendered = function(){
 		    "location": [10,10]
 		}
 	    },*/
-	    canvasID : "PartsDesigner",
+	    canvasID : "PartDesigner",
 	    clear: true
 	    });
         Session.set("mainInstance",partsDesigner);

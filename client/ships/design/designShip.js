@@ -1,0 +1,16 @@
+Template.designShip.rendered = function(){
+        var id = Session.get('currentShip');
+	shipDesigner = start("ShipDesigner",{
+	    /*instanceOptions : {
+		grid: {
+		    "dims" : [32,32],
+		    "width" : 490,
+		    "height" : 490,
+		    "location": [10,10]
+		}
+	    },*/
+	    canvasID : "ShipDesigner",
+	    clear: true
+	    });
+        Session.set("mainInstance",shipDesigner);
+};
