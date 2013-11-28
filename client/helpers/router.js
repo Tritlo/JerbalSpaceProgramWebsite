@@ -20,9 +20,10 @@ Router.map(function() {
     });
     
     this.route('browseShips', {
-	path: '/ships/browse/:_id?',
+	path: '/ships/browse/:page?/:_id?',
 	before: [function(){
 	    Session.set('currentShip',this.params._id);
+	    Session.set('currentPage',this.params.page);
 	}]
     });
     

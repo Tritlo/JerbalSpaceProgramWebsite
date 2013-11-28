@@ -99,10 +99,10 @@ PartsDesigner.prototype.init = function() {
     };
 
 PartsDesigner.prototype.newPart = function () {
-    console.log("new part");
-    console.log(this.currentPart);
-    console.log("old parts");
-    console.log(util.storageLoad("parts"));
+    //console.log("new part");
+    //console.log(this.currentPart);
+    //console.log("old parts");
+    //console.log(util.storageLoad("parts"));
     $('#in1').val("");
     $('#in2').val("");
     $('#in3').val("");
