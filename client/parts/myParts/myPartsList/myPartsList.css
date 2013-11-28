@@ -1,0 +1,14 @@
+.myPartsList {
+    width: 200px;
+    text-align: center;
+    margin: 0 auto;
+    float:right;
+    }
+
+#myParts {
+    height: 500px;
+}
+
+.myPartsList a {
+    color: lime;
+}
