@@ -1,11 +1,3 @@
-#browseParts {
-    width: 800px;
-    margin:0 auto;
-    }
-#bigViewer {
-    float: left;
-    width: 510px;
-   } 
 .partsList {
     width: 200px;
     text-align: center;
@@ -20,5 +12,3 @@
 .partsList a {
     color: lime;
 }
-
-
