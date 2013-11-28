@@ -19,11 +19,33 @@ Router.map(function() {
 	}]
     });
     
+    this.route('designPart', {
+	path: '/parts/design/:_id?',
+	before: [function(){
+	    if(!Meteor.user()){
+		this.render("mustBeLoggedIn");
+		this.stop();
+	    }
+	    Session.set('currentPart',this.params._id);
+	}]
+    });
+    
     this.route('browseShips', {
 	path: '/ships/browse/:page?/:_id?',
 	before: [function(){
 	    Session.set('currentShip',this.params._id);
 	    Session.set('currentPage',this.params.page);
+	}]
+    });
+    
+    this.route('designShip', {
+	path: '/ships/design/:_id?',
+	before: [function(){
+	    if(!Meteor.user()){
+		this.render("mustBeLoggedIn");
+		this.stop();
+	    }
+	    Session.set('currentShip',this.params._id);
 	}]
     });
     
