@@ -1,0 +1,18 @@
+#browseShips {
+    width: 800px;
+    margin:0 auto;
+    }
+#browseShips a {
+	color: lime;
+	font-size: 2em;
+}
+#viewShip {
+	float: left;
+	text-align: center;
+}
+#bigViewer {
+    float: left;
+    width: 510px;
+   } 
+
+
