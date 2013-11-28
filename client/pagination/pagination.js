@@ -26,5 +26,5 @@ Template.pagination.notLastPage = function(){
         var page =  parseInt(Session.get("currentPage"));
         var limit = parseInt(Session.get("paginationLimit"));
         var count = parseInt(Session.get("paginationTotal"));
-        return (page)*limit <= count;
+        return (page)*limit < count;
 };

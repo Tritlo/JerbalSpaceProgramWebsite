@@ -1,5 +1,5 @@
 Template.game.rendered = function() {
-    start("JSP",{canvasID: "JSPCanvas", clear: false, instanceOptions: {local: true}});
+    start("JSP",{canvasID: "JSPCanvas", clear: true, instanceOptions: {local: true}});
 };
 
 Template.game.destroyed = function(){

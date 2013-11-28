@@ -42,6 +42,8 @@ Template.part.rendered = function(){
 	    var inst = InstanceManager.getInstance(partViewer).viewer.loadPart(this.data);
 	}
 };
+
 Template.part.destroyed = function(){
-    
-}
+    var instID = "part-" + this.data._id;
+    InstanceManager.removeInstance(instID);
+};

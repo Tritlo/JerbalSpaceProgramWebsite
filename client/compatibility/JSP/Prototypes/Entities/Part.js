@@ -360,11 +360,16 @@ Part.prototype._renderAttachmentPoints = function (ctx){
     var points = this.attachmentPoints;
     if(points) {
 	    ctx.save();
+	    if(typeof(this.getInstance().entityManager) !== 'undefined'){
+		   var radius = 7/this.getInstance().entityManager.cameraZoom;
+	    } else {
+		var radius = 7;
+		}
 	    ctx.strokeStyle = "red";
 	    for(var i = 0; i < points.length; i++){
 		var x = points[i][0];
 		var y = points[i][1];
-		util.strokeCircle(ctx,x,y,7);
+		util.strokeCircle(ctx,x,y,radius);
 	    }
 	    ctx.restore();
 	    }
@@ -386,7 +391,7 @@ Part.prototype.render = function (ctx) {
             ctx.fillStyle = this.fill;
         }
         if(this.stroke){
-            ctx.strokeStyle = this.stroke
+            ctx.strokeStyle = this.stroke;
         }
         if(this.lineWidth){
             ctx.lineWidth = this.lineWidth;

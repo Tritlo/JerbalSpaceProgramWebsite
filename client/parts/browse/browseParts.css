@@ -2,6 +2,17 @@
     width: 800px;
     margin:0 auto;
     }
+
+#viewPart a {
+	color: lime;
+	font-size: 2em;
+}
+
+#viewPart {
+    float: left;
+    text-align: center;
+}
+
 #bigViewer {
     float: left;
     width: 510px;

@@ -5,7 +5,9 @@
 	    style="border: 1px solid black;">
 	Sorry, but your browser does not support the HTML5 canvas tag.
 	</canvas>
-  	<p> <a href="{{pathFor 'launchShip'}}" id="launch">Launch</a></p>
+  	<p> <a href="{{pathFor 'launchShip'}}" class="launch">Launch</a></p><p>
+   	  <a href="{{pathFor 'designShip'}}" class="edit">Edit</a></p>
+	</p>
 	</div>
     {{> shipsList}}	
   </div>

@@ -1,5 +1,6 @@
 function ShipDesigner(instanceID,descr) {
     this.setup(instanceID,descr);
+    this.local = this.getInstance().local;
 };
 
 ShipDesigner.prototype = new State();
@@ -94,7 +95,7 @@ ShipDesigner.prototype.init = function() {
     });
 
     
-    this.grid = new Grid({
+    this.grid = new Grid(this.instanceID,{
 	    "dims" : [64,64],
         "width" : 525,
         "height" : 525,
@@ -157,7 +158,14 @@ ShipDesigner.prototype.saveShip = function ()
         var ships = util.storageLoad("ships");
 	console.log(ships);
         if (ships){
-            ships.push(this.currentShip);
+	    var name = this.currentShip.name;
+	    var author = this.currentShip.author;
+	    for(var i = 0; i < ships.length; i++){
+		if(ships[i].name === name && author === ships[i].author) {
+		    break;
+		    }
+	    }
+	    ships[i] = this.currentPart;
         } else {
             ships = [this.currentShip];
             }
@@ -178,11 +186,15 @@ ShipDesigner.prototype.saveShip = function ()
     }
 }
 
-ShipDesigner.prototype.loadShip = function ()
+ShipDesigner.prototype.loadShip = function (ship)
 {
-    var ships = util.storageLoad("ships");
-    var selVal = $('#in9').val() || 0;
-    var ship = new Ship(this.instanceID, ships[selVal]);
+    if(!(ship)){
+	var ships = util.storageLoad("ships");
+	var selVal = $('#in9').val() || 0;
+	var ship = new Ship(this.instanceID, ships[selVal]);
+    } else {
+	var ship = new Ship(this.instanceID, ship);
+    }
     var ship = ship.disassemble(this.grid,this.instanceID);
     this.currentShip = ship;
     var gri = this.grid;

@@ -19,10 +19,16 @@ Template.browseShips.rendered = function (){
 };
 
 Template.browseShips.events({
-    "click a": function(evt){
+    "click .launch a": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
 	if(id){Router.go('launchShip',{_id:id});}
+    },
+    "click .edit a": function(evt){
+	evt.preventDefault();
+	var id = Session.get('currentShip');
+	console.log(id);
+	if(id){Router.go('designShip',{_id:id});}
     }
     
 });
