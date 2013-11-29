@@ -7,9 +7,8 @@ ShipDesigner.prototype = new State();
 
 ShipDesigner.prototype.init = function() {
     if(this.getInstance().local){
-	this.back = new Menu(this.instanceID,{
-	    "state" : this,
-	    "items" : [
+	var backItems = 
+	     [
 	    {
 		"text" : "Back",
 		"action" : function (state) {
@@ -22,12 +21,24 @@ ShipDesigner.prototype.init = function() {
 			state.launch();
 		    }
 		    },
-	    ],
-	    "width" : 100,
-	    "height" : 100,
-	    "location" : [this.getInstance().canvas.width - 100, 0]
-	    });
+	    ];
+    } else {
+	var backItems = [
+		{
+		"text" : "Share",
+		"action" : function(state) {
+		    state.shareShip();
+		}
+		}];
     }
+    this.back = new Menu(this.instanceID,{
+	"state" : this,
+	"items" : backItems,
+	"width" : 100,
+	"height" : 100,
+	"location" : [this.getInstance().canvas.width - 100, 0]
+	});
+     
 
     this.menu2 = new Menu(this.instanceID,{
 	"state" : this,
@@ -114,7 +125,7 @@ ShipDesigner.prototype.launch = function(){
     //this.getInstance().entityManager.generateShip(this.currentShip);
     this.getInstance().entityManager.createInitialShips();
     this.getInstance().stateManager.switchState("simulation");
-}
+};
 
 ShipDesigner.prototype.newShip = function ()
 {
@@ -151,9 +162,11 @@ ShipDesigner.prototype.saveShip = function ()
 {
     
     console.log(ships);
+    var name = this.currentShip.name;
     this.currentShip = new Ship(this.instanceID,
 				{"parts" : this.addedParts,
-				 "name": $('#in5').val()}
+				 "name": name
+				 }
 			       );
 
     if(this.currentShip)
@@ -188,7 +201,35 @@ ShipDesigner.prototype.saveShip = function ()
 	    $("#in9").append('<option value="'+key+'">'+value.name+'</option>');});
 	}
     }
-}
+};
+
+ShipDesigner.prototype.shareShip = function (){
+    var name = this.currentShip.name;
+    this.currentShip = new Ship(this.instanceID,
+				{"parts" : this.addedParts,
+				 "name": name
+				 }
+			       );
+    this.currentShip.assemble(this.grid);
+    var uname = Meteor.user().username;
+    var uid = Meteor.user()._id; 
+    var aid = this.currentShip.authorID;
+    if(this.currentShip._id && aid && uid === aid){
+	    Ships.update(this.currentShip._id,{$set: this.currentShip});
+	    Ships.update(this.currentShip._id,{$inc: {version: 1}});
+    } else {
+	    this.currentShip.version = 1;
+	    this.currentShip.author = uname;
+	    this.currentShip.authorID = uid;
+	    var id = Ships.insert(this.currentShip);
+	    this.currentShip._id = id;
+    }
+    var ship = this.currentShip.disassemble(this.grid,this.instanceID);
+    this.currentShip = ship;
+    $('#in5').val(this.currentShip.name);
+    var gri = this.grid;
+    this.addedParts = ship.parts;
+};
 
 ShipDesigner.prototype.loadShip = function (ship)
 {

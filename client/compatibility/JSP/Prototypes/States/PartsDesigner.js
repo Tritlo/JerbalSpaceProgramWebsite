@@ -132,7 +132,6 @@ PartsDesigner.prototype.newPart = function () {
 
 PartsDesigner.prototype.sharePart = function(){
     this.currentPart.finalize(this.grid);
-    this.currentPart.author = "";
     var uname = Meteor.user().username;
     var uid = Meteor.user()._id; 
     var aid = this.currentPart.authorID;

@@ -18,7 +18,7 @@ Template.myParts.rendered = function (){
 	}
 };
 
-Template.browseParts.destroyed = function(){
+Template.myParts.destroyed = function(){
     InstanceManager.clear();
 };
 
