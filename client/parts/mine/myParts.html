@@ -1,6 +1,7 @@
 <template name="myParts">
   <div id="myParts">
         <div id="viewPart">
+            <h2 id="info">Nothing selected </h2>
 	<canvas id="bigViewer" width="500" height="500"
 	    style="border: 1px solid black;">
 	Sorry, but your browser does not support the HTML5 canvas tag.
@@ -8,7 +9,7 @@
   	<p> <a href="#" class="edit">Edit</a></p>
 	<p> <a href="#" class="delete">Delete</a></p>
 	</div>
-    {{> myPartsList}}
+    {{> partsList listData}}
   </div>
 </template>
 

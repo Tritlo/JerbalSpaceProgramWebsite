@@ -1,14 +1,8 @@
 Meteor.methods({
-    partsCount: function(){
-	       return Parts.find().count();
-	},
-    shipsCount: function(){
-	       return Ships.find().count();
-	},
-	myPartsCount: function(){
-		return Parts.find( { author: Meteor.user().username } ).count();
-	},    
-	myShipsCount: function(){
-		return Ships.find( { author: Meteor.user().username } ).count();
-	}    
+    partsCount: function(scope){
+	       return Parts.find(scope).count();
+    },
+    shipsCount: function(scope){
+	       return Ships.find(scope).count();
+    }
 });

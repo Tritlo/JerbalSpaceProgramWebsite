@@ -1,14 +1,12 @@
 Template.ship.events({
     "mouseenter" : function(event){
-    	var id = this._id;
-        var mainInstance = Session.get("mainInstance");
-	setShip(id,mainInstance);
+        var id = this._id;
+        setShip(id);
     },
     
     "mouseleave" : function(event){
-	var id = Session.get("currentItem");
-        var mainInstance = Session.get("mainInstance");
-	setShip(id,mainInstance);
+        var id = Session.get("currentItem");
+        setShip(id);
     },
     "click": function(event){
 	var id = this._id;

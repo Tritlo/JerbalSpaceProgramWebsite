@@ -1,21 +1,17 @@
 Template.part.events({
     "mouseenter" : function(event){
-    	var id = this._id;
-        var mainInstance = Session.get("mainInstance");
-        setPart(id,mainInstance);
+	var f = this.events["mouseenter"];
+	if(f) {f(event,this);}
     },
     
     "mouseleave" : function(event){
-        var id = Session.get("currentItem");
-        var mainInstance = Session.get("mainInstance");
-        setPart(id,mainInstance);
+	var f = this.events["mouseleave"];
+	if(f) {f(event,this);}
     },
     "click": function(event){
-        var id = this._id;
-        var page =Session.get('currentPage');
-        event.preventDefault();
-        Router.go(Router.current().route.name,{page: page,_id:id});
-	}
+	var f = this.events["click"];
+	if(f) {f(event,this);}
+    }
 });
 
 Template.part.rendered = function(){

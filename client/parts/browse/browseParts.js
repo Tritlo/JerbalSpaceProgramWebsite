@@ -16,6 +16,9 @@ Template.browseParts.rendered = function (){
         setPart(id,bigViewer);
 };
 
+Template.browseParts.listData = {scope: {},
+				partEvents: defaultPartEvents};
+
 Template.browseParts.events({
     "click .edit": function(evt){
 	evt.preventDefault();

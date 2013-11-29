@@ -1,4 +1,4 @@
-Template.browseShips.rendered = function (){
+Template.myShips.rendered = function (){
         var id = Session.get('currentItem');
 	bigViewer = start("Viewer",{
 	    instanceOptions : {
@@ -13,12 +13,14 @@ Template.browseShips.rendered = function (){
 	    clear: false
 	    });
         Session.set("mainInstance",bigViewer);
-        setShip(id,bigViewer);
+	if(id && Ships.findOne(id)){
+	    var inst = InstanceManager.getInstance(bigViewer).viewer.loadShip(Ships.findOne(id));
+	}
 };
 
-Template.browseShips.listData = {scope: {}};
+Template.myShips.listData = {scope: {author:Meteor.user().username}};
 
-Template.browseShips.events({
+Template.myShips.events({
     "click .launch": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentItem');
@@ -27,12 +29,22 @@ Template.browseShips.events({
     "click .edit": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentItem');
+	console.log(id);
 	if(id){Router.go('designShip',{_id:id});}
+    },
+    "click .delete": function(evt){
+	evt.preventDefault();
+	var id = Session.get('currentItem');
+	var inst = Session.get("mainInstance");
+	InstanceManager.getInstance(inst).viewer.clear();
+	console.log("removing: " + id);
+	Session.set('currentItem', undefined);
+	Ships.remove(id);
     }
     
 });
 
-Template.browseShips.destroyed = function(){
+Template.myShips.destroyed = function(){
     InstanceManager.clear();
 };
 

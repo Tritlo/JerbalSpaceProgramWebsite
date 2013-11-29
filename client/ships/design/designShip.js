@@ -20,6 +20,19 @@ Template.designShip.rendered = function(){
 	}
 };
 
+Template.designShip.listData = {
+    scope:{},
+    partEvents: {
+	"click": function(event,part){
+	    var id = part._id;
+	    event.preventDefault();
+	    var mainInst = Session.get("mainInstance");
+	    InstanceManager.getInstance(mainInst).shipDesigner.addPart(Parts.findOne(id));
+	}
+    }
+};
+				     
+
 Template.designShip.destroyed = function(){
     InstanceManager.clear();
     Session.set("shoulNotPaginate",false);

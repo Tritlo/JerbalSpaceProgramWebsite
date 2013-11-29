@@ -1,4 +1,4 @@
-Template.myShips.rendered = function (){
+Template.myParts.rendered = function (){
         var id = Session.get('currentItem');
 	bigViewer = start("Viewer",{
 	    instanceOptions : {
@@ -13,36 +13,35 @@ Template.myShips.rendered = function (){
 	    clear: false
 	    });
         Session.set("mainInstance",bigViewer);
-	if(id && Ships.findOne(id)){
-	    var inst = InstanceManager.getInstance(bigViewer).viewer.loadShip(Ships.findOne(id));
+	if(id && Parts.findOne(id)){
+	    var inst = InstanceManager.getInstance(bigViewer).viewer.loadPart(Parts.findOne(id));
 	}
 };
 
-Template.myShips.events({
-    "click .launch": function(evt){
-	evt.preventDefault();
-	var id = Session.get('currentItem');
-	if(id){Router.go('launchShip',{_id:id});}
-    },
+Template.myParts.listData = {
+    scope: { author:Meteor.user().username},
+    partEvents: defaultPartEvents
+};
+
+Template.myParts.events({
     "click .edit": function(evt){
-	evt.preventDefault();
 	var id = Session.get('currentItem');
 	console.log(id);
-	if(id){Router.go('designShip',{_id:id});}
+	evt.preventDefault();
+	if(id){Router.go('designPart',{_id:id});}
     },
     "click .delete": function(evt){
 	evt.preventDefault();
+
 	var id = Session.get('currentItem');
-	var inst = Session.get("mainInstance");
-	InstanceManager.getInstance(inst).viewer.clear();
-	console.log("removing: " + id);
+	InstanceManager.getInstance(bigViewer).viewer.clear();
+	console.log("removing part: " + id);
 	Session.set('currentItem', undefined);
-	Ships.remove(id);
+	Parts.remove(id);
     }
-    
 });
 
-Template.myShips.destroyed = function(){
+Template.myParts.destroyed = function(){
     InstanceManager.clear();
 };
 
