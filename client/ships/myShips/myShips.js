@@ -33,8 +33,8 @@ Template.myShips.events({
     "click .delete": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
-	console.log(id);
-	InstanceManager.getInstance(bigViewer).viewer.clear();
+	var inst = Session.get("mainInstance");
+	InstanceManager.getInstance(inst).viewer.clear();
 	console.log("removing: " + id);
 	Session.set('currentShip', undefined);
 	Ships.remove(id);

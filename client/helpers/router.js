@@ -16,7 +16,7 @@ Router.map(function() {
     
     this.route('browseParts', {
 	path: '/parts/browse/:page?/:_id?',
-	before: [clearInstanceManager, function(){
+	before: [function(){
 	    Session.set('currentPart',this.params._id);
 	    Session.set('currentPage',this.params.page);
 	}]
@@ -24,7 +24,7 @@ Router.map(function() {
     
     this.route('designPart', {
 	path: '/parts/design/:_id?',
-	before: [clearInstanceManager,function(){
+	before: [function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -36,7 +36,7 @@ Router.map(function() {
     
     this.route('myParts', {
 	path: '/parts/myParts/:page?/:_id?',
-	before: [clearInstanceManager,function(){
+	before: [function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -47,7 +47,7 @@ Router.map(function() {
 
     this.route('browseShips', {
 	path: '/ships/browse/:page?/:_id?',
-	before: [clearInstanceManager,function(){
+	before: [function(){
 	    Session.set('currentShip',this.params._id);
 	    Session.set('currentPage',this.params.page);
 	}]
@@ -55,7 +55,7 @@ Router.map(function() {
     
     this.route('designShip', {
 	path: '/ships/design/:_id?',
-	before: [clearInstanceManager,function(){
+	before: [function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -68,7 +68,7 @@ Router.map(function() {
     
 	this.route('myShips', {
 	path: '/parts/myShips/:page?/:_id?',
-	before: [clearInstanceManager,function(){
+	before: [function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -79,7 +79,7 @@ Router.map(function() {
     
     this.route('launchShip', {
 	path: '/ships/launch/:_id?',
-	before: [clearInstanceManager,function(){
+	before: [function(){
 	    if(this.params._id) Session.set('currentShip',this.params._id);
 	    if(!(Session.get('currentShip') || !(Ships.findOne(Session.get('currentShip'))))){
 		this.render("mustSelectShip");

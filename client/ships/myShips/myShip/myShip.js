@@ -10,6 +10,7 @@ Template.myShip.events({
     "mouseleave" : function(event){
 	var id = Session.get("currentShip");
         var mainInstance = Session.get("mainInstance");
+	console.log(mainInstance);
         if(id){
             InstanceManager.getInstance(mainInstance).viewer.loadShip(Ships.findOne(id));
         }
