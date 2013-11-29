@@ -1,5 +1,4 @@
 //Here we define the routes for the app
-
 Router.configure({
     autoRender: false,
     notFoundTemplate: 'notFound'
@@ -16,7 +15,7 @@ Router.map(function() {
 	path: '/parts/browse/:page?/:_id?',
 	before: [function(){
 	    Session.set('currentItem',this.params._id);
-	    Session.set('currentPage',this.params.page);
+	    Session.set('currentPage',this.params.page || 1);
 	}]
     });
     
@@ -47,12 +46,12 @@ Router.map(function() {
 	path: '/ships/browse/:page?/:_id?',
 	before: [function(){
 	    Session.set('currentItem',this.params._id);
-	    Session.set('currentPage',this.params.page);
+	    Session.set('currentPage',this.params.page || 1);
 	}]
     });
     
     this.route('designShip', {
-	path: '/ships/design/:_id?',
+        path: '/ships/design/:page?/:_id?',
 	before: [function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
@@ -60,7 +59,8 @@ Router.map(function() {
 	    }
 	    if(this.params._id)
 	    Session.set('currentItem',this.params._id);
-	    
+        
+	    Session.set('currentPage',this.params.page || 1);
 	}]
     });
     
