@@ -21,7 +21,7 @@ Template.designShip.rendered = function(){
 };
 
 Template.designShip.listData = {
-    scope:{},
+    scope:function() {return {}},
     partEvents: {
 	"click": function(event,part){
 	    var id = part._id;

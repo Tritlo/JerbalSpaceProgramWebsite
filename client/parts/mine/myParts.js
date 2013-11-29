@@ -19,7 +19,7 @@ Template.myParts.rendered = function (){
 };
 
 Template.myParts.listData = {
-    scope: { author:Meteor.user().username},
+    scope: function() { return { author:Meteor.user().username}},
     partEvents: defaultPartEvents
 };
 
@@ -34,7 +34,7 @@ Template.myParts.events({
 	evt.preventDefault();
 
 	var id = Session.get('currentItem');
-	InstanceManager.getInstance(bigViewer).viewer.clear();
+    clearItem(bigViewer);
 	console.log("removing part: " + id);
 	Session.set('currentItem', undefined);
 	Parts.remove(id);

@@ -3,10 +3,6 @@ Router.configure({
     notFoundTemplate: 'notFound'
 });
 
-clearInstanceManager = function(){
-    if(InstanceManager) InstanceManager.clear();
-};
-
 Router.map(function() {
     this.route('home', {
 	path: '/'

@@ -16,7 +16,9 @@ Template.browseShips.rendered = function (){
         setShip(id,bigViewer);
 };
 
-Template.browseShips.listData = {scope: {}};
+Template.browseShips.listData = {
+    scope: function() {return {}}
+};
 
 Template.browseShips.events({
     "click .launch": function(evt){

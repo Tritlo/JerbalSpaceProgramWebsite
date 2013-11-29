@@ -18,7 +18,7 @@ Template.myShips.rendered = function (){
 	}
 };
 
-Template.myShips.listData = {scope: {author:Meteor.user().username}};
+Template.myShips.listData = {scope: function(){return {author:Meteor.user().username}}};
 
 Template.myShips.events({
     "click .launch": function(evt){
@@ -36,9 +36,10 @@ Template.myShips.events({
 	evt.preventDefault();
 	var id = Session.get('currentItem');
 	var inst = Session.get("mainInstance");
-	InstanceManager.getInstance(inst).viewer.clear();
+    clearItem(inst);
 	console.log("removing: " + id);
 	Session.set('currentItem', undefined);
+    $("#info").val("Nothing selected");
 	Ships.remove(id);
     }
     

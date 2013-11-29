@@ -16,7 +16,7 @@ Template.browseParts.rendered = function (){
         setPart(id,bigViewer);
 };
 
-Template.browseParts.listData = {scope: {},
+Template.browseParts.listData = {scope: function() {return {}},
 				partEvents: defaultPartEvents};
 
 Template.browseParts.events({
