@@ -19,7 +19,7 @@ Template.browseParts.rendered = function (){
 };
 
 Template.browseParts.events({
-    "click a": function(evt){
+    "click .edit a": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentPart');
 	if(id){Router.go('designPart',{_id:id});}

@@ -12,6 +12,7 @@ Template.designShip.rendered = function(){
 	    clear: false
 	    });
         Session.set("mainInstance",shipDesigner);
+        Session.set("shoulNotPaginate",true);
         var id = Session.get('currentShip');
 	if(id && Ships.findOne(id)){
 	   InstanceManager.getInstance(shipDesigner).shipDesigner.loadShip(Ships.findOne(id));
@@ -20,4 +21,6 @@ Template.designShip.rendered = function(){
 
 Template.designShip.destroyed = function(){
     InstanceManager.clear();
+    Session.set("shoulNotPaginate",false);
+    Session.set("currentPage",1);
 };

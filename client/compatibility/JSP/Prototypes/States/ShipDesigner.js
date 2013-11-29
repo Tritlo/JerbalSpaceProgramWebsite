@@ -143,6 +143,8 @@ ShipDesigner.prototype.addPart = function (part){
 	var partInd = part;
 	var parts = util.storageLoad("parts");
 	var part = new Part(this.instanceID, parts[partInd]);
+    } else {
+	var part = new Part(this.instanceID,part);
     }
     this.heldPart = part.toDesigner(this.grid);
     if(this.addedParts){

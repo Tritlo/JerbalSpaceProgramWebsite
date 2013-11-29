@@ -9,28 +9,33 @@ starts = {
     "Viewer": function(options,canvas) {
 	//options.canvasID = canvas;
 	var view = new Instance(options);
-	view.ctx.font = view.settings.font;
-	view.stateManager.switchState("viewer");
-	view.start();
-	return view.ID;
+	if(view){
+	    view.stateManager.switchState("viewer");
+	    view.start();
+	    return view.ID;
+	}
     },
     "PartDesigner": function(options,canvas) {
 	options.enableQuit = false;
 	//options.canvasID = canvas;
 	var view = new Instance(options);
-	view.ctx.font = view.settings.font;
-	view.stateManager.switchState("partsDesigner");
-	view.start();
-	return view.ID;
+	if(view){
+	    view.ctx.font = view.settings.font;
+	    view.stateManager.switchState("partsDesigner");
+	    view.start();
+	    return view.ID;
+	}
     },
     "ShipDesigner": function(options,canvas) {
 	options.enableQuit = false;
 	//options.canvasID = canvas;
 	var view = new Instance(options);
-	view.ctx.font = view.settings.font;
-	view.stateManager.switchState("shipDesigner");
-	view.start();
-	return view.ID;
+	if(view){
+	    view.ctx.font = view.settings.font;
+	    view.stateManager.switchState("shipDesigner");
+	    view.start();
+	    return view.ID;
+	}
     },
     "ShipLauncher": function(options,canvas){
 	options.enableQuit = false;
