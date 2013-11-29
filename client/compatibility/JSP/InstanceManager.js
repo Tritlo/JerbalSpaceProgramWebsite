@@ -5,14 +5,19 @@ InstanceManager.init = function() {
     this.runningInstances = {};
 };
 
-InstanceManager.getNewID = function(canvasID){
+InstanceManager.getNewID = function(canvasID,force){
     if(canvasID in this.instances){
-        for(var i = 1; ; i++){
-            var newID = canvasID +""+i;
-            if(!(newID in this.instances)){
-                return newID;
+        if(force){
+            for(var i = 1; ; i++){
+                var newID = canvasID +""+i;
+                if(!(newID in this.instances)){
+                    return newID;
+                }
             }
-        }
+        } else {
+	    console.log(canvasID);
+	    return undefined
+	}
 
     }
     else{ return canvasID}

@@ -23,6 +23,7 @@ StateManager.prototype.init = function(states) {
 		    "shipDesigner" : this.getInstance().shipDesigner,
 	            "viewer" : this.getInstance().viewer
 	};
+        /*
         //Deactivate all other possible states
         if(typeof(this.getInstance().simulation) !== 'undefined'){
             this.getInstance().simulation.onDeactivation();
@@ -39,7 +40,7 @@ StateManager.prototype.init = function(states) {
         }
         if(typeof(this.getInstance().viewer) !== 'undefined'){
             this.getInstance().viewer.onDeactivation();
-        }
+        }*/
         var stateK = Object.keys(this.states);
         for(var i = 0; i < stateK.length; i++){
             var state = stateK[i];
