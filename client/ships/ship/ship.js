@@ -2,23 +2,19 @@ Template.ship.events({
     "mouseenter" : function(event){
     	var id = this._id;
         var mainInstance = Session.get("mainInstance");
-        if(id){
-            InstanceManager.getInstance(mainInstance).viewer.loadShip(Ships.findOne(id));
-        }
+	setShip(id,mainInstance);
     },
     
     "mouseleave" : function(event){
 	var id = Session.get("currentShip");
         var mainInstance = Session.get("mainInstance");
-        if(id){
-            InstanceManager.getInstance(mainInstance).viewer.loadShip(Ships.findOne(id));
-        }
+	setShip(id,mainInstance);
     },
     "click": function(event){
 	var id = this._id;
 	var page =Session.get('currentPage');
 	event.preventDefault();
-	Router.go('browseShips',{page: page,_id:id});
+	Router.go(Router.current().route.name,{page: page,_id:id});
 	}
 });
 
@@ -38,11 +34,13 @@ Template.ship.rendered = function(){
 	    clear: false
 	    });
 
-        console.log(shipViewer);
-	if(shipId){
-	    var inst = InstanceManager.getInstance(shipViewer).viewer.loadShip(this.data);
-	}
+        setShip(shipId,shipViewer);
 };
+
+Template.ship.isMine = function(){
+    return this.authorID === Meteor.userId();
+};
+
 Template.ship.destroyed = function(){
     var instID = "ship-" + this.data._id;
     InstanceManager.removeInstance(instID);

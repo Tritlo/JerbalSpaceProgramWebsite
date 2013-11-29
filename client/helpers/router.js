@@ -67,13 +67,15 @@ Router.map(function() {
     });
     
 	this.route('myShips', {
-	path: '/parts/myShips/:page?/:_id?',
+	path: '/ships/myShips/:page?/:_id?',
 	before: [function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
 	    }
+	    console.log(this.params._id)
 	    Session.set('currentShip',this.params._id);
+	    Session.set('currentPage',this.params.page);
 	}]
     });
     

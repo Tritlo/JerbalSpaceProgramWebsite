@@ -13,9 +13,7 @@ Template.browseShips.rendered = function (){
 	    clear: false
 	    });
         Session.set("mainInstance",bigViewer);
-	if(id && Ships.findOne(id)){
-	    var inst = InstanceManager.getInstance(bigViewer).viewer.loadShip(Ships.findOne(id));
-	}
+        setShip(id,bigViewer);
 };
 
 Template.browseShips.events({
@@ -27,7 +25,6 @@ Template.browseShips.events({
     "click .edit": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
-	console.log(id);
 	if(id){Router.go('designShip',{_id:id});}
     }
     

@@ -145,7 +145,8 @@ PartsDesigner.prototype.sharePart = function(){
 	    var id = Parts.insert(this.currentPart);
 	    this.currentPart._id = id;
     }
-    this.currentPart.toDesigner(this.grid);
+    Router.go("myParts",{_id: this.currentPart._id, page: 1});
+    //this.currentPart.toDesigner(this.grid);
     
 };
 

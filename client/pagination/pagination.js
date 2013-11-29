@@ -3,22 +3,20 @@ Template.pagination.events({
 	event.preventDefault();
 	var page = parseInt(Session.get("currentPage"))-1;
 	var paginationItem = Session.get("paginationItem");
-	var paginationOf = Session.get("paginationOf");
 	var id = Session.get("current"+paginationItem);
 	Session.set("currentPage", page);
 	if(!(Session.get("shouldNotPaginate"))){
-		Router.go(paginationOf,{page: page,_id:id});
+		Router.go(Router.current().router.name,{page: page,_id:id});
 	}
     },
     "click .next": function(event){
 	event.preventDefault();
 	var page = parseInt(Session.get("currentPage"))+1;
 	var paginationItem = Session.get("paginationItem");
-	var paginationOf = Session.get("paginationOf");
 	var id = Session.get("current"+paginationItem);
 	Session.set("currentPage", page);
 	if(!(Session.get("shouldNotPaginate"))){
-	    Router.go(paginationOf,{page: page,_id:id});
+	    Router.go(Router.current().router.name,{page: page,_id:id});
 	}
     }
 });

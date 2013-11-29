@@ -1,6 +1,10 @@
 <template name="ship">
   <div class="ship">
-    <p>{{name}} by {{author}}</p>
+    {{#if isMine}}
+	<p>{{name}}</p>
+	{{else}}
+	<p>{{name}} by {{author}}</p>
+    {{/if}}
     <canvas id="ship-{{_id}}" width="200" height="200"
 	style="border: 1px solid black;">
     Sorry, but your browser does not support the HTML5 canvas tag.

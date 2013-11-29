@@ -2,23 +2,19 @@ Template.part.events({
     "mouseenter" : function(event){
     	var id = this._id;
         var mainInstance = Session.get("mainInstance");
-        if(id){
-            InstanceManager.getInstance(mainInstance).viewer.loadPart(Parts.findOne(id));
-        }
+	setPart(id,mainInstance);
     },
     
     "mouseleave" : function(event){
 	var id = Session.get("currentPart");
         var mainInstance = Session.get("mainInstance");
-        if(id && Parts.findOne(id)){
-            InstanceManager.getInstance(mainInstance).viewer.loadPart(Parts.findOne(id));
-        }
+	setPart(id,mainInstance);
     },
     "click": function(event){
 	var id = this._id;
 	var page =Session.get('currentPage');
 	event.preventDefault();
-	Router.go('browseParts',{page: page,_id:id});
+	Router.go(Router.current().route.name,{page: page,_id:id});
 	}
 });
 
@@ -38,10 +34,11 @@ Template.part.rendered = function(){
 	    clear: false
 	    });
 
-        console.log(partViewer);
-	if(partId){
-	    var inst = InstanceManager.getInstance(partViewer).viewer.loadPart(this.data);
-	}
+        setPart(partId,partViewer);
+};
+
+Template.part.isMine = function(){
+    return this.authorID === Meteor.userId();
 };
 
 Template.part.destroyed = function(){

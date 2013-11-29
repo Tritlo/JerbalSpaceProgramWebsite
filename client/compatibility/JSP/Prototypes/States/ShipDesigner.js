@@ -226,11 +226,14 @@ ShipDesigner.prototype.shareShip = function (){
 	    var id = Ships.insert(this.currentShip);
 	    this.currentShip._id = id;
     }
+    Router.go("myShips",{_id: this.currentShip._id, page: 1});
+    /*
     var ship = this.currentShip.disassemble(this.grid,this.instanceID);
     this.currentShip = ship;
     $('#in5').val(this.currentShip.name);
     var gri = this.grid;
     this.addedParts = ship.parts;
+    */
 };
 
 ShipDesigner.prototype.loadShip = function (ship)
