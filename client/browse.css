@@ -1,14 +1,14 @@
-#myParts {
-    width: 800px;
-    margin:0 auto;
-    }
+#browse {
+    width: 710px;
+    margin: 0 auto;
+}
 
-#viewPart a {
+#view a {
 	color: lime;
 	font-size: 2em;
 }
 
-#viewPart {
+#view {
     float: left;
     text-align: center;
 }
@@ -16,4 +16,4 @@
 #bigViewer {
     float: left;
     width: 510px;
-   } 
+} 
