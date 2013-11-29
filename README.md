@@ -11,3 +11,5 @@ This was the final project in both Computer Game Programming and Web Programming
 University of Iceland. Project members were Matthías Páll Gissurarson, Haukur Óskar Þorgeirsson, Sólrún Halla Einarsdóttir and Bjarki Geir Benediktsson. Matthías Páll and Sólrún Halla made the website.
 
 The multiplayer is still in beta, bear that in mind!
+
+[A short demo of the game](http://youtu.be/6cwalUbIsYM)
