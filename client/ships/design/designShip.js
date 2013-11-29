@@ -6,7 +6,7 @@ Template.designShip.rendered = function(){
 	    clear: false
 	    });
         Session.set("mainInstance",shipDesigner);
-        Session.set("shouldNotPaginate",true);
+        Session.set("shouldNotBrowse",true);
         var id = Session.get('currentItem');
         var currID = InstanceManager.getInstance(shipDesigner).shipDesigner.currentShip._id;
 	if(id && Ships.findOne(id) && id !== currID){
@@ -14,6 +14,8 @@ Template.designShip.rendered = function(){
 	}
 };
 
+// ship parts are displayed next to designer and can be selected
+// with mouse. On click, the part is added to designer.
 Template.designShip.listData = {
     scope:function() {return {}},
     partEvents: {
@@ -26,9 +28,9 @@ Template.designShip.listData = {
     }
 };
 				     
-
+// deletes the ship designer game-instance 
 Template.designShip.destroyed = function(){
     InstanceManager.clear();
-    Session.set("shouldNotPaginate",false);
+    Session.set("shouldNotBrowse",false);
     Session.set("currentPage",1);
 };
