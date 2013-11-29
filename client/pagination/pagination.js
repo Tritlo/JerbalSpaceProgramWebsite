@@ -10,7 +10,7 @@ Template.pagination.events({
 	Session.set("currentPage", page);
 
     //We don't want to reload the page in the designer
-	if(!(Session.get("shouldNotPaginate"))){
+	if(!(Session.get("shouldNotBrowse"))){
 		Router.go(Router.current().router.name,{page: page,_id:id});
 	}
     },
@@ -19,7 +19,7 @@ Template.pagination.events({
 	var page = parseInt(Session.get("currentPage"))+1;
 	var id = Session.get("currentItem");
 	Session.set("currentPage", page);
-	if(!(Session.get("shouldNotPaginate"))){
+	if(!(Session.get("shouldNotBrowse"))){
 	    Router.go(Router.current().router.name,{page: page,_id:id});
 	}
     }
