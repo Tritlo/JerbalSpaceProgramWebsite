@@ -268,7 +268,13 @@ ShipDesigner.prototype.render = function(ctx) {
 };
 
 ShipDesigner.prototype.update = function (du) {
-	this.currentShip.name   = $('#in5').val();
+    var name = $('#in5').val()
+    if(name.length === 0){
+        $('#in5').addClass("invalid");
+    } else {
+        $('#in5').removeClass("invalid");
+        this.currentShip.name   = name;
+    }
 };
 
 ShipDesigner.prototype.handleMenus = function(evt,type){
