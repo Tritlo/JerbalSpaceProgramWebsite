@@ -312,7 +312,8 @@ EntityManager.prototype.update = function(du) {
 	    fuel: ship.fuel,
 	    shipId: ship._id,
 	    center: ship.center,
-	    rotation: ship.rotation
+	    rotation: ship.rotation,
+        username: Meteor.user().username
 		    };
 	updatePlayerState(state);
 	this.getInstance().currentPlayers = currentPlayers;

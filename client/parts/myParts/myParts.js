@@ -18,6 +18,22 @@ Template.myParts.rendered = function (){
 	}
 };
 
+Template.myParts.events({
+    "click .edit": function(evt){
+	var id = Session.get('currentPart');
+	console.log(id);
+	if(id){Router.go('designPart',{_id:id});}
+	evt.preventDefault();
+    },
+    "click .delete": function(evt){
+	evt.preventDefault();
+	var id = Session.get('currentPart');
+	InstanceManager.getInstance(bigViewer).viewer.clear();
+	console.log("removing part: " + id);
+	Parts.remove(id);
+    }
+});
+
 Template.myParts.destroyed = function(){
     InstanceManager.clear();
 };

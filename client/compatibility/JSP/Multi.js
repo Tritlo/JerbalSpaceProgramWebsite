@@ -18,6 +18,11 @@ function updatePlayerState(state){
 };
 
 function updatePlayers(){
+    if(!(Meteor && Meteor.userId())){
+        isUpdating = false
+        consol.log(Meteor);
+        return;
+    }
     var id = Meteor.userId();
     //var now = Date.now();
     var sinceTimeout = lastUpdated - timeout;
@@ -25,7 +30,7 @@ function updatePlayers(){
     var ps = {};
     for(var i =0; i< oPs.length; i++){
         var player = oPs[i];
-        var name = Meteor.users.findOne(player._id).username;
+        var name = player.username;
         loadShip(player.shipId);
         ps[name] = player;
     }

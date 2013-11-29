@@ -7,35 +7,32 @@ starts = {
         return jsp.ID;
     },
     "Viewer": function(options,canvas) {
-	//options.canvasID = canvas;
-	var view = new Instance(options);
-	if(view){
-	    view.stateManager.switchState("viewer");
-	    view.start();
-	    return view.ID;
-	}
+        //options.canvasID = canvas;
+        var view = new Instance(options);
+        if(!(view.ID)){ view = InstanceManager.getInstance(options.canvasID);}
+        view.stateManager.switchState("viewer");
+        view.start();
+        return view.ID;
     },
     "PartDesigner": function(options,canvas) {
 	options.enableQuit = false;
 	//options.canvasID = canvas;
 	var view = new Instance(options);
-	if(view){
+        if(!(view.ID)){ view = InstanceManager.getInstance(options.canvasID);}
 	    view.ctx.font = view.settings.font;
 	    view.stateManager.switchState("partsDesigner");
 	    view.start();
 	    return view.ID;
-	}
     },
     "ShipDesigner": function(options,canvas) {
-	options.enableQuit = false;
-	//options.canvasID = canvas;
-	var view = new Instance(options);
-	if(view){
-	    view.ctx.font = view.settings.font;
-	    view.stateManager.switchState("shipDesigner");
-	    view.start();
-	    return view.ID;
-	}
+        options.enableQuit = false;
+        //options.canvasID = canvas;
+        var view = new Instance(options);
+        if(!(view.ID)){ view = InstanceManager.getInstance(options.canvasID);}
+        view.ctx.font = view.settings.font;
+        view.stateManager.switchState("shipDesigner");
+        view.start();
+        return view.ID;
     },
     "ShipLauncher": function(options,canvas){
 	options.enableQuit = false;

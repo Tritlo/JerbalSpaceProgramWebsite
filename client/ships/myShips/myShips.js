@@ -29,6 +29,13 @@ Template.myShips.events({
 	var id = Session.get('currentShip');
 	console.log(id);
 	if(id){Router.go('designShip',{_id:id});}
+    },
+    "click .delete": function(evt){
+	evt.preventDefault();
+	var id = Session.get('currentShip');
+	InstanceManager.getInstance(bigViewer).viewer.clear();
+	console.log("removing: " + id);
+	Ships.remove(id);
     }
     
 });

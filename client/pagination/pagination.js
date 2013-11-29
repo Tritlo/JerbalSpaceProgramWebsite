@@ -34,3 +34,8 @@ Template.pagination.notLastPage = function(){
         var count = parseInt(Session.get("paginationTotal"));
         return (page)*limit < count;
 };
+
+Template.pagination.destroyed = function(){
+    Session.set("currentPage",1);
+
+};
