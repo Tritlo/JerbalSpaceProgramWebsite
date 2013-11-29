@@ -10,7 +10,8 @@ starts = {
         //options.canvasID = canvas;
         var view = new Instance(options);
         if(!(view.ID)){ view = InstanceManager.getInstance(options.canvasID);}
-        view.stateManager.switchState("viewer");
+	if(view.stateManager.currentState !== "Viewer")
+	   view.stateManager.switchState("viewer");
         view.start();
         return view.ID;
     },
@@ -19,10 +20,11 @@ starts = {
 	//options.canvasID = canvas;
 	var view = new Instance(options);
         if(!(view.ID)){ view = InstanceManager.getInstance(options.canvasID);}
-	    view.ctx.font = view.settings.font;
-	    view.stateManager.switchState("partsDesigner");
-	    view.start();
-	    return view.ID;
+	view.ctx.font = view.settings.font;
+	if(view.stateManager.currentState !== "PartsDesigner")
+	   view.stateManager.switchState("partsDesigner");
+	view.start();
+	return view.ID;
     },
     "ShipDesigner": function(options,canvas) {
         options.enableQuit = false;
@@ -30,7 +32,9 @@ starts = {
         var view = new Instance(options);
         if(!(view.ID)){ view = InstanceManager.getInstance(options.canvasID);}
         view.ctx.font = view.settings.font;
-        view.stateManager.switchState("shipDesigner");
+	console.log(view.stateManager.currentState);
+	if(view.stateManager.currentState !== "shipDesigner")
+	   view.stateManager.switchState("shipDesigner");
         view.start();
         return view.ID;
     },

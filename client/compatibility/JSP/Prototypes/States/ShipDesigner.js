@@ -247,7 +247,6 @@ ShipDesigner.prototype.loadShip = function (ship)
     $('#in5').val(this.currentShip.name);
     var gri = this.grid;
     this.addedParts = ship.parts;
-    console.log(this.currentShip);
 }
 
 ShipDesigner.prototype.onActivation = function ()
