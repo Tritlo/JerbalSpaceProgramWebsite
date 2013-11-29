@@ -2,8 +2,7 @@ Template.pagination.events({
     "click .previous": function(event){
 	event.preventDefault();
 	var page = parseInt(Session.get("currentPage"))-1;
-	var paginationItem = Session.get("paginationItem");
-	var id = Session.get("current"+paginationItem);
+	var id = Session.get("currentItem");
 	Session.set("currentPage", page);
 	if(!(Session.get("shouldNotPaginate"))){
 		Router.go(Router.current().router.name,{page: page,_id:id});
@@ -12,8 +11,7 @@ Template.pagination.events({
     "click .next": function(event){
 	event.preventDefault();
 	var page = parseInt(Session.get("currentPage"))+1;
-	var paginationItem = Session.get("paginationItem");
-	var id = Session.get("current"+paginationItem);
+	var id = Session.get("currentItem");
 	Session.set("currentPage", page);
 	if(!(Session.get("shouldNotPaginate"))){
 	    Router.go(Router.current().router.name,{page: page,_id:id});

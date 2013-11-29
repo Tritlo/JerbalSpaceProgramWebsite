@@ -11,6 +11,4 @@ Template.myPartsList.created = function(){
     var page = parseInt(Session.get('currentPage'));
     var totalParts = Meteor.call("myPartsCount", function(error,result){ Session.set("paginationTotal",result);} );
     Session.set("paginationLimit",3);
-    Session.set("paginationOf","myParts");
-    Session.set("paginationItem","Part");
 }
