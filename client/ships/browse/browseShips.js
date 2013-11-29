@@ -1,5 +1,5 @@
 Template.browseShips.rendered = function (){
-        var id = Session.get('currentShip');
+        var id = Session.get('currentItem');
 	bigViewer = start("Viewer",{
 	    instanceOptions : {
 		grid: {
@@ -19,12 +19,12 @@ Template.browseShips.rendered = function (){
 Template.browseShips.events({
     "click .launch": function(evt){
 	evt.preventDefault();
-	var id = Session.get('currentShip');
+	var id = Session.get('currentItem');
 	if(id){Router.go('launchShip',{_id:id});}
     },
     "click .edit": function(evt){
 	evt.preventDefault();
-	var id = Session.get('currentShip');
+	var id = Session.get('currentItem');
 	if(id){Router.go('designShip',{_id:id});}
     }
     

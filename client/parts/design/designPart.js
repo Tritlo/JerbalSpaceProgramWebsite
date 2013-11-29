@@ -11,11 +11,11 @@ Template.designPart.rendered = function(){
 	    canvasID : "PartDesigner",
 	    clear: true
 	    });
-        var id = Session.get('currentPart');
+        var id = Session.get('currentItem');
         Session.set("mainInstance",partsDesigner);
-	if(id && Parts.findOne(id)){
-	   InstanceManager.getInstance(partsDesigner).partsDesigner.loadPart(Parts.findOne(id));
-	}
+        if(id && Parts.findOne(id)){
+           InstanceManager.getInstance(partsDesigner).partsDesigner.loadPart(Parts.findOne(id));
+        }
 };
 
 Template.designPart.destroyed = function(){

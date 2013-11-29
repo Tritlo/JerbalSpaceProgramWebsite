@@ -2,19 +2,19 @@ Template.part.events({
     "mouseenter" : function(event){
     	var id = this._id;
         var mainInstance = Session.get("mainInstance");
-	setPart(id,mainInstance);
+        setPart(id,mainInstance);
     },
     
     "mouseleave" : function(event){
-	var id = Session.get("currentPart");
+        var id = Session.get("currentItem");
         var mainInstance = Session.get("mainInstance");
-	setPart(id,mainInstance);
+        setPart(id,mainInstance);
     },
     "click": function(event){
-	var id = this._id;
-	var page =Session.get('currentPage');
-	event.preventDefault();
-	Router.go(Router.current().route.name,{page: page,_id:id});
+        var id = this._id;
+        var page =Session.get('currentPage');
+        event.preventDefault();
+        Router.go(Router.current().route.name,{page: page,_id:id});
 	}
 });
 

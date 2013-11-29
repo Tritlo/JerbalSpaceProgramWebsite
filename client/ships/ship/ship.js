@@ -6,7 +6,7 @@ Template.ship.events({
     },
     
     "mouseleave" : function(event){
-	var id = Session.get("currentShip");
+	var id = Session.get("currentItem");
         var mainInstance = Session.get("mainInstance");
 	setShip(id,mainInstance);
     },

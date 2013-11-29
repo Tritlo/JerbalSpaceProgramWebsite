@@ -1,5 +1,5 @@
 Template.browseParts.rendered = function (){
-        var id = Session.get('currentPart');
+        var id = Session.get('currentItem');
 	bigViewer = start("Viewer",{
 	    instanceOptions : {
 		grid: {
@@ -19,7 +19,7 @@ Template.browseParts.rendered = function (){
 Template.browseParts.events({
     "click .edit": function(evt){
 	evt.preventDefault();
-	var id = Session.get('currentPart');
+	var id = Session.get('currentItem');
 	if(id){Router.go('designPart',{_id:id});}
     }
     

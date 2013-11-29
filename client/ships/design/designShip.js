@@ -13,7 +13,7 @@ Template.designShip.rendered = function(){
 	    });
         Session.set("mainInstance",shipDesigner);
         Session.set("shoulNotPaginate",true);
-        var id = Session.get('currentShip');
+        var id = Session.get('currentItem');
         var currID = InstanceManager.getInstance(shipDesigner).shipDesigner.currentShip._id;
 	if(id && Ships.findOne(id) && id !== currID){
 	   InstanceManager.getInstance(shipDesigner).shipDesigner.loadShip(Ships.findOne(id));

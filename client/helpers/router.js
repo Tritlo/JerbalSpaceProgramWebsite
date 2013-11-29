@@ -17,7 +17,7 @@ Router.map(function() {
     this.route('browseParts', {
 	path: '/parts/browse/:page?/:_id?',
 	before: [function(){
-	    Session.set('currentPart',this.params._id);
+	    Session.set('currentItem',this.params._id);
 	    Session.set('currentPage',this.params.page);
 	}]
     });
@@ -30,7 +30,7 @@ Router.map(function() {
 		this.stop();
 	    }
 	    if(this.params._id)
-		Session.set('currentPart',this.params._id);
+		Session.set('currentItem',this.params._id);
 	}]
     });
     
@@ -41,14 +41,14 @@ Router.map(function() {
 		this.render("mustBeLoggedIn");
 		this.stop();
 	    }
-	    Session.set('currentPart',this.params._id);
+	    Session.set('currentItem',this.params._id);
 	}]
     });
 
     this.route('browseShips', {
 	path: '/ships/browse/:page?/:_id?',
 	before: [function(){
-	    Session.set('currentShip',this.params._id);
+	    Session.set('currentItem',this.params._id);
 	    Session.set('currentPage',this.params.page);
 	}]
     });
@@ -61,7 +61,7 @@ Router.map(function() {
 		this.stop();
 	    }
 	    if(this.params._id)
-		Session.set('currentShip',this.params._id);
+	    Session.set('currentItem',this.params._id);
 	    
 	}]
     });
@@ -74,7 +74,7 @@ Router.map(function() {
 		this.stop();
 	    }
 	    console.log(this.params._id)
-	    Session.set('currentShip',this.params._id);
+	    Session.set('currentItem',this.params._id);
 	    Session.set('currentPage',this.params.page);
 	}]
     });
@@ -82,8 +82,8 @@ Router.map(function() {
     this.route('launchShip', {
 	path: '/ships/launch/:_id?',
 	before: [function(){
-	    if(this.params._id) Session.set('currentShip',this.params._id);
-	    if(!(Session.get('currentShip') || !(Ships.findOne(Session.get('currentShip'))))){
+	    if(this.params._id) Session.set('currentItem',this.params._id);
+	    if(!(Session.get('currentItem') || !(Ships.findOne(Session.get('currentItem'))))){
 		this.render("mustSelectShip");
 		this.stop();
 	    }

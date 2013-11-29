@@ -1,5 +1,5 @@
 Template.myParts.rendered = function (){
-        var id = Session.get('currentPart');
+        var id = Session.get('currentItem');
 	bigViewer = start("Viewer",{
 	    instanceOptions : {
 		grid: {
@@ -20,17 +20,18 @@ Template.myParts.rendered = function (){
 
 Template.myParts.events({
     "click .edit": function(evt){
-	var id = Session.get('currentPart');
+	var id = Session.get('currentItem');
 	console.log(id);
 	evt.preventDefault();
 	if(id){Router.go('designPart',{_id:id});}
     },
     "click .delete": function(evt){
 	evt.preventDefault();
-	var id = Session.get('currentPart');
+
+	var id = Session.get('currentItem');
 	InstanceManager.getInstance(bigViewer).viewer.clear();
 	console.log("removing part: " + id);
-	Session.set('currentPart', undefined);
+	Session.set('currentItem', undefined);
 	Parts.remove(id);
     }
 });

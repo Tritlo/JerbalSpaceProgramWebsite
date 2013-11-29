@@ -1,5 +1,5 @@
 Template.launchShip.rendered = function (){
-	var id = Session.get('currentShip');
+	var id = Session.get('currentItem');
         var ship = Ships.findOne(id);
 
         if(ship){
