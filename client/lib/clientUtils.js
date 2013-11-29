@@ -1,7 +1,5 @@
-
-
-
-
+//Some utility functions available in the global namespace,
+//for adding parts and ships to instances, and clearing them
 setShip = function(id,instance){
     id = id || Session.get("currentItem");
     instance = instance || Session.get("mainInstance");
@@ -31,6 +29,7 @@ clearItem = function(instance){
     $("#info").html("Nothing selected");
 };
 
+//The default dictionary for events on parts
 defaultPartEvents = {
 	"mouseenter" : function(event, part){
 	    var id = part._id;

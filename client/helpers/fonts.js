@@ -1,3 +1,5 @@
+//Here we fetch the pixelated font from google
+
 WebFontConfig = {
 google: { families: [ 'VT323::latin' ] }
 };
