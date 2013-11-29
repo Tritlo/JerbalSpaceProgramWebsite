@@ -331,25 +331,64 @@ PartsDesigner.prototype.render = function(ctx) {
     }
 };
 
+PartsDesigner.prototype.updateValues = function() {
+	    this.currentPart.stroke = $('#in6').val();
+        if ($('#in8').val() != "#000000"){
+            this.currentPart.fill   = $('#in8').val() ;
+            } else {
+            this.currentPart.fill   = undefined;
+            }
+        var name = $('#in5').val()
+        if(name.length === 0){
+            $('#in5').addClass("invalid");
+        } else {
+            $('#in5').removeClass("invalid");
+            this.currentPart.name   = name;
+        }
+        
+        var mass =  parseFloat($('#in4').val());
+        var fuel   = parseFloat($('#in3').val());
+        var efficiency   = parseFloat($('#in1').val());
+        var thrust = parseFloat($('#in2').val());
+        this.currentPart.type   = $('#in7').val();
+
+        if (isNaN(mass)) {
+            $('#in4').addClass("invalid");
+            this.currentPart.mass   = 0;
+        } else {
+            $('#in4').removeClass("invalid");
+            this.currentPart.mass   = mass
+        }
+        if (isNaN(fuel)) {
+            $('#in3').addClass("invalid");
+            this.currentPart.fuel   = 0;
+        } else {
+            $('#in3').removeClass("invalid");
+            this.currentPart.fuel   = fuel
+        }
+        if (isNaN(efficiency)) {
+            $('#in1').addClass("invalid");
+            this.currentPart.efficiency   = 0;
+        } else {
+            $('#in1').removeClass("invalid");
+            this.currentPart.efficiency   = efficiency
+        }
+        if (isNaN(thrust)) {
+            $('#in2').addClass("invalid");
+            this.currentPart.thrust   = 0;
+        } else {
+            $('#in2').removeClass("invalid");
+            this.currentPart.thrust   = thrust
+        }
+}
+
 PartsDesigner.prototype.update = function (du) {
     if (this.currentPart){
-	this.currentPart.stroke = $('#in6').val();
-	if ($('#in8').val() != "#000000"){
-	    this.currentPart.fill   = $('#in8').val() ;
-	    } else {
-	    this.currentPart.fill   = undefined;
-		}
-	this.currentPart.name   = $('#in5').val();
-	this.currentPart.mass   = parseFloat($('#in4').val());
-	this.currentPart.fuel   = parseFloat($('#in3').val());
-	this.currentPart.efficiency   = parseFloat($('#in1').val());
-	this.currentPart.thrust = parseFloat($('#in2').val());
-	this.currentPart.type   = $('#in7').val();
-	
-	if(this.flame && this.flame.length === 3 && !this.flameSet) {
-	    this.currentPart.setFlame(this.flame);
-	    this.flameSet = true;
-	}
+        this.updateValues();	
+        if(this.flame && this.flame.length === 3 && !this.flameSet) {
+            this.currentPart.setFlame(this.flame);
+            this.flameSet = true;
+        }
     }
 };
 
