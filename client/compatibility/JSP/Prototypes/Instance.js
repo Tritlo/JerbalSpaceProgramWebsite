@@ -20,6 +20,7 @@ Instance.prototype.ship = undefined;
 Instance.prototype.local = false;
 Instance.prototype.currentPlayers = undefined;
 Instance.prototype.multi = false;
+Instance.prototype.force = false;
 Instance.prototype.loadedShips = undefined;
 
 Instance.prototype.loadShip = function(id){
@@ -54,7 +55,6 @@ Instance.prototype.loadShips = function(){
     } else {
 	g_defaultShips = g_defaultShips.map(function (str) {
 	    var s = new Ship(inst,$.parseJSON(str));
-	    console.log(s);
 	    s.disconnect();
 	    return s;
 	});
@@ -82,7 +82,8 @@ Instance.prototype.loadShips = function(){
 };
 
 Instance.prototype.init = function (){
-    this.ID = InstanceManager.getNewID(this.canvasID);
+    this.ID = InstanceManager.getNewID(this.canvasID,this.force);
+    if(!(this.ID)){return;}
     InstanceManager.addInstance(this);
     if(this.settings === undefined){
         this.settings = g_settings;

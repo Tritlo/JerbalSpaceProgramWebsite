@@ -9,12 +9,10 @@ Template.designShip.rendered = function(){
 		}
 	    },*/
 	    canvasID : "ShipDesigner",
-	    clear: true
+	    clear: false
 	    });
         Session.set("mainInstance",shipDesigner);
         var id = Session.get('currentShip');
-         console.log(Session);
-        console.log(id);
 	if(id && Ships.findOne(id)){
 	   InstanceManager.getInstance(shipDesigner).shipDesigner.loadShip(Ships.findOne(id));
 	}

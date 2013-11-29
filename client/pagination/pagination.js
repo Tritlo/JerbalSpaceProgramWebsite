@@ -5,7 +5,7 @@ Template.pagination.events({
 	var paginationOf = Session.get("paginationOf");
 	var id = Session.get("current"+paginationOf);
 	Session.set("currentPage", page);
-	Router.go('browse'+paginationOf+"s",{page: page,_id:id});
+	//Router.go('browse'+paginationOf+"s",{page: page,_id:id});
     },
     "click .next": function(event){
 	event.preventDefault();
@@ -13,7 +13,7 @@ Template.pagination.events({
 	var paginationOf = Session.get("paginationOf");
 	var id = Session.get("current"+paginationOf);
 	Session.set("currentPage", page);
-	Router.go('browse'+paginationOf+"s",{page: page,_id:id});
+	//Router.go('browse'+paginationOf+"s",{page: page,_id:id});
     }
 });
 

@@ -13,4 +13,4 @@ Meteor.publish('ships', function() { return Ships.find();});
 
 
 
-Meteor.publish('players',function() {Players.find();});
+Meteor.publish('players',function() {return Players.find();});
