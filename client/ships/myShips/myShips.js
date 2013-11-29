@@ -19,12 +19,12 @@ Template.myShips.rendered = function (){
 };
 
 Template.myShips.events({
-    "click .launch a": function(evt){
+    "click .launch": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
 	if(id){Router.go('launchShip',{_id:id});}
     },
-    "click .edit a": function(evt){
+    "click .edit": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
 	console.log(id);
@@ -33,8 +33,10 @@ Template.myShips.events({
     "click .delete": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
+	console.log(id);
 	InstanceManager.getInstance(bigViewer).viewer.clear();
 	console.log("removing: " + id);
+	Session.set('currentShip', undefined);
 	Ships.remove(id);
     }
     

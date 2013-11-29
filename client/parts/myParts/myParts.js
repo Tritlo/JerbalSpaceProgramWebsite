@@ -22,14 +22,15 @@ Template.myParts.events({
     "click .edit": function(evt){
 	var id = Session.get('currentPart');
 	console.log(id);
-	if(id){Router.go('designPart',{_id:id});}
 	evt.preventDefault();
+	if(id){Router.go('designPart',{_id:id});}
     },
     "click .delete": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentPart');
 	InstanceManager.getInstance(bigViewer).viewer.clear();
 	console.log("removing part: " + id);
+	Session.set('currentPart', undefined);
 	Parts.remove(id);
     }
 });

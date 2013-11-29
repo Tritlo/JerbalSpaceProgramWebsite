@@ -19,12 +19,12 @@ Template.browseShips.rendered = function (){
 };
 
 Template.browseShips.events({
-    "click .launch a": function(evt){
+    "click .launch": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
 	if(id){Router.go('launchShip',{_id:id});}
     },
-    "click .edit a": function(evt){
+    "click .edit": function(evt){
 	evt.preventDefault();
 	var id = Session.get('currentShip');
 	console.log(id);

@@ -31,7 +31,8 @@ Template.part.rendered = function(){
 		    "width" : 100,
 		    "height" : 100,
 		    "location": [10,10]
-		}
+		},
+		force: true
 	    },
 	    canvasID : "part-"+partId,
 	    clear: false

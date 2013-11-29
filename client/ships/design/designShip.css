@@ -1,3 +1,8 @@
+#designShipWrapper {
+    width: 800px;
+    margin: 0 auto;
+}
+
 #designShip {
     float: left;
     }

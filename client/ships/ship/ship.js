@@ -31,7 +31,8 @@ Template.ship.rendered = function(){
 		    "width" : 180,
 		    "height" : 180,
 		    "location": [10,10]
-		}
+		},
+		force: true
 	    },
 	    canvasID : "ship-"+shipId,
 	    clear: false

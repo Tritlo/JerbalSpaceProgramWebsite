@@ -3,6 +3,9 @@ Router.configure({
     notFoundTemplate: 'notFound'
 });
 
+clearInstanceManager = function(){
+    if(InstanceManager) InstanceManager.clear();
+};
 
 Router.map(function() {
     this.route('home', {
@@ -13,7 +16,7 @@ Router.map(function() {
     
     this.route('browseParts', {
 	path: '/parts/browse/:page?/:_id?',
-	before: [function(){
+	before: [clearInstanceManager, function(){
 	    Session.set('currentPart',this.params._id);
 	    Session.set('currentPage',this.params.page);
 	}]
@@ -21,7 +24,7 @@ Router.map(function() {
     
     this.route('designPart', {
 	path: '/parts/design/:_id?',
-	before: [function(){
+	before: [clearInstanceManager,function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -32,8 +35,8 @@ Router.map(function() {
     });
     
     this.route('myParts', {
-	path: '/parts/myParts/:_id?',
-	before: [function(){
+	path: '/parts/myParts/:page?/:_id?',
+	before: [clearInstanceManager,function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -44,7 +47,7 @@ Router.map(function() {
 
     this.route('browseShips', {
 	path: '/ships/browse/:page?/:_id?',
-	before: [function(){
+	before: [clearInstanceManager,function(){
 	    Session.set('currentShip',this.params._id);
 	    Session.set('currentPage',this.params.page);
 	}]
@@ -52,7 +55,7 @@ Router.map(function() {
     
     this.route('designShip', {
 	path: '/ships/design/:_id?',
-	before: [function(){
+	before: [clearInstanceManager,function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -64,8 +67,8 @@ Router.map(function() {
     });
     
 	this.route('myShips', {
-	path: '/parts/myShips/:_id?',
-	before: [function(){
+	path: '/parts/myShips/:page?/:_id?',
+	before: [clearInstanceManager,function(){
 	    if(!Meteor.user()){
 		this.render("mustBeLoggedIn");
 		this.stop();
@@ -76,7 +79,7 @@ Router.map(function() {
     
     this.route('launchShip', {
 	path: '/ships/launch/:_id?',
-	before: [function(){
+	before: [clearInstanceManager,function(){
 	    if(this.params._id) Session.set('currentShip',this.params._id);
 	    if(!(Session.get('currentShip') || !(Ships.findOne(Session.get('currentShip'))))){
 		this.render("mustSelectShip");

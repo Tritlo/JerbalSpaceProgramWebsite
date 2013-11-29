@@ -31,17 +31,18 @@ Template.myShip.rendered = function(){
 		    "width" : 180,
 		    "height" : 180,
 		    "location": [10,10]
-		}
+		},
+		force: true
 	    },
 	    canvasID : "myShip-"+myShipId,
 	    clear: false
 	    });
 
-        console.log(myShipViewer);
 	if(myShipId){
 	    var inst = InstanceManager.getInstance(myShipViewer).viewer.loadShip(this.data);
 	}
 };
+
 Template.myShip.destroyed = function(){
     var instID = "myShip-" + this.data._id;
     InstanceManager.removeInstance(instID);
