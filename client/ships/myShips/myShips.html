@@ -1,0 +1,16 @@
+<template name="myShips">
+  <div id="myShips">
+	<div id="viewShip">
+	<canvas id="bigViewer" width="500" height="500"
+	    style="border: 1px solid black;">
+	Sorry, but your myr does not support the HTML5 canvas tag.
+	</canvas>
+  	<p> <a href="{{pathFor 'launchShip'}}" class="launch">Launch</a></p><p>
+   	  <a href="{{pathFor 'designShip'}}" class="edit">Edit</a></p>
+   	  <a href="{{pathFor 'deleteShip'}}" class="delete">Delete</a></p>
+	</p>
+	</div>
+    {{> myShipsList}}	
+  </div>
+</template>
+

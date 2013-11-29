@@ -1,0 +1,12 @@
+<template name="myShipsList">
+<div class="myShipsList">
+    <div id="myShips">
+      {{#each myShips}}
+        {{> myShip}}
+      {{/each}}
+    </div>
+    <div id="pagination">
+      {{> myPagination}}
+    </div>
+</div>
+</template>

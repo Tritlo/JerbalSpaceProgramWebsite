@@ -63,6 +63,17 @@ Router.map(function() {
 	}]
     });
     
+	this.route('myShips', {
+	path: '/parts/myShips/:_id?',
+	before: [function(){
+	    if(!Meteor.user()){
+		this.render("mustBeLoggedIn");
+		this.stop();
+	    }
+	    Session.set('currentShip',this.params._id);
+	}]
+    });
+    
     this.route('launchShip', {
 	path: '/ships/launch/:_id?',
 	before: [function(){

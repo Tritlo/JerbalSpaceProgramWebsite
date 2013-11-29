@@ -1,0 +1,10 @@
+<template name="myPagination">
+    <ul class="pager">
+	{{#if notFirstPage}}
+	    <li><a href="#" class="previous">Previous</a></li>
+	{{/if}}
+	{{#if notLastPage}}
+	    <li><a href="#" class="next">Next</a></li>
+	{{/if}}
+    </ul>
+</template>
