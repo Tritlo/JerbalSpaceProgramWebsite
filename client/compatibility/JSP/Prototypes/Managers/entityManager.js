@@ -302,7 +302,7 @@ EntityManager.prototype.update = function(du) {
 	this.updateOtherPlayersShips(du);
     }
 
-    if (this.getInstance().multi){
+    if (this.getInstance().multi && Meteor.userId()){
         var ship = this.getMainShip();
         var state = {
 	    vel: [ship.velX,ship.velY],
