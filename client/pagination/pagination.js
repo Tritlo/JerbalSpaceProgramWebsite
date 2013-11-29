@@ -2,18 +2,20 @@ Template.pagination.events({
     "click .previous": function(event){
 	event.preventDefault();
 	var page = parseInt(Session.get("currentPage"))-1;
+	var paginationItem = Session.get("paginationItem");
 	var paginationOf = Session.get("paginationOf");
-	var id = Session.get("current"+paginationOf);
+	var id = Session.get("current"+paginationItem);
 	Session.set("currentPage", page);
-	Router.go('browse'+paginationOf+"s",{page: page,_id:id});
+	Router.go(paginationOf,{page: page,_id:id});
     },
     "click .next": function(event){
 	event.preventDefault();
 	var page = parseInt(Session.get("currentPage"))+1;
+	var paginationItem = Session.get("paginationItem");
 	var paginationOf = Session.get("paginationOf");
-	var id = Session.get("current"+paginationOf);
+	var id = Session.get("current"+paginationItem);
 	Session.set("currentPage", page);
-	Router.go('browse'+paginationOf+"s",{page: page,_id:id});
+	Router.go(paginationOf,{page: page,_id:id});
     }
 });
 
