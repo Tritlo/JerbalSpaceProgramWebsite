@@ -17,3 +17,7 @@ Template.designPart.rendered = function(){
 	   InstanceManager.getInstance(partsDesigner).partsDesigner.loadPart(Parts.findOne(id));
 	}
 };
+
+Template.designPart.destroyed = function(){
+    InstanceManager.clear();
+};

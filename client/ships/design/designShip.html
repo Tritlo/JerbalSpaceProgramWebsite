@@ -1,9 +1,11 @@
 <template name="designShip">
   <div id="designShip">
+    <div id="canvas">
 	<canvas id="ShipDesigner" width="650" height="650"
 	    style="border: 1px solid black;">
 	Sorry, but your browser does not support the HTML5 canvas tag.
 	</canvas>
+    <form id="gameInput">
 	<select id="in7" style="display:none;"></select>
 	<select id="in9" style="display:none;"></select>
 	<input id="in6" type="color" style="display: none;"></input>
@@ -13,5 +15,7 @@
 	<input id="in2" type="text"  style="display: none;" ></input>
 	<input id="in1" type="text"  style="display: none;" ></input>
 	<input id="in8" type="color"  style="display: none;" ></input>
+</form>
+    </div>
   </div>
 </template>

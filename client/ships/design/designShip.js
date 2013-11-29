@@ -19,3 +19,7 @@ Template.designShip.rendered = function(){
 	   InstanceManager.getInstance(shipDesigner).shipDesigner.loadShip(Ships.findOne(id));
 	}
 };
+
+Template.designShip.destroyed = function(){
+    InstanceManager.clear();
+};
