@@ -44,6 +44,7 @@ Template.ship.isMine = function(){
     return this.authorID === Meteor.userId();
 };
 
+// removes the game-instance used for viewing the ship
 Template.ship.destroyed = function(){
     var instID = "ship-" + this.data._id;
     InstanceManager.removeInstance(instID);
