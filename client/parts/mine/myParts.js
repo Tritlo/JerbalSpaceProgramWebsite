@@ -1,3 +1,4 @@
+//Display the part on the big screen
 Template.myParts.rendered = function (){
         var id = Session.get('currentItem');
 	bigViewer = start("Viewer",{
@@ -18,11 +19,17 @@ Template.myParts.rendered = function (){
 	}
 };
 
+//Only real difference from browseParts is this guy,
+//which sets the scope as only the parts having the current user as the author
+//This page isn't displayed when the user is not logged in
 Template.myParts.listData = {
     scope: function() { return { author:Meteor.user().username}},
     partEvents: defaultPartEvents
 };
 
+
+//Here we enable editing as in browse parts, but we 
+//also allow the user to delete the parts, as they are his own
 Template.myParts.events({
     "click .edit": function(evt){
 	var id = Session.get('currentItem');

@@ -1,3 +1,5 @@
+//Here we define the routes for the app
+
 Router.configure({
     autoRender: false,
     notFoundTemplate: 'notFound'
