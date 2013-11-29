@@ -6,6 +6,6 @@ Meteor.methods({
 	       return Ships.find().count();
 	},
 	myPartsCount: function(){
-		return Parts.find( { author: Meteor.user() } ).count();
+		return Parts.find( { author: Meteor.user().username } ).count();
 	}    
 });

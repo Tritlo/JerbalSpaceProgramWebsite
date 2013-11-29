@@ -2,7 +2,7 @@ Template.myPartsList.helpers({
 		myParts: function(){
         var page = parseInt(Session.get('currentPage'));
         var limit = parseInt(Session.get('paginationLimit'));
-        return Parts.find({ author:Meteor.user() },{skip: (page-1)*limit, limit: limit});
+        return Parts.find({ author:Meteor.user().username },{skip: (page-1)*limit, limit: limit});
 	}
 });
 
