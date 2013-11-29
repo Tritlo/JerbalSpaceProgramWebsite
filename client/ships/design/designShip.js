@@ -1,18 +1,12 @@
 Template.designShip.rendered = function(){
+	// creates an instance of the game which is in ship
+	// designer mode
 	shipDesigner = start("ShipDesigner",{
-	    /*instanceOptions : {
-		grid: {
-		    "dims" : [32,32],
-		    "width" : 490,
-		    "height" : 490,
-		    "location": [10,10]
-		}
-	    },*/
 	    canvasID : "ShipDesigner",
 	    clear: false
 	    });
         Session.set("mainInstance",shipDesigner);
-        Session.set("shoulNotPaginate",true);
+        Session.set("shouldNotPaginate",true);
         var id = Session.get('currentItem');
         var currID = InstanceManager.getInstance(shipDesigner).shipDesigner.currentShip._id;
 	if(id && Ships.findOne(id) && id !== currID){
@@ -35,6 +29,6 @@ Template.designShip.listData = {
 
 Template.designShip.destroyed = function(){
     InstanceManager.clear();
-    Session.set("shoulNotPaginate",false);
+    Session.set("shouldNotPaginate",false);
     Session.set("currentPage",1);
 };
