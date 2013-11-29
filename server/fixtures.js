@@ -1,10 +1,5 @@
-/*var oldflame = {
-      points:[[4,15],[20,15],[12,41]],
-      center:[12,15],
-      direction:[0,1],
-      length:26
-};
-*/
+//Here we add initial data to the database, for both
+//parts and ships
 if (Parts.find().count() == 0){
   Parts.insert({
     author: "Tritlo",
