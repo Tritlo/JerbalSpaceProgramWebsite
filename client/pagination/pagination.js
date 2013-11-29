@@ -11,7 +11,7 @@ Template.pagination.events({
 
     //We don't want to reload the page in the designer
 	if(!(Session.get("shouldNotBrowse"))){
-		Router.go(Router.current().router.name,{page: page,_id:id});
+		Router.go(Router.current().route.name,{page: page,_id:id});
 	}
     },
     "click .next": function(event){
@@ -20,7 +20,7 @@ Template.pagination.events({
 	var id = Session.get("currentItem");
 	Session.set("currentPage", page);
 	if(!(Session.get("shouldNotBrowse"))){
-	    Router.go(Router.current().router.name,{page: page,_id:id});
+	    Router.go(Router.current().route.name,{page: page,_id:id});
 	}
     }
 });
