@@ -12,3 +12,5 @@ accounts-ui-bootstrap-3
 accounts-password
 appcache
 showdown
+phantomjs
+spiderable
