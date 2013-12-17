@@ -13,6 +13,7 @@ CODE_LINES=`find . -type f \( ! -regex '.*/\..*' \) | xargs wc -l | grep total`
 
 APP_NAME=JerbalSpaceProgram
 SUBDOMAIN=jerbalspaceprogram
+MAINDOMAIN=jsp.mpg.is
 
 rm -rf $OUTPUT_DIR
 demeteorizer -o $OUTPUT_DIR
@@ -28,6 +29,7 @@ cat >> package2.json << __END__
   "scripts": {
     "start": "node programs/server/boot.js programs/server/program.json "
   },
+  "domains" : ["$MAINDOMAIN"],
   "engines": {
     "node": "0.10.x"
   }
