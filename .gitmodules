@@ -1,0 +1,3 @@
+[submodule "client/compatibility/JSP"]
+	path = client/compatibility/JSP
+	url = git@github.com:Tritlo/JerbalSpaceProgram
