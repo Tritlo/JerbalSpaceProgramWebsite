@@ -12,3 +12,5 @@ This was the final project in Web Programming at the University of Iceland. Proj
 The multiplayer is still in beta, bear that in mind!
 
 [A short demo of the game](http://youtu.be/6cwalUbIsYM)
+
+[Link to the game repo](https://github.com/Tritlo/JerbalSpaceProgram)
