@@ -16,7 +16,7 @@ SUBDOMAIN=jerbalspaceprogram
 MAINDOMAIN=jsp.mpg.is
 
 rm -rf $OUTPUT_DIR
-demeteorizer -o $OUTPUT_DIR
+demeteorizer -a $APP_NAME -o $OUTPUT_DIR
 cd $OUTPUT_DIR
 npm install
 npm shrinkwrap
